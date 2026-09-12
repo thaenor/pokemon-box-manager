@@ -255,9 +255,16 @@ If `season=M4&days=7` is appended, the response includes `dailyBattleSummary` �
 
 ### Behaviour with vs without format param
 
-- **Without `format`**: Returns the Pokémon record with metadata and all CSV paths, **no** battle summary.
+- **Without `format`**: Returns the Pokémon record with metadata, all CSV paths, and `learnableMoveNames` array (every move the Pokémon can learn — useful for move pickers). **No** battle summary.
 - **With `format=Doubles`**: Battle summary is scoped to Doubles usage.
 - **With `format=Singles`**: Battle summary is scoped to Singles usage.
+
+Example without format (includes learnableMoveNames):
+```js
+const res = await fetch('https://championsbattledata.com/api/pokemon/garchomp');
+const d = await res.json();
+console.log(d.learnableMoveNames); // ~58 moves for Garchomp
+```
 
 ### Field path extraction
 
@@ -483,6 +490,17 @@ The `saved_name` is the key to:
       "spa": 50, "spd": 90, "spe": 120, "total": 610
     },
     {
+      "title": "Tauros [Paldean Form (Combat Breed)]",
+      "base_name": "Tauros",
+      "saved_name": "Paldean Tauros Combat Breed",
+      "types": "Fighting",
+      "abilities": "Intimidate|Anger Point|Cud Chew",
+      "image_path": "pokemon_champions_assets/pokemon/Paldean Tauros Combat Breed.png",
+      "form": "Paldean Combat Breed",
+      "hp": 150, "atk": 130, "def": 125,
+      "spa": 50, "spd": 90, "spe": 120, "total": 610
+    },
+    {
       "title": "Tauros",
       "base_name": "Tauros",
       "saved_name": "Tauros",
@@ -550,9 +568,9 @@ The API accepts **Pokémon Showdown internal IDs** — lowercase, stripped of pu
 | Tauros-Paldea-Blaze-Breed | `taurospaldeablaze` |
 | Rotom-Wash | `rotomwash` |
 | Basculegion-Female | `basculegionf` |
-| Flutter Mane | `fluttermare` _(or `fluttermane` — verify via index)_ |
-| Raging Bolt | `ragingbolt` _(or similar — verify via index)_ |
-| Urshifu-Rapid-Strike | `urshifurapidstrike` |
+| Flutter Mane | `fluttermane` | **NOT in Champions API** | Check index for correct ID if added later |
+| Raging Bolt | `ragingbolt` | **NOT in Champions API** | Check index for correct ID if added later |
+| Urshifu-Rapid-Strike | `urshifurapidstrike` | **NOT in Champions API** | Gen 8/9 DLC — not yet in game |
 | Amoonguss | `amoonguss` |
 
 ### Algorithm: display name → Showdown ID
@@ -574,9 +592,9 @@ The API is **case-insensitive** — `GARCHOMP` and `garchomp` both work. Route n
 | Display name (Showdown format) | Showdown ID (API) | Battle data CSV name |
 |---|---|---|
 | `Incineroar` | `incineroar` | `Incineroar.csv` |
-| `Raging Bolt` | `ragingbolt` | `Raging Bolt.csv` |
-| `Urshifu-Rapid-Strike` | `urshifurapidstrike` | `Urshifu Rapid Strike.csv` *(confirm via index)* |
-| `Flutter Mane` | `fluttermane` | `Flutter Mane.csv` |
+| `Raging Bolt` | `ragingbolt` | `Raging Bolt.csv` | ⚠️ NOT in Champions API |
+| `Urshifu-Rapid-Strike` | `urshifurapidstrike` | `Urshifu Rapid Strike.csv` | ⚠️ NOT in Champions API |
+| `Flutter Mane` | `fluttermane` | `Flutter Mane.csv` | ⚠️ NOT in Champions API |
 | `Amoonguss` | `amoonguss` | `Amoonguss.csv` |
 | `Arcanine-Hisui` | `arcaninehisui` | `Hisuian Arcanine.csv` *(confirm via index)* |
 
@@ -605,7 +623,9 @@ const entry = resolvePokemon('Arcanine-Hisui');
 const battleUrl = `https://championsbattledata.com/api/battle/Doubles/${entry.showdownId}`;
 ```
 
-### Important: battleName vs saved_name
+### Important: battleName is form-specific
+
+Each form has its own `battleName`, which is used for CSV filenames. This means Hisuian Arcanine has `battleName: "Hisuian Arcanine"` with its own `Hisuian Arcanine.csv`, separate from regular Arcanine's `Arcanine.csv`.
 
 The API uses three naming schemes:
 
@@ -613,20 +633,20 @@ The API uses three naming schemes:
 |---|---|---|
 | `showdownId` | `arcaninehisui` | API routes: `/api/battle/Doubles/arcaninehisui` |
 | `showdownName` | `Arcanine-Hisui` | Pokémon Showdown's canonical display name |
-| `battleName` | `Arcanine` | CSV filename: `battle_data/Doubles/Arcanine.csv` |
+| `battleName` | `Hisuian Arcanine` | CSV filename: `battle_data/Doubles/Hisuian Arcanine.csv` |
 | `saved_name` | `Hisuian Arcanine` | Sprite filename: `pokemon/Hisuian Arcanine.png` |
-
-The CSV path for a form uses the **base form's `battleName`**, not the form-specific `saved_name`. Sprite files use the form-specific `saved_name`. This means both Hisuian Arcanine and regular Arcanine share the same CSV (`Arcanine.csv`) but have different sprite files.
 
 To construct static asset URLs:
 
 ```js
-// CSV: use battleName (from index entry)
+// CSV: use battleName (from index entry) — this IS form-specific
 const csvUrl = `https://championsbattledata.com/pokemon_champions_assets/battle_data/Doubles/${encodeURIComponent(entry.battleName)}.csv`;
 
 // Sprite: use saved_name (from metadata entry or form data)
 const spriteUrl = `https://championsbattledata.com/pokemon_champions_assets/pokemon/${encodeURIComponent(formData.saved_name)}.png`;
 ```
+
+Note: `battleName` and `saved_name` are often the same string, but for some Pokemon they differ (base form may have `saved_name` equal to the species name, while the battleName is the same). Always use `battleName` from the index entry or Pokemon record for CSV paths, and `saved_name` from metadata for sprite paths.
 
 ---
 
