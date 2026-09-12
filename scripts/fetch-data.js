@@ -282,41 +282,22 @@ async function downloadSpriteIndex() {
     return { succeeded: false, failed: ['pokemon-species index'] };
   }
 
-  // Fetch sprite URLs for each species (in batches to be kind to the API)
-  const BATCH_SIZE = 25;
-  const spriteIndex = [];
+  // Construct sprite URLs deterministically from species ID
+  // PokéAPI front-default sprites follow a known GitHub raw URL pattern:
+  // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png
+  // This eliminates 1,100 individual API calls — execution drops from minutes to <1s.
+  const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
 
-  log('SPRITES', `Fetching sprite URLs in batches of ${BATCH_SIZE}…`);
+  log('SPRITES', 'Constructing sprite URLs deterministically…');
 
-  for (let i = 0; i < speciesList.length; i += BATCH_SIZE) {
-    const batch = speciesList.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.allSettled(
-      batch.map(async (species) => {
-        try {
-          // PokéAPI returns species URLs like ".../pokemon-species/{id}/"
-          // We need to use the /pokemon/{id} endpoint for sprite data.
-          const id = species.url.match(/\/(\d+)\/?$/)?.[1];
-          const pokemonUrl = `${POKEAPI_BASE}/pokemon/${id}`;
-          const res = await fetchWithTimeout(pokemonUrl, 15000);
-          const pokeData = await res.json();
-          const spriteUrl = pokeData.sprites?.front_default || null;
-          return { name: species.name, spriteUrl, id: pokeData.id };
-        } catch (err) {
-          return { name: species.name, spriteUrl: null, id: null, error: err.message };
-        }
-      })
-    );
-
-    for (const result of batchResults) {
-      if (result.status === 'fulfilled') {
-        spriteIndex.push(result.value);
-      }
-    }
-
-    if ((i / BATCH_SIZE) % 10 === 0) {
-      log('SPRITES', `Progress: ${Math.min(i + BATCH_SIZE, speciesList.length)}/${speciesList.length}`);
-    }
-  }
+  const spriteIndex = speciesList.map((species) => {
+    const id = species.url.match(/\/(\d+)\/?$/)?.[1];
+    return {
+      name: species.name,
+      spriteUrl: id ? `${SPRITE_BASE}/${id}.png` : null,
+      id: id ? parseInt(id, 10) : null,
+    };
+  });
 
   const indexed = spriteIndex.filter(s => s.spriteUrl);
   const missing = spriteIndex.filter(s => !s.spriteUrl);
