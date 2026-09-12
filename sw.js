@@ -16,6 +16,8 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(PRECACHE_URLS);
+    }).catch(err => {
+      console.error('Precache failed:', err);
     })
   );
   self.skipWaiting();
@@ -30,7 +32,9 @@ self.addEventListener('activate', event => {
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
       )
-    )
+    ).catch(err => {
+      console.error('Cache cleanup failed:', err);
+    })
   );
   self.clients.claim();
 });

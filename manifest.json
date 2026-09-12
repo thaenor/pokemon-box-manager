@@ -2,6 +2,7 @@
   "name": "Pokémon Box Manager",
   "short_name": "Box Manager",
   "description": "Browse, filter, and manage your Pokémon boxes with ease.",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
