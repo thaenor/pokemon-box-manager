@@ -135,6 +135,9 @@ async function downloadShowdownFile(fileConfig) {
     data = body;
   } else if (fileConfig.type === 'js') {
     log('SHOWDOWN', `Converting JS → JSON (export key: ${fileConfig.exportKey})`);
+    // Note: vm sandbox provides ISOLATION (no require/process/globals) but NOT a
+    // security boundary. Safe here because Showdown data is trusted first-party.
+    // Do NOT reuse for untrusted sources.
     const sandbox = { exports: {} };
     const script = new vm.Script(body);
     script.runInNewContext(sandbox);
@@ -292,7 +295,7 @@ async function downloadSpriteIndex() {
         try {
           // PokéAPI returns species URLs like ".../pokemon-species/{id}/"
           // We need to use the /pokemon/{id} endpoint for sprite data.
-          const id = species.url.split('/').filter(Boolean).pop();
+          const id = species.url.match(/\/(\d+)\/?$/)?.[1];
           const pokemonUrl = `${POKEAPI_BASE}/pokemon/${id}`;
           const res = await fetchWithTimeout(pokemonUrl, 15000);
           const pokeData = await res.json();
