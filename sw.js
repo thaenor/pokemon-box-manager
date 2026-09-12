@@ -2,7 +2,6 @@ const CACHE_NAME = 'pkmn-box-v1';
 
 const PRECACHE_URLS = [
   '/',
-  '/index.html',
   '/css/style.css',
   '/js/firebase-config.js',
   '/js/app.js',
@@ -41,15 +40,23 @@ self.addEventListener('activate', event => {
 
 /* ── Fetch strategy ── */
 self.addEventListener('fetch', event => {
-  const request = event.request;
+  const { request } = event;
+  const url = new URL(request.url);
 
-  // API / data requests → network-first
-  if (request.url.includes('/api/') || request.url.includes('firestore')) {
-    event.respondWith(networkFirst(request));
+  // Only intercept same-origin GET requests
+  if (request.method !== 'GET' || url.origin !== self.location.origin) {
     return;
   }
 
-  // Everything else → cache-first
+  // Navigation requests: serve cached index.html shell as fallback
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  // Static assets: Cache-first
   event.respondWith(cacheFirst(request));
 });
 
@@ -60,30 +67,12 @@ async function cacheFirst(request) {
 
   try {
     const response = await fetch(request);
-    const cache = await caches.open(CACHE_NAME);
-    // Only cache successful responses
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (err) {
-    // Offline and nothing cached — fail gracefully
-    return new Response('Offline', { status: 503 });
-  }
-}
-
-/* ── Network-first strategy ── */
-async function networkFirst(request) {
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
+    if (response && response.status === 200 && response.type === 'basic') {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, response.clone());
     }
     return response;
   } catch (err) {
-    const cached = await caches.match(request);
-    if (cached) return cached;
-    return new Response('Offline', { status: 503 });
+    return new Response('Offline', { status: 503, statusText: 'Offline' });
   }
 }
