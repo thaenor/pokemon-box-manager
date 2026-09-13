@@ -49,7 +49,14 @@ export function showSpeciesSearch() {
     panel.appendChild(title);
 
     /* ── Search input ── */
+    const searchLabel = document.createElement('label');
+    searchLabel.className = 'sr-only';
+    searchLabel.htmlFor = 'species-search-input';
+    searchLabel.textContent = 'Search Pokémon';
+    panel.appendChild(searchLabel);
+
     const input = document.createElement('input');
+    input.id = 'species-search-input';
     input.type = 'text';
     input.placeholder = 'Search Pokémon...';
     input.style.width = '100%';
