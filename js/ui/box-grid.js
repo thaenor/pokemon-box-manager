@@ -85,7 +85,7 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
       // ── Name label below sprite ──
       const nameEl = document.createElement('span');
       nameEl.className = 'label-micro';
-      nameEl.style.cssText = 'position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px;';
+      nameEl.style.cssText = 'position: absolute; bottom: 26px; left: 0; right: 0; text-align: center; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px;';
       nameEl.textContent = pokemon.species.name;
       slot.appendChild(nameEl);
 
