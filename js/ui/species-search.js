@@ -208,9 +208,21 @@ export function showSpeciesSearch() {
 
     function renderResults(filter) {
       const q = filter.trim().toLowerCase();
-      const results = q ? speciesList.filter((s) => s.name.toLowerCase().includes(q)) : speciesList;
 
       resultsEl.innerHTML = "";
+
+      if (q.length === 0) {
+        const hint = document.createElement("div");
+        hint.className = "body-md";
+        hint.style.color = "var(--color-text-muted)";
+        hint.style.textAlign = "center";
+        hint.style.padding = "var(--space-2xl) var(--space-md)";
+        hint.textContent = "Type to search Pokémon…";
+        resultsEl.appendChild(hint);
+        return;
+      }
+
+      const results = speciesList.filter((s) => s.name.toLowerCase().includes(q));
 
       if (results.length === 0) {
         const empty = document.createElement("div");
