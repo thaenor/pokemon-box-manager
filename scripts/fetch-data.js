@@ -24,24 +24,24 @@
  *   --include-learnsets Include learnsets.json (~3MB) — skipped by default
  */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
 
-const ROOT = path.resolve(__dirname, '..');
-const DATA_DIR = path.join(ROOT, 'data');
-const STATS_DIR = path.join(DATA_DIR, 'usage-stats');
-const SPRITES_DIR = path.join(DATA_DIR, 'sprites');
+const ROOT = path.resolve(__dirname, "..");
+const DATA_DIR = path.join(ROOT, "data");
+const STATS_DIR = path.join(DATA_DIR, "usage-stats");
+const SPRITES_DIR = path.join(DATA_DIR, "sprites");
 
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
-const SHOWDOWN_BASE = 'https://play.pokemonshowdown.com/data';
-const STATS_BASE = 'https://data.pkmn.cc/stats';
-const POKEAPI_BASE = 'https://pokeapi.co/api/v2';
+const SHOWDOWN_BASE = "https://play.pokemonshowdown.com/data";
+const STATS_BASE = "https://data.pkmn.cc/stats";
+const POKEAPI_BASE = "https://pokeapi.co/api/v2";
 
 /**
  * Files to download from play.pokemonshowdown.com/data/
@@ -50,18 +50,28 @@ const POKEAPI_BASE = 'https://pokeapi.co/api/v2';
  * - type: 'js'    → evaluate with VM and export the main key as JSON
  */
 const SHOWDOWN_FILES = [
-  { name: 'pokedex.json',   url: `${SHOWDOWN_BASE}/pokedex.json`,   type: 'json' },
-  { name: 'moves.json',     url: `${SHOWDOWN_BASE}/moves.json`,     type: 'json' },
-  { name: 'abilities.json', url: `${SHOWDOWN_BASE}/abilities.js`,   type: 'js', exportKey: 'BattleAbilities' },
-  { name: 'items.json',     url: `${SHOWDOWN_BASE}/items.js`,       type: 'js', exportKey: 'BattleItems' },
-  { name: 'type-chart.json', url: `${SHOWDOWN_BASE}/typechart.js`,  type: 'js', exportKey: 'BattleTypeChart' },
-  { name: 'learnsets.json', url: `${SHOWDOWN_BASE}/learnsets.json`, type: 'json', skip: true },
+  { name: "pokedex.json", url: `${SHOWDOWN_BASE}/pokedex.json`, type: "json" },
+  { name: "moves.json", url: `${SHOWDOWN_BASE}/moves.json`, type: "json" },
+  {
+    name: "abilities.json",
+    url: `${SHOWDOWN_BASE}/abilities.js`,
+    type: "js",
+    exportKey: "BattleAbilities",
+  },
+  { name: "items.json", url: `${SHOWDOWN_BASE}/items.js`, type: "js", exportKey: "BattleItems" },
+  {
+    name: "type-chart.json",
+    url: `${SHOWDOWN_BASE}/typechart.js`,
+    type: "js",
+    exportKey: "BattleTypeChart",
+  },
+  { name: "learnsets.json", url: `${SHOWDOWN_BASE}/learnsets.json`, type: "json", skip: true },
 ];
 
 /**
  * Smogon formats to download stats for
  */
-const STATS_FORMATS = ['gen9ou', 'gen9doublesou'];
+const STATS_FORMATS = ["gen9ou", "gen9doublesou"];
 
 /**
  * PokéAPI species limit (all known species as of Gen 9)
@@ -77,8 +87,8 @@ function log(label, msg) {
 }
 
 function formatBytes(bytes) {
-  if (bytes === 0) return '0 B';
-  const units = ['B', 'KB', 'MB', 'GB'];
+  if (bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
   let i = 0;
   let size = bytes;
   while (size >= 1024 && i < units.length - 1) {
@@ -125,16 +135,16 @@ async function fetchWithTimeout(url, timeoutMs = 30000) {
 async function downloadShowdownFile(fileConfig) {
   const destPath = path.join(DATA_DIR, fileConfig.name);
 
-  log('SHOWDOWN', `Downloading ${fileConfig.url} → ${fileConfig.name}`);
+  log("SHOWDOWN", `Downloading ${fileConfig.url} → ${fileConfig.name}`);
 
   const response = await fetchWithTimeout(fileConfig.url, 60000);
   const body = await response.text();
   let data;
 
-  if (fileConfig.type === 'json') {
+  if (fileConfig.type === "json") {
     data = body;
-  } else if (fileConfig.type === 'js') {
-    log('SHOWDOWN', `Converting JS → JSON (export key: ${fileConfig.exportKey})`);
+  } else if (fileConfig.type === "js") {
+    log("SHOWDOWN", `Converting JS → JSON (export key: ${fileConfig.exportKey})`);
     // Note: vm sandbox provides ISOLATION (no require/process/globals) but NOT a
     // security boundary. Safe here because Showdown data is trusted first-party.
     // Do NOT reuse for untrusted sources.
@@ -148,10 +158,10 @@ async function downloadShowdownFile(fileConfig) {
     data = JSON.stringify(exported, null, 2);
   }
 
-  fs.writeFileSync(destPath, data, 'utf-8');
+  fs.writeFileSync(destPath, data, "utf-8");
 
   const stats = fs.statSync(destPath);
-  log('SHOWDOWN', `✅ Saved ${fileConfig.name} (${formatBytes(stats.size)})`);
+  log("SHOWDOWN", `✅ Saved ${fileConfig.name} (${formatBytes(stats.size)})`);
   return { name: fileConfig.name, size: stats.size };
 }
 
@@ -159,23 +169,21 @@ async function downloadShowdownFile(fileConfig) {
  * Download all configured Showdown files in parallel.
  */
 async function downloadShowdownData(includeLearnsets) {
-  const files = SHOWDOWN_FILES.filter(f => !f.skip || includeLearnsets);
-  log('SHOWDOWN', `Downloading ${files.length} file(s) from Showdown…`);
+  const files = SHOWDOWN_FILES.filter((f) => !f.skip || includeLearnsets);
+  log("SHOWDOWN", `Downloading ${files.length} file(s) from Showdown…`);
 
-  const results = await Promise.allSettled(
-    files.map(f => downloadShowdownFile(f))
-  );
+  const results = await Promise.allSettled(files.map((f) => downloadShowdownFile(f)));
 
   const succeeded = [];
   const failed = [];
 
   for (const result of results) {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       succeeded.push(result.value);
     } else {
       const failedFile = files[results.indexOf(result)];
       failed.push(failedFile.name);
-      log('SHOWDOWN', `❌ Failed: ${failedFile.name} — ${result.reason.message}`);
+      log("SHOWDOWN", `❌ Failed: ${failedFile.name} — ${result.reason.message}`);
     }
   }
 
@@ -193,62 +201,62 @@ async function downloadUsageStats() {
   ensureDir(STATS_DIR);
 
   // Download index first to see what's available
-  log('STATS', 'Fetching stats index…');
+  log("STATS", "Fetching stats index…");
   let indexData;
   try {
     const res = await fetchWithTimeout(`${STATS_BASE}/index.json`, 30000);
     indexData = await res.json();
-    log('STATS', `Index has ${Object.keys(indexData).length} formats`);
+    log("STATS", `Index has ${Object.keys(indexData).length} formats`);
   } catch (err) {
-    log('STATS', `⚠️ Could not fetch index: ${err.message}`);
-    log('STATS', 'Will try downloading individual formats directly');
+    log("STATS", `⚠️ Could not fetch index: ${err.message}`);
+    log("STATS", "Will try downloading individual formats directly");
     indexData = null;
   }
 
   // Filter to requested formats, handling missing ones gracefully.
   // The index keys include ".json" suffix (e.g. "gen9ou.json").
-  const formatsToFetch = STATS_FORMATS.filter(fmt => {
+  const formatsToFetch = STATS_FORMATS.filter((fmt) => {
     const key = `${fmt}.json`;
     if (indexData && !indexData[key]) {
-      log('STATS', `⚠️ Format "${fmt}" not found in index, skipping`);
+      log("STATS", `⚠️ Format "${fmt}" not found in index, skipping`);
       return false;
     }
     return true;
   });
 
   if (formatsToFetch.length === 0) {
-    log('STATS', 'No formats to download');
+    log("STATS", "No formats to download");
     return { succeeded: [], failed: [] };
   }
 
-  log('STATS', `Downloading stats for: ${formatsToFetch.join(', ')}`);
+  log("STATS", `Downloading stats for: ${formatsToFetch.join(", ")}`);
 
   const results = await Promise.allSettled(
     formatsToFetch.map(async (fmt) => {
       const url = `${STATS_BASE}/${fmt}.json`;
       const destPath = path.join(STATS_DIR, `${fmt}.json`);
 
-      log('STATS', `Downloading ${url}`);
+      log("STATS", `Downloading ${url}`);
       const res = await fetchWithTimeout(url, 60000);
       const data = await res.text();
 
-      fs.writeFileSync(destPath, data, 'utf-8');
+      fs.writeFileSync(destPath, data, "utf-8");
       const stats = fs.statSync(destPath);
-      log('STATS', `✅ Saved ${fmt}.json (${formatBytes(stats.size)})`);
+      log("STATS", `✅ Saved ${fmt}.json (${formatBytes(stats.size)})`);
       return { name: `${fmt}.json`, size: stats.size };
-    })
+    }),
   );
 
   const succeeded = [];
   const failed = [];
 
   for (const result of results) {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       succeeded.push(result.value);
     } else {
       const idx = results.indexOf(result);
       failed.push(formatsToFetch[idx]);
-      log('STATS', `❌ Failed: ${formatsToFetch[idx]} — ${result.reason.message}`);
+      log("STATS", `❌ Failed: ${formatsToFetch[idx]} — ${result.reason.message}`);
     }
   }
 
@@ -266,29 +274,29 @@ async function downloadUsageStats() {
 async function downloadSpriteIndex() {
   ensureDir(SPRITES_DIR);
 
-  log('SPRITES', `Fetching species list from PokéAPI (limit=${POKEAPI_SPECIES_LIMIT})…`);
+  log("SPRITES", `Fetching species list from PokéAPI (limit=${POKEAPI_SPECIES_LIMIT})…`);
 
   let speciesList;
   try {
     const res = await fetchWithTimeout(
       `${POKEAPI_BASE}/pokemon-species?limit=${POKEAPI_SPECIES_LIMIT}`,
-      30000
+      30000,
     );
     const data = await res.json();
     speciesList = data.results || [];
-    log('SPRITES', `Found ${speciesList.length} species`);
+    log("SPRITES", `Found ${speciesList.length} species`);
   } catch (err) {
-    log('SPRITES', `❌ Failed to fetch species list: ${err.message}`);
-    return { succeeded: false, failed: ['pokemon-species index'] };
+    log("SPRITES", `❌ Failed to fetch species list: ${err.message}`);
+    return { succeeded: false, failed: ["pokemon-species index"] };
   }
 
   // Construct sprite URLs deterministically from species ID
   // PokéAPI front-default sprites follow a known GitHub raw URL pattern:
   // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png
   // This eliminates 1,100 individual API calls — execution drops from minutes to <1s.
-  const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+  const SPRITE_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
 
-  log('SPRITES', 'Constructing sprite URLs deterministically…');
+  log("SPRITES", "Constructing sprite URLs deterministically…");
 
   const spriteIndex = speciesList.map((species) => {
     const id = species.url.match(/\/(\d+)\/?$/)?.[1];
@@ -299,14 +307,17 @@ async function downloadSpriteIndex() {
     };
   });
 
-  const indexed = spriteIndex.filter(s => s.spriteUrl);
-  const missing = spriteIndex.filter(s => !s.spriteUrl);
+  const indexed = spriteIndex.filter((s) => s.spriteUrl);
+  const missing = spriteIndex.filter((s) => !s.spriteUrl);
 
-  const indexPath = path.join(SPRITES_DIR, 'index.json');
-  fs.writeFileSync(indexPath, JSON.stringify({ entries: spriteIndex }, null, 2), 'utf-8');
+  const indexPath = path.join(SPRITES_DIR, "index.json");
+  fs.writeFileSync(indexPath, JSON.stringify({ entries: spriteIndex }, null, 2), "utf-8");
 
   const stats = fs.statSync(indexPath);
-  log('SPRITES', `✅ Saved sprites/index.json (${formatBytes(stats.size)}) — ${indexed.length} with sprites, ${missing.length} missing`);
+  log(
+    "SPRITES",
+    `✅ Saved sprites/index.json (${formatBytes(stats.size)}) — ${indexed.length} with sprites, ${missing.length} missing`,
+  );
 
   return {
     succeeded: true,
@@ -322,10 +333,10 @@ async function downloadSpriteIndex() {
 
 async function main() {
   const args = process.argv.slice(2);
-  const showHelp = args.includes('--help');
-  const skipStats = args.includes('--skip-stats');
-  const skipSprites = args.includes('--skip-sprites');
-  const includeLearnsets = args.includes('--include-learnsets');
+  const showHelp = args.includes("--help");
+  const skipStats = args.includes("--skip-stats");
+  const skipSprites = args.includes("--skip-sprites");
+  const includeLearnsets = args.includes("--include-learnsets");
 
   const usage = `
 Usage: node scripts/fetch-data.js [options]
@@ -350,9 +361,9 @@ Examples:
     process.exit(0);
   }
 
-  console.log('╔══════════════════════════════════════════════╗');
-  console.log('║   Pokémon Data Fetcher — Offline Bundle     ║');
-  console.log('╚══════════════════════════════════════════════╝');
+  console.log("╔══════════════════════════════════════════════╗");
+  console.log("║   Pokémon Data Fetcher — Offline Bundle     ║");
+  console.log("╚══════════════════════════════════════════════╝");
   console.log();
 
   // Create output directories
@@ -364,55 +375,59 @@ Examples:
   let totalSize = 0;
 
   // 1. Showdown data files
-  console.log('── Showdown Data ──────────────────────────────');
+  console.log("── Showdown Data ──────────────────────────────");
   const sdResult = await downloadShowdownData(includeLearnsets);
   allSucceeded.push(...sdResult.succeeded);
   allFailed.push(...sdResult.failed);
-  sdResult.succeeded.forEach(f => { totalSize += f.size; });
+  sdResult.succeeded.forEach((f) => {
+    totalSize += f.size;
+  });
   console.log();
 
   // 2. Smogon usage stats
   if (skipStats) {
-    console.log('── Smogon Stats (skipped) ─────────────────────');
+    console.log("── Smogon Stats (skipped) ─────────────────────");
   } else {
-    console.log('── Smogon Stats ───────────────────────────────');
+    console.log("── Smogon Stats ───────────────────────────────");
     const statsResult = await downloadUsageStats();
     allSucceeded.push(...statsResult.succeeded);
     allFailed.push(...statsResult.failed);
-    statsResult.succeeded.forEach(f => { totalSize += f.size; });
+    statsResult.succeeded.forEach((f) => {
+      totalSize += f.size;
+    });
   }
   console.log();
 
   // 3. PokéAPI sprite index
   if (skipSprites) {
-    console.log('── PokéAPI Sprites (skipped) ──────────────────');
+    console.log("── PokéAPI Sprites (skipped) ──────────────────");
   } else {
-    console.log('── PokéAPI Sprites ────────────────────────────');
+    console.log("── PokéAPI Sprites ────────────────────────────");
     const spriteResult = await downloadSpriteIndex();
     if (spriteResult.succeeded) {
-      allSucceeded.push({ name: 'sprites/index.json', size: spriteResult.size });
+      allSucceeded.push({ name: "sprites/index.json", size: spriteResult.size });
       totalSize += spriteResult.size;
     } else {
-      allFailed.push('sprites/index.json');
+      allFailed.push("sprites/index.json");
     }
   }
   console.log();
 
   // Summary
-  console.log('════════════════════════════════════════════════');
-  console.log('  Summary:');
+  console.log("════════════════════════════════════════════════");
+  console.log("  Summary:");
   console.log(`    Succeeded: ${allSucceeded.length} file(s)`);
-  allSucceeded.forEach(f => console.log(`      ✅ ${f.name} (${formatBytes(f.size)})`));
+  allSucceeded.forEach((f) => console.log(`      ✅ ${f.name} (${formatBytes(f.size)})`));
   if (allFailed.length > 0) {
     console.log(`    Failed: ${allFailed.length} file(s)`);
-    allFailed.forEach(f => console.log(`      ❌ ${f}`));
+    allFailed.forEach((f) => console.log(`      ❌ ${f}`));
   }
   console.log(`    Total bundle size: ${formatBytes(totalSize)}`);
   console.log(`    Output directory: ${DATA_DIR}`);
-  console.log('════════════════════════════════════════════════');
+  console.log("════════════════════════════════════════════════");
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
+main().catch((err) => {
+  console.error("Fatal error:", err);
   process.exit(1);
 });

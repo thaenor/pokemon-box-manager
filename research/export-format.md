@@ -25,7 +25,7 @@
 
 ## Executive Summary
 
-The **Pokémon Showdown Export format** (commonly called *Pokepaste*) is the unambiguous recommendation. It is the universal format used by the competitive Pokémon community (Smogon, VGC, Pokémon Showdown), is natively parseable by both humans and LLMs, handles all edge cases including regional variants, and requires no external tooling to produce or consume. Export JSON format is recommended as an internal/structured interchange format for programmatic use.
+The **Pokémon Showdown Export format** (commonly called _Pokepaste_) is the unambiguous recommendation. It is the universal format used by the competitive Pokémon community (Smogon, VGC, Pokémon Showdown), is natively parseable by both humans and LLMs, handles all edge cases including regional variants, and requires no external tooling to produce or consume. Export JSON format is recommended as an internal/structured interchange format for programmatic use.
 
 ---
 
@@ -38,6 +38,7 @@ Pokémon Showdown defines three canonical team formats ([source](https://github.
 **Purpose:** Human-readable import/export (the "teambuilder" format users see).
 
 **Strengths:**
+
 - Universally understood by the competitive community — Smogon forums, VGC players, Discord servers
 - Natively readable by LLMs (OpenAI ChatGPT, Claude, Gemini, etc.) — it's structured plain text
 - Every existing Pokémon MCP server and tool produces/consumes this format
@@ -62,6 +63,7 @@ Nature Nature
 ```
 
 **Key rules:**
+
 - Pokémon are separated by one or more blank lines (typically 6 per team)
 - All fields except species name are optional with sensible defaults
 - EVs default to 0, IVs default to 31, level defaults to 100 (50 for VGC)
@@ -74,6 +76,7 @@ Nature Nature
 **Purpose:** Internal codebase representation; structured programmatic interchange.
 
 **Strengths:**
+
 - Machine-parseable by default
 - Used internally by Pokémon Showdown (`PokemonSet[]` type)
 - Lossless — no ambiguity in stat keys
@@ -83,17 +86,12 @@ Nature Nature
 
 ```json
 {
-  "name": "",                          // nickname (empty string = no nickname)
-  "species": "Arcanine-Hisui",         // full species name including forme
-  "gender": "M",                       // "M", "F", or ""
-  "item": "Heavy-Duty Boots",          // held item name
-  "ability": "Intimidate",             // ability name
-  "moves": [
-    "Flare Blitz",
-    "Head Smash",
-    "Will-O-Wisp",
-    "Extreme Speed"
-  ],
+  "name": "", // nickname (empty string = no nickname)
+  "species": "Arcanine-Hisui", // full species name including forme
+  "gender": "M", // "M", "F", or ""
+  "item": "Heavy-Duty Boots", // held item name
+  "ability": "Intimidate", // ability name
+  "moves": ["Flare Blitz", "Head Smash", "Will-O-Wisp", "Extreme Speed"],
   "nature": "Adamant",
   "evs": {
     "hp": 252,
@@ -132,6 +130,7 @@ NICKNAME|SPECIES|ITEM|ABILITY|MOVES|NATURE|EVS|GENDER|IVS|SHINY|LEVEL|HAPPINESS,
 ```
 
 **Example:**
+
 ```
 ||Arcanine-Hisui||intimidate|heavydutyboots|flareblitz,headsmash,willowisp,extremespeed|Adamant|252,252,,,4,|M|,,31,31,31,31,31,31||50|
 ```
@@ -154,18 +153,19 @@ NICKNAME|SPECIES|ITEM|ABILITY|MOVES|NATURE|EVS|GENDER|IVS|SHINY|LEVEL|HAPPINESS,
 
 Pokémon Showdown represents regional variants using a **`-Suffix`** pattern on the species name ([source](https://github.com/smogon/pokemon-showdown/blob/master/sim/dex-species.ts)):
 
-| Variant | Export Format Species Name |
-|---------|---------------------------|
-| Alolan Marowak | `Marowak-Alola` |
-| Alolan Raichu | `Raichu-Alola` |
-| Galarian Moltres | `Moltres-Galar` |
-| Galarian Slowbro | `Slowbro-Galar` |
-| Hisuian Arcanine | `Arcanine-Hisui` |
-| Hisuian Decidueye | `Decidueye-Hisui` |
-| Paldean Tauros (Combat) | `Tauros-Paldea-Combat` |
-| Paldean Tauros (Blaze) | `Tauros-Paldea-Blaze` |
+| Variant                 | Export Format Species Name |
+| ----------------------- | -------------------------- |
+| Alolan Marowak          | `Marowak-Alola`            |
+| Alolan Raichu           | `Raichu-Alola`             |
+| Galarian Moltres        | `Moltres-Galar`            |
+| Galarian Slowbro        | `Slowbro-Galar`            |
+| Hisuian Arcanine        | `Arcanine-Hisui`           |
+| Hisuian Decidueye       | `Decidueye-Hisui`          |
+| Paldean Tauros (Combat) | `Tauros-Paldea-Combat`     |
+| Paldean Tauros (Blaze)  | `Tauros-Paldea-Blaze`      |
 
 **Aliases are also accepted** ([source](https://github.com/smogon/pokemon-showdown/blob/master/data/aliases.ts)):
+
 - `harc` → `Arcanine-Hisui`
 - `alowak` → `Marowak-Alola`
 - `gmolt` / `goltres` → `Moltres-Galar`
@@ -188,6 +188,7 @@ Adamant Nature
 This is unambiguous: the parser sees `Arcanine-Hisui`, looks up the species, and knows it's a Rock/Fire type with different base stats from standard Arcanine.
 
 **In JSON format:**
+
 ```json
 { "species": "Arcanine-Hisui", ... }
 ```
@@ -198,12 +199,12 @@ This is unambiguous: the parser sees `Arcanine-Hisui`, looks up the species, and
 
 Based on analysis of existing MCP servers, community usage, and format structure:
 
-| Format | LLM Readability | Community Standard | Tooling Support | Unambiguous |
-|--------|:---------------:|:------------------:|:---------------:|:-----------:|
-| **Export (Pokepaste)** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Yes |
-| JSON | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | Yes |
-| Packed | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | No |
-| Custom YAML | ⭐⭐⭐⭐ | ⭐ | ⭐ | Could be |
+| Format                 | LLM Readability | Community Standard | Tooling Support | Unambiguous |
+| ---------------------- | :-------------: | :----------------: | :-------------: | :---------: |
+| **Export (Pokepaste)** |   ⭐⭐⭐⭐⭐    |     ⭐⭐⭐⭐⭐     |   ⭐⭐⭐⭐⭐    |     Yes     |
+| JSON                   |    ⭐⭐⭐⭐     |       ⭐⭐⭐       |    ⭐⭐⭐⭐     |     Yes     |
+| Packed                 |      ⭐⭐       |       ⭐⭐⭐       |     ⭐⭐⭐      |     No      |
+| Custom YAML            |    ⭐⭐⭐⭐     |         ⭐         |       ⭐        |  Could be   |
 
 **Why Export format wins for AI ingestion:**
 
@@ -224,6 +225,7 @@ Based on analysis of existing MCP servers, community usage, and format structure
 ### Primary: Pokémon Showdown Export (Pokepaste)
 
 Use this format for:
+
 - **Exporting teams** for the user to copy/paste into AI chat, pokepast.es, or Pokémon Showdown
 - **Displaying team data** in the UI (read-only or editable text blocks)
 - **Sharing** via chat, forum, or clipboard
@@ -232,6 +234,7 @@ Use this format for:
 ### Secondary: Pokémon Showdown JSON
 
 Use this format for:
+
 - **Internal storage** in the application database
 - **API responses** between backend and frontend
 - **Programmatic manipulation** (sorting, filtering, transforming teams)
@@ -331,8 +334,8 @@ Adamant Nature
     "ability": "Intimidate",
     "moves": ["Flare Blitz", "Knock Off", "Parting Shot", "Fake Out"],
     "nature": "Careful",
-    "evs": {"hp": 252, "atk": 0, "def": 124, "spa": 0, "spd": 132, "spe": 0},
-    "ivs": {"hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31},
+    "evs": { "hp": 252, "atk": 0, "def": 124, "spa": 0, "spd": 132, "spe": 0 },
+    "ivs": { "hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31 },
     "level": 50,
     "teraType": "Ghost"
   },
@@ -343,8 +346,8 @@ Adamant Nature
     "ability": "Protosynthesis",
     "moves": ["Thunderclap", "Draco Meteor", "Thunderbolt", "Protect"],
     "nature": "Timid",
-    "evs": {"hp": 252, "atk": 0, "def": 20, "spa": 4, "spd": 4, "spe": 228},
-    "ivs": {"hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 31},
+    "evs": { "hp": 252, "atk": 0, "def": 20, "spa": 4, "spd": 4, "spe": 228 },
+    "ivs": { "hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 31 },
     "level": 50,
     "teraType": "Electric"
   },
@@ -355,8 +358,8 @@ Adamant Nature
     "ability": "Unseen Fist",
     "moves": ["Surging Strikes", "Close Combat", "Aqua Jet", "Protect"],
     "nature": "Jolly",
-    "evs": {"hp": 0, "atk": 252, "def": 0, "spa": 0, "spd": 4, "spe": 252},
-    "ivs": {"hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31},
+    "evs": { "hp": 0, "atk": 252, "def": 0, "spa": 0, "spd": 4, "spe": 252 },
+    "ivs": { "hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31 },
     "level": 50,
     "teraType": "Water"
   },
@@ -367,8 +370,8 @@ Adamant Nature
     "ability": "Protosynthesis",
     "moves": ["Moonblast", "Shadow Ball", "Icy Wind", "Protect"],
     "nature": "Timid",
-    "evs": {"hp": 76, "atk": 0, "def": 116, "spa": 116, "spd": 4, "spe": 196},
-    "ivs": {"hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 31},
+    "evs": { "hp": 76, "atk": 0, "def": 116, "spa": 116, "spd": 4, "spe": 196 },
+    "ivs": { "hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 31 },
     "level": 50,
     "teraType": "Fairy"
   },
@@ -379,8 +382,8 @@ Adamant Nature
     "ability": "Regenerator",
     "moves": ["Rage Powder", "Spore", "Pollen Puff", "Protect"],
     "nature": "Sassy",
-    "evs": {"hp": 244, "atk": 0, "def": 156, "spa": 0, "spd": 108, "spe": 0},
-    "ivs": {"hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 0},
+    "evs": { "hp": 244, "atk": 0, "def": 156, "spa": 0, "spd": 108, "spe": 0 },
+    "ivs": { "hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 0 },
     "level": 50,
     "teraType": "Water"
   },
@@ -391,8 +394,8 @@ Adamant Nature
     "ability": "Intimidate",
     "moves": ["Flare Blitz", "Head Smash", "Extreme Speed", "Will-O-Wisp"],
     "nature": "Adamant",
-    "evs": {"hp": 252, "atk": 116, "def": 4, "spa": 0, "spd": 28, "spe": 108},
-    "ivs": {"hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31},
+    "evs": { "hp": 252, "atk": 116, "def": 4, "spa": 0, "spd": 28, "spe": 108 },
+    "ivs": { "hp": 31, "atk": 31, "def": 31, "spa": 31, "spd": 31, "spe": 31 },
     "level": 50,
     "teraType": "Normal"
   }

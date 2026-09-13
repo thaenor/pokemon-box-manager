@@ -10,11 +10,11 @@
  * Cache is never auto-evicted for MVP — manual clear via DevTools is acceptable.
  */
 
-const API_BASE = 'https://pokeapi.co/api/v2';
+const API_BASE = "https://pokeapi.co/api/v2";
 
 /* ── localStorage cache layer ── */
 
-const POKEMON_CACHE_KEY = 'pokemon-box:cache';
+const POKEMON_CACHE_KEY = "pokemon-box:cache";
 
 /** Read the full cache object from localStorage. Returns {} on miss or corruption. */
 function loadCache() {
@@ -22,7 +22,7 @@ function loadCache() {
     const raw = localStorage.getItem(POKEMON_CACHE_KEY);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
-    return typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    return typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
   } catch {
     return {};
   }
@@ -33,7 +33,7 @@ function saveCache(cache) {
   try {
     localStorage.setItem(POKEMON_CACHE_KEY, JSON.stringify(cache));
   } catch (e) {
-    console.warn('PokéAPI cache: localStorage write failed —', e.message);
+    console.warn("PokéAPI cache: localStorage write failed —", e.message);
   }
 }
 

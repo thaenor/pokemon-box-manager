@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 /* ══════════════════════════════════════════════════
    Precision Box System — Production CSS
@@ -16,13 +16,13 @@
 /* ── Custom Properties ── */
 :root {
   /* Surface & Elevation Hierarchy */
-  --color-canvas: #0D1117;
-  --color-surface-l1: #161B22;
-  --color-surface-l2: #21262D;
-  --color-surface-hover: #262C36;
-  --color-slot-hover: #28303A;
-  --color-hairline: #30363D;
-  --color-border-active: #58A6FF;
+  --color-canvas: #0d1117;
+  --color-surface-l1: #161b22;
+  --color-surface-l2: #21262d;
+  --color-surface-hover: #262c36;
+  --color-slot-hover: #28303a;
+  --color-hairline: #30363d;
+  --color-border-active: #58a6ff;
 
   /* Surface Container Palette (Material-inspired) */
   --color-surface: #10141a;
@@ -47,7 +47,7 @@
   --color-surface-tint: #7bd0ff;
 
   /* Functional Accents */
-  --color-primary: #38BDF8;
+  --color-primary: #38bdf8;
   --color-on-primary: #00354a;
   --color-primary-container: #38bdf8;
   --color-on-primary-container: #004965;
@@ -56,15 +56,15 @@
   --color-primary-fixed-dim: #7bd0ff;
   --color-on-primary-fixed: #001e2c;
   --color-on-primary-fixed-variant: #004c69;
-  --color-primary-hover: #7DD3FC;
+  --color-primary-hover: #7dd3fc;
   --color-primary-wash: rgba(56, 189, 248, 0.04);
 
   /* Warning / Destructive (Scarlet) */
-  --color-destructive: #EF4444;
+  --color-destructive: #ef4444;
   --color-destructive-hover-bg: rgba(239, 68, 68, 0.15);
 
   /* Special Status (Amber) */
-  --color-tertiary: #F59E0B;
+  --color-tertiary: #f59e0b;
   --color-on-tertiary: #472a00;
   --color-tertiary-container: #f59e0b;
   --color-on-tertiary-container: #613b00;
@@ -90,33 +90,33 @@
   --color-on-error-container: #ffdad6;
 
   /* UI Text */
-  --color-text-primary: #F0F6FC;
-  --color-text-secondary: #C9D1D9;
-  --color-text-muted: #8B949E;
+  --color-text-primary: #f0f6fc;
+  --color-text-secondary: #c9d1d9;
+  --color-text-muted: #8b949e;
 
   /* ── Pokémon Type Colors ── */
-  --type-normal: #A8A77A;
-  --type-fire: #EE8130;
-  --type-water: #6390F0;
-  --type-grass: #7AC74C;
-  --type-electric: #F7D02C;
-  --type-ice: #96D9D6;
-  --type-fighting: #C22E28;
-  --type-poison: #A33EA1;
-  --type-ground: #E2BF65;
-  --type-flying: #A98FF3;
-  --type-psychic: #F95587;
-  --type-bug: #A6B91A;
-  --type-rock: #B6A136;
+  --type-normal: #a8a77a;
+  --type-fire: #ee8130;
+  --type-water: #6390f0;
+  --type-grass: #7ac74c;
+  --type-electric: #f7d02c;
+  --type-ice: #96d9d6;
+  --type-fighting: #c22e28;
+  --type-poison: #a33ea1;
+  --type-ground: #e2bf65;
+  --type-flying: #a98ff3;
+  --type-psychic: #f95587;
+  --type-bug: #a6b91a;
+  --type-rock: #b6a136;
   --type-ghost: #735797;
-  --type-dragon: #6F35FC;
+  --type-dragon: #6f35fc;
   --type-dark: #705746;
-  --type-steel: #B7B7CE;
-  --type-fairy: #D685AD;
+  --type-steel: #b7b7ce;
+  --type-fairy: #d685ad;
 
   /* ── Typography ── */
-  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
 
   /* Headline sizes */
   --headline-lg: 32px;
@@ -312,7 +312,9 @@ img {
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .box-nav-header__arrow:hover {
@@ -358,7 +360,10 @@ img {
   font-size: var(--body-sm);
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .box-nav-header__toggle:hover {
@@ -383,7 +388,10 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, border-color 0.15s, border-width 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    border-width 0.15s;
 }
 
 .slot-cell:hover {
@@ -443,30 +451,66 @@ img {
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.5px;
-  color: #FFFFFF;
+  color: #ffffff;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 /* Type color variants */
-.type-badge--normal   { background: var(--type-normal); }
-.type-badge--fire     { background: var(--type-fire); }
-.type-badge--water    { background: var(--type-water); }
-.type-badge--grass    { background: var(--type-grass); }
-.type-badge--electric { background: var(--type-electric); }
-.type-badge--ice      { background: var(--type-ice); }
-.type-badge--fighting { background: var(--type-fighting); }
-.type-badge--poison   { background: var(--type-poison); }
-.type-badge--ground   { background: var(--type-ground); }
-.type-badge--flying   { background: var(--type-flying); }
-.type-badge--psychic  { background: var(--type-psychic); }
-.type-badge--bug      { background: var(--type-bug); }
-.type-badge--rock     { background: var(--type-rock); }
-.type-badge--ghost    { background: var(--type-ghost); }
-.type-badge--dragon   { background: var(--type-dragon); }
-.type-badge--dark     { background: var(--type-dark); }
-.type-badge--steel    { background: var(--type-steel); }
-.type-badge--fairy    { background: var(--type-fairy); }
+.type-badge--normal {
+  background: var(--type-normal);
+}
+.type-badge--fire {
+  background: var(--type-fire);
+}
+.type-badge--water {
+  background: var(--type-water);
+}
+.type-badge--grass {
+  background: var(--type-grass);
+}
+.type-badge--electric {
+  background: var(--type-electric);
+}
+.type-badge--ice {
+  background: var(--type-ice);
+}
+.type-badge--fighting {
+  background: var(--type-fighting);
+}
+.type-badge--poison {
+  background: var(--type-poison);
+}
+.type-badge--ground {
+  background: var(--type-ground);
+}
+.type-badge--flying {
+  background: var(--type-flying);
+}
+.type-badge--psychic {
+  background: var(--type-psychic);
+}
+.type-badge--bug {
+  background: var(--type-bug);
+}
+.type-badge--rock {
+  background: var(--type-rock);
+}
+.type-badge--ghost {
+  background: var(--type-ghost);
+}
+.type-badge--dragon {
+  background: var(--type-dragon);
+}
+.type-badge--dark {
+  background: var(--type-dark);
+}
+.type-badge--steel {
+  background: var(--type-steel);
+}
+.type-badge--fairy {
+  background: var(--type-fairy);
+}
 
 /* ── Type Micro Pill (3px dot indicator) ── */
 .type-micro-pill {
@@ -476,24 +520,60 @@ img {
   border-radius: var(--radius-full);
 }
 
-.type-micro-pill--normal   { background: var(--type-normal); }
-.type-micro-pill--fire     { background: var(--type-fire); }
-.type-micro-pill--water    { background: var(--type-water); }
-.type-micro-pill--grass    { background: var(--type-grass); }
-.type-micro-pill--electric { background: var(--type-electric); }
-.type-micro-pill--ice      { background: var(--type-ice); }
-.type-micro-pill--fighting { background: var(--type-fighting); }
-.type-micro-pill--poison   { background: var(--type-poison); }
-.type-micro-pill--ground   { background: var(--type-ground); }
-.type-micro-pill--flying   { background: var(--type-flying); }
-.type-micro-pill--psychic  { background: var(--type-psychic); }
-.type-micro-pill--bug      { background: var(--type-bug); }
-.type-micro-pill--rock     { background: var(--type-rock); }
-.type-micro-pill--ghost    { background: var(--type-ghost); }
-.type-micro-pill--dragon   { background: var(--type-dragon); }
-.type-micro-pill--dark     { background: var(--type-dark); }
-.type-micro-pill--steel    { background: var(--type-steel); }
-.type-micro-pill--fairy    { background: var(--type-fairy); }
+.type-micro-pill--normal {
+  background: var(--type-normal);
+}
+.type-micro-pill--fire {
+  background: var(--type-fire);
+}
+.type-micro-pill--water {
+  background: var(--type-water);
+}
+.type-micro-pill--grass {
+  background: var(--type-grass);
+}
+.type-micro-pill--electric {
+  background: var(--type-electric);
+}
+.type-micro-pill--ice {
+  background: var(--type-ice);
+}
+.type-micro-pill--fighting {
+  background: var(--type-fighting);
+}
+.type-micro-pill--poison {
+  background: var(--type-poison);
+}
+.type-micro-pill--ground {
+  background: var(--type-ground);
+}
+.type-micro-pill--flying {
+  background: var(--type-flying);
+}
+.type-micro-pill--psychic {
+  background: var(--type-psychic);
+}
+.type-micro-pill--bug {
+  background: var(--type-bug);
+}
+.type-micro-pill--rock {
+  background: var(--type-rock);
+}
+.type-micro-pill--ghost {
+  background: var(--type-ghost);
+}
+.type-micro-pill--dragon {
+  background: var(--type-dragon);
+}
+.type-micro-pill--dark {
+  background: var(--type-dark);
+}
+.type-micro-pill--steel {
+  background: var(--type-steel);
+}
+.type-micro-pill--fairy {
+  background: var(--type-fairy);
+}
 
 /* ── Tactical Action Buttons ── */
 
@@ -510,7 +590,10 @@ img {
   font-size: var(--body-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
   white-space: nowrap;
 }
 
@@ -715,7 +798,9 @@ img {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Responsive: Mobile / Compact ── */

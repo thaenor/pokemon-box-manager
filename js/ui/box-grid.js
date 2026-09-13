@@ -1,4 +1,4 @@
-import { speciesList, findSpecies } from '../data/species-list.js';
+import { speciesList, findSpecies } from "../data/species-list.js";
 
 /**
  * Creates the box grid view — main view after login.
@@ -12,41 +12,42 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   const filled = box.filter(Boolean).length;
 
   // ── Two-pane wrapper ──
-  const container = document.createElement('div');
-  container.className = 'two-pane';
+  const container = document.createElement("div");
+  container.className = "two-pane";
 
   // ── Left pane ──
-  const leftPane = document.createElement('div');
-  leftPane.className = 'two-pane__left';
+  const leftPane = document.createElement("div");
+  leftPane.className = "two-pane__left";
 
   // ── Empty state ──
   if (filled === 0) {
-    const emptyState = document.createElement('div');
-    emptyState.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;';
+    const emptyState = document.createElement("div");
+    emptyState.style.cssText =
+      "display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;";
 
-    const icon = document.createElement('div');
-    icon.textContent = '📦';
-    icon.style.cssText = 'font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;';
+    const icon = document.createElement("div");
+    icon.textContent = "📦";
+    icon.style.cssText = "font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;";
     emptyState.appendChild(icon);
 
-    const title = document.createElement('p');
-    title.className = 'headline-sm';
-    title.textContent = 'Your box is empty';
-    title.style.marginBottom = 'var(--space-sm)';
+    const title = document.createElement("p");
+    title.className = "headline-sm";
+    title.textContent = "Your box is empty";
+    title.style.marginBottom = "var(--space-sm)";
     emptyState.appendChild(title);
 
-    const subtitle = document.createElement('p');
-    subtitle.className = 'body-md';
-    subtitle.style.color = 'var(--color-text-muted)';
-    subtitle.style.marginBottom = 'var(--space-xl)';
-    subtitle.textContent = 'Tap + Add Pokémon to start building your box';
+    const subtitle = document.createElement("p");
+    subtitle.className = "body-md";
+    subtitle.style.color = "var(--color-text-muted)";
+    subtitle.style.marginBottom = "var(--space-xl)";
+    subtitle.textContent = "Tap + Add Pokémon to start building your box";
     emptyState.appendChild(subtitle);
 
-    const addBtn = document.createElement('button');
-    addBtn.className = 'btn btn-primary';
-    addBtn.textContent = '+ Add Pokémon';
-    addBtn.addEventListener('click', function () {
-      if (typeof onAddPokemon === 'function') {
+    const addBtn = document.createElement("button");
+    addBtn.className = "btn btn-primary";
+    addBtn.textContent = "+ Add Pokémon";
+    addBtn.addEventListener("click", function () {
+      if (typeof onAddPokemon === "function") {
         onAddPokemon();
       }
     });
@@ -56,14 +57,15 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
     container.appendChild(leftPane);
 
     // ── Right pane: inspector panel ──
-    const rightPane = document.createElement('div');
-    rightPane.className = 'two-pane__right';
-    const inspector = document.createElement('aside');
-    inspector.className = 'inspector-panel';
-    const emptyMsg = document.createElement('p');
-    emptyMsg.className = 'body-sm';
-    emptyMsg.style.cssText = 'color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;';
-    emptyMsg.textContent = 'Select a Pokémon to inspect';
+    const rightPane = document.createElement("div");
+    rightPane.className = "two-pane__right";
+    const inspector = document.createElement("aside");
+    inspector.className = "inspector-panel";
+    const emptyMsg = document.createElement("p");
+    emptyMsg.className = "body-sm";
+    emptyMsg.style.cssText =
+      "color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;";
+    emptyMsg.textContent = "Select a Pokémon to inspect";
     inspector.appendChild(emptyMsg);
     rightPane.appendChild(inspector);
     container.appendChild(rightPane);
@@ -72,29 +74,29 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   }
 
   // ── Box nav header ──
-  const nav = document.createElement('div');
-  nav.className = 'box-nav-header';
+  const nav = document.createElement("div");
+  nav.className = "box-nav-header";
 
-  const navInner = document.createElement('div');
-  navInner.className = 'box-nav-header__nav';
+  const navInner = document.createElement("div");
+  navInner.className = "box-nav-header__nav";
 
-  const prevBtn = document.createElement('button');
-  prevBtn.className = 'box-nav-header__arrow';
-  prevBtn.textContent = '\u2039';
-  prevBtn.setAttribute('aria-label', 'Previous box');
+  const prevBtn = document.createElement("button");
+  prevBtn.className = "box-nav-header__arrow";
+  prevBtn.textContent = "\u2039";
+  prevBtn.setAttribute("aria-label", "Previous box");
 
-  const nextBtn = document.createElement('button');
-  nextBtn.className = 'box-nav-header__arrow';
-  nextBtn.textContent = '\u203A';
-  nextBtn.setAttribute('aria-label', 'Next box');
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "box-nav-header__arrow";
+  nextBtn.textContent = "\u203A";
+  nextBtn.setAttribute("aria-label", "Next box");
 
-  const indexSpan = document.createElement('span');
-  indexSpan.className = 'box-nav-header__index';
-  indexSpan.textContent = 'BOX 01 / 32';
+  const indexSpan = document.createElement("span");
+  indexSpan.className = "box-nav-header__index";
+  indexSpan.textContent = "BOX 01 / 32";
 
-  const capacitySpan = document.createElement('span');
-  capacitySpan.className = 'box-nav-header__capacity';
-  capacitySpan.textContent = filled + '/' + boxSize;
+  const capacitySpan = document.createElement("span");
+  capacitySpan.className = "box-nav-header__capacity";
+  capacitySpan.textContent = filled + "/" + boxSize;
 
   navInner.appendChild(prevBtn);
   navInner.appendChild(indexSpan);
@@ -103,52 +105,55 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   nav.appendChild(capacitySpan);
 
   // ── Toolbar (right side of nav) ──
-  const toolbar = document.createElement('div');
-  toolbar.className = 'box-nav-header__toolbar';
+  const toolbar = document.createElement("div");
+  toolbar.className = "box-nav-header__toolbar";
 
-  const toggleBtn = document.createElement('button');
-  toggleBtn.className = 'box-nav-header__toggle';
-  toggleBtn.textContent = 'Select';
+  const toggleBtn = document.createElement("button");
+  toggleBtn.className = "box-nav-header__toggle";
+  toggleBtn.textContent = "Select";
   toolbar.appendChild(toggleBtn);
   nav.appendChild(toolbar);
 
   leftPane.appendChild(nav);
 
   // ── Matrix grid ──
-  const grid = document.createElement('div');
-  grid.className = 'matrix-grid';
+  const grid = document.createElement("div");
+  grid.className = "matrix-grid";
 
   for (let i = 0; i < boxSize; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'slot-cell';
+    const slot = document.createElement("div");
+    slot.className = "slot-cell";
     slot.dataset.index = String(i);
 
     const pokemon = box[i];
     if (pokemon && pokemon.species) {
       // ── Sprite ──
-      const img = document.createElement('img');
-      img.className = 'slot-cell__sprite';
+      const img = document.createElement("img");
+      img.className = "slot-cell__sprite";
       img.alt = `${pokemon.species.name} sprite`;
-      img.src = 'https://play.pokemonshowdown.com/sprites/gen5/' + pokemon.species.showdownId + '.png';
-      img.loading = 'lazy';
+      img.src =
+        "https://play.pokemonshowdown.com/sprites/gen5/" + pokemon.species.showdownId + ".png";
+      img.loading = "lazy";
       slot.appendChild(img);
 
       // ── Shiny indicator ──
       // ── Name label below sprite ──
-      const nameEl = document.createElement('span');
-      nameEl.className = 'label-micro';
-      nameEl.style.cssText = 'position: absolute; bottom: 26px; left: 0; right: 0; text-align: center; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px;';
+      const nameEl = document.createElement("span");
+      nameEl.className = "label-micro";
+      nameEl.style.cssText =
+        "position: absolute; bottom: 26px; left: 0; right: 0; text-align: center; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px;";
       nameEl.textContent = pokemon.species.name;
       slot.appendChild(nameEl);
 
       // ── Type badges ──
       const types = pokemon.species.types || [];
       if (types.length > 0) {
-        const typeRow = document.createElement('div');
-        typeRow.style.cssText = 'position: absolute; bottom: 3px; left: 0; right: 0; display: flex; gap: 2px; justify-content: center;';
+        const typeRow = document.createElement("div");
+        typeRow.style.cssText =
+          "position: absolute; bottom: 3px; left: 0; right: 0; display: flex; gap: 2px; justify-content: center;";
         for (const t of types) {
-          const badge = document.createElement('span');
-          badge.className = 'type-badge type-badge--' + t.toLowerCase();
+          const badge = document.createElement("span");
+          badge.className = "type-badge type-badge--" + t.toLowerCase();
           badge.textContent = t;
           typeRow.appendChild(badge);
         }
@@ -156,21 +161,21 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
       }
 
       if (pokemon.isShiny) {
-        const shinyDot = document.createElement('span');
-        shinyDot.className = 'slot-cell__shiny-indicator';
+        const shinyDot = document.createElement("span");
+        shinyDot.className = "slot-cell__shiny-indicator";
         slot.appendChild(shinyDot);
       }
 
       // ── Click handler ──
-      slot.addEventListener('click', function () {
-        if (typeof onSelectPokemon === 'function') {
+      slot.addEventListener("click", function () {
+        if (typeof onSelectPokemon === "function") {
           onSelectPokemon(pokemon, i);
         }
       });
     } else {
       // ── Empty slot: click triggers add ──
-      slot.addEventListener('click', function () {
-        if (typeof onAddPokemon === 'function') {
+      slot.addEventListener("click", function () {
+        if (typeof onAddPokemon === "function") {
           onAddPokemon(i);
         }
       });
@@ -182,14 +187,14 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   leftPane.appendChild(grid);
 
   // ── Add Pokémon button ──
-  const addWrapper = document.createElement('div');
-  addWrapper.style.cssText = 'display: flex; justify-content: center; margin-top: var(--space-lg);';
+  const addWrapper = document.createElement("div");
+  addWrapper.style.cssText = "display: flex; justify-content: center; margin-top: var(--space-lg);";
 
-  const addBtn = document.createElement('button');
-  addBtn.className = 'btn btn-primary';
-  addBtn.textContent = '+ Add Pok\u00E9mon';
-  addBtn.addEventListener('click', function () {
-    if (typeof onAddPokemon === 'function') {
+  const addBtn = document.createElement("button");
+  addBtn.className = "btn btn-primary";
+  addBtn.textContent = "+ Add Pok\u00E9mon";
+  addBtn.addEventListener("click", function () {
+    if (typeof onAddPokemon === "function") {
       onAddPokemon();
     }
   });
@@ -200,16 +205,17 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   container.appendChild(leftPane);
 
   // ── Right pane: inspector panel ──
-  const rightPane = document.createElement('div');
-  rightPane.className = 'two-pane__right';
+  const rightPane = document.createElement("div");
+  rightPane.className = "two-pane__right";
 
-  const inspector = document.createElement('aside');
-  inspector.className = 'inspector-panel';
+  const inspector = document.createElement("aside");
+  inspector.className = "inspector-panel";
 
-  const emptyMsg = document.createElement('p');
-  emptyMsg.className = 'body-sm';
-  emptyMsg.style.cssText = 'color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;';
-  emptyMsg.textContent = 'Select a Pok\u00E9mon to inspect';
+  const emptyMsg = document.createElement("p");
+  emptyMsg.className = "body-sm";
+  emptyMsg.style.cssText =
+    "color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;";
+  emptyMsg.textContent = "Select a Pok\u00E9mon to inspect";
 
   inspector.appendChild(emptyMsg);
   rightPane.appendChild(inspector);
