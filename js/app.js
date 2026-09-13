@@ -199,7 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
         "https://recaptchaenterprise.googleapis.com/v1/projects/pokemon-box-manager/assessments?key=AIzaSyA9nd1RsWNb4GB0LLBsUvJMRsWCdoy8IVk",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Referer: window.location.origin,
+          },
           body: JSON.stringify({
             event: {
               token,
