@@ -142,7 +142,7 @@ export function showSpeciesSearch() {
       /* Actual sprite — hidden until loaded */
       const spriteImg = document.createElement('img');
       spriteImg.loading = 'lazy';
-      spriteImg.src = `https://play.pokemonshowdown.com/sprites/gen5/${species.showdownId}.png`;
+      spriteImg.src = species.spriteUrl;
       spriteImg.alt = species.name;
       spriteImg.style.width = '48px';
       spriteImg.style.height = '48px';
