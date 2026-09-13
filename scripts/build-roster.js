@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * build-roster.js — Build the full Reg M-C species roster (260 entries)
+ * build-roster.js — Build the full Reg M-C species roster
  *
  * Usage: node scripts/build-roster.js
  * Output: js/data/species-list.js
@@ -17,11 +17,12 @@ const POKEDEX_PATH = path.join(ROOT, 'data', 'pokedex.json');
 const OUTPUT_PATH = path.join(ROOT, 'js', 'data', 'species-list.js');
 const METAVGC_URL = 'https://metavgc.com/regulations/regulationm-c';
 
+// Sprite sources
+const POKEAPI_SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
+const SHOWDOWN_SPRITE_BASE = 'https://play.pokemonshowdown.com/sprites/gen5';
+const POKEAPI_SPECIES_URL = 'https://pokeapi.co/api/v2/pokemon-species';
+
 // ─── Manual name → showdownId ────────────────────────────────────────
-// The canonical showdownId for each species as used in this project.
-// Base species map to their pokedex ID. Forms with custom IDs
-// (not in Showdown pokedex) specify the custom ID; types are resolved
-// by falling back to the base species.
 const NAME_MAP = {
   'Abomasnow': 'abomasnow',
   'Absol': 'absol',
@@ -206,7 +207,7 @@ const NAME_MAP = {
   'Scrafty': 'scrafty',
   'Serperior': 'serperior',
   'Sharpedo': 'sharpedo',
-  'Sirfetch\'d': 'sirfetchd',
+  "Sirfetch'd": 'sirfetchd',
   'Skarmory': 'skarmory',
   'Skeledirge': 'skeledirge',
   'Slowbro': 'slowbro',
@@ -253,106 +254,23 @@ const NAME_MAP = {
   'Zoroark': 'zoroark',
 
   // Farfetch'd with HTML-aware name
-  'Farfetch\'d': 'farfetchd',
-  'Farfetch\'d Galar': 'farfetchdgalar',
-
-  // All Megas — Showdown uses concatenated form names
-  'Mega Absol': 'absolmega',
-  'Mega Aerodactyl': 'aerodactylmega',
-  'Mega Aggron': 'aggronmega',
-  'Mega Alakazam': 'alakazammega',
-  'Mega Altaria': 'altariamega',
-  'Mega Ampharos': 'ampharosmega',
-  'Mega Audino': 'audinomega',
-  'Mega Banette': 'banettemega',
-  'Mega Barbaracle': 'barbaraclemega',
-  'Mega Baxcalibur': 'baxcaliburmega',
-  'Mega Beedrill': 'beedrillmega',
-  'Mega Blastoise': 'blastoismega',
-  'Mega Blaziken': 'blazikenmega',
-  'Mega Camerupt': 'cameruptmega',
-  'Mega Chandelure': 'chandeluremega',
-  'Mega Charizard X': 'charizardmegax',
-  'Mega Charizard Y': 'charizardmegay',
-  'Mega Chesnaught': 'chesnaughtmega',
-  'Mega Chimecho': 'chimechomega',
-  'Mega Clefable': 'clefablemega',
-  'Mega Crabominable': 'crabominablemega',
-  'Mega Delphox': 'delphoxmega',
-  'Mega Dragalge': 'dragalgemega',
-  'Mega Dragonite': 'dragonitemega',
-  'Mega Drampa': 'drampanite',
-  'Mega Eelektross': 'eelektrossmega',
-  'Mega Emboar': 'emboarmega',
-  'Mega Excadrill': 'excadrillmega',
-  'Mega Falinks': 'falinksmega',
-  'Mega Feraligatr': 'feraligatrmega',
-  'Mega Floette': 'floettemega',
-  'Mega Froslass': 'froslassmega',
-  'Mega Gallade': 'gallademega',
-  'Mega Garchomp': 'garchompmega',
-  'Mega Gardevoir': 'gardevoirmega',
-  'Mega Gengar': 'gengarmega',
-  'Mega Glalie': 'glaliomega',
-  'Mega Glimmora': 'glimmoramite',
-  'Mega Golisopod': 'golisopodmega',
-  'Mega Golurk': 'golurkite',
-  'Mega Greninja': 'greninjite',
-  'Mega Gyarados': 'gyaradosmega',
-  'Mega Hawlucha': 'hawluchanite',
-  'Mega Heracross': 'heracrossmega',
-  'Mega Houndoom': 'houndoominite',
-  'Mega Kangaskhan': 'kangaskhanmega',
-  'Mega Lopunny': 'lopunnymega',
-  'Mega Lucario': 'lucariomega',
-  'Mega Malamar': 'malamarmega',
-  'Mega Manectric': 'manectricmega',
-  'Mega Mawile': 'mawilemega',
-  'Mega Medicham': 'medichammega',
-  'Mega Meganium': 'meganiummega',
-  'Mega Meowstic': 'meowsticmega',
-  'Mega Metagross': 'metagrossmega',
-  'Mega Pidgeot': 'pidgeotmega',
-  'Mega Pinsir': 'pinsirmega',
-  'Mega Pyroar': 'pyroarmega',
-  'Mega Raichu X': 'raichumegax',
-  'Mega Raichu Y': 'raichumegay',
-  'Mega Sableye': 'sableyemega',
-  'Mega Salamence': 'salamencemega',
-  'Mega Sceptile': 'sceptilemega',
-  'Mega Scizor': 'scizormega',
-  'Mega Scolipede': 'scolipede-mega',
-  'Mega Scovillain': 'scovillainmega',
-  'Mega Scrafty': 'scraftymega',
-  'Mega Sharpedo': 'sharpedomega',
-  'Mega Skarmory': 'skarmorymega',
-  'Mega Slowbro': 'slowbromega',
-  'Mega Staraptor': 'staraptormega',
-  'Mega Starmie': 'starmiemega',
-  'Mega Steelix': 'steelixmega',
-  'Mega Swampert': 'swampertmega',
-  'Mega Tyranitar': 'tyranitarmega',
-  'Mega Venusaur': 'venusaurmega',
-  'Mega Victreebel': 'victreebelmega',
+  "Farfetch'd": 'farfetchd',
+  "Farfetch'd Galar": 'farfetchdgalar',
 };
 
 // ─── Z-Mega Champion-exclusive forms (custom IDs, not in Showdown) ───
-// Uses project convention: `-ultra` suffix (not `-mega-z`)
 const Z_MEGAS = {
   'Mega Absol Z': { showdownId: 'absol-ultra', types: ['Dark'] },
   'Mega Garchomp Z': { showdownId: 'garchomp-ultra', types: ['Dragon', 'Ground'] },
   'Mega Lucario Z': { showdownId: 'lucario-ultra', types: ['Fighting', 'Steel'] },
 };
 
-// ─── Knon species not in Showdown pokedex → base showdownId for fallback ─
-// When the mapped showdownId doesn't exist in the pokedex, we look up
-// the base species to get the types and number.
+// ─── Known species not in Showdown pokedex → base showdownId for fallback ─
 const FORM_BASE_MAP = {
   'indeedee-female': 'indeedee',
   'indeedee-male': 'indeedee',
   'farfetchdgalar': 'farfetchd',
   'persian-alola': 'persian',
-  'scolipede-mega': 'scolipede',
   'toxtricity-lowkey': 'toxtricity',
 };
 
@@ -362,13 +280,12 @@ const TYPE_OVERRIDES = {
 };
 
 // ─── Champions-exclusive species with hardcoded types ────────────────
-// Species that don't exist in Showdown pokedex at all
 const CHAMPIONS_EXCLUSIVE = {
   'mr-mime': { num: 122, types: ['Psychic', 'Fairy'] },
   'mr-mime-galar': { num: 122, types: ['Ice', 'Psychic'] },
   'raichumegax': { num: 26, types: ['Electric', 'Psychic'] },
   'raichumegay': { num: 26, types: ['Electric', 'Fighting'] },
-  'scolipede': { num: 545, types: ['Bug', 'Poison'] }, // This is base Scolipede, not Mega
+  'scolipede': { num: 545, types: ['Bug', 'Poison'] },
 };
 
 // ─── Fetch page & extract species ──────────────────────────────────
@@ -381,7 +298,6 @@ async function fetchSpeciesGrid() {
   const g = html.match(/<ul id="pokemon-grid"[^>]*>([\s\S]*?)<\/ul>/i);
   if (!g) throw new Error('Could not find pokemon-grid in HTML');
 
-  // Extract display names + data-search IDs by splitting on <li>
   const species = [];
   const liParts = g[1].split(/<li\s/);
   for (const part of liParts) {
@@ -399,12 +315,12 @@ async function fetchSpeciesGrid() {
 
 // ─── Resolve species data from pokedex ───────────────────────────
 function resolveSpecies(pokedex, displayName, searchId) {
-  // 1. Check Z-Megas
+  // 1. Check Z-Megas (keep these — they are ultra forms, not megas)
   if (Z_MEGAS[displayName]) {
     const z = Z_MEGAS[displayName];
-    // Get dex number from base species
-    const baseKey = searchId.replace(/(\w+)-\w+/, '$1').replace('absol-mega-z', 'absol-mega').replace('garchomp-mega-z', 'garchomp-mega').replace('lucario-mega-z', 'lucario-mega');
-    const baseEntry = pokedex[searchId.replace('-mega-z', 'mega')] || pokedex[searchId.replace('-mega-z', '')];
+    // Strip '-ultra' to get base species id
+    const baseId = z.showdownId.replace('-ultra', '');
+    const baseEntry = pokedex[baseId];
     const num = baseEntry ? baseEntry.num : 0;
     return { showdownId: z.showdownId, types: z.types, num };
   }
@@ -412,23 +328,18 @@ function resolveSpecies(pokedex, displayName, searchId) {
   // 2. Check manual NAME_MAP
   const mappedId = NAME_MAP[displayName];
   if (mappedId) {
-    // Try exact pokedex match
     if (pokedex[mappedId]) {
       return { showdownId: mappedId, types: pokedex[mappedId].types, num: pokedex[mappedId].num };
     }
-    // Try Champions-exclusive entries
     if (CHAMPIONS_EXCLUSIVE[mappedId]) {
       return { showdownId: mappedId, ...CHAMPIONS_EXCLUSIVE[mappedId] };
     }
-    // Fallback: look up base species for types
     const baseKey = FORM_BASE_MAP[mappedId];
     if (baseKey && pokedex[baseKey]) {
       const result = { showdownId: mappedId, types: pokedex[baseKey].types, num: pokedex[baseKey].num };
-      // Apply type overrides for regional forms with different types
       if (TYPE_OVERRIDES[mappedId]) result.types = TYPE_OVERRIDES[mappedId];
       return result;
     }
-    // Last resort: try searchId
     if (pokedex[searchId]) {
       return { showdownId: searchId, types: pokedex[searchId].types, num: pokedex[searchId].num };
     }
@@ -443,6 +354,48 @@ function resolveSpecies(pokedex, displayName, searchId) {
 
   console.warn(`  ⚠ Unresolveable: ${displayName} (searchId=${searchId})`);
   return null;
+}
+
+// ─── Detect if species is a mega form by showdownId ────────────────
+function isMegaForm(showdownId, name) {
+  // False positive on "meganium" check: "meganium" does not end with "mega"
+  // Mega showdownIds end with "mega" or are "scolipede-mega"
+  if (showdownId.endsWith('mega') || showdownId.endsWith('-mega')) {
+    return true;
+  }
+  // Mega Raichu X/Y are special — they use "raichumegax/y" which don't end with "mega"
+  if (showdownId === 'raichumegax' || showdownId === 'raichumegay') {
+    return true;
+  }
+  return false;
+}
+
+// ─── Detect if species is an ultra/Z-Mega form ────────────────────
+function isUltraForm(showdownId, name) {
+  return showdownId.includes('-ultra');
+}
+
+// ─── Sleep helper for rate limiting ───────────────────────────────
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ─── Fetch sprite URL from PokéAPI with fallback to Showdown CDN ──
+async function fetchSpriteUrl(num, showdownId) {
+  // Try PokéAPI species endpoint
+  const apiUrl = `${POKEAPI_SPECIES_URL}/${num}/`;
+  try {
+    const result = cp.execSync(`curl -sL --max-time 8 '${apiUrl}' 2>/dev/null`, {
+      timeout: 15000, encoding: 'utf-8', maxBuffer: 256 * 1024,
+    }).toString();
+    if (result && result.includes('"id"')) {
+      return `${POKEAPI_SPRITE_BASE}/${num}.png`;
+    }
+  } catch {
+    // fallthrough to Showdown fallback
+  }
+  // Fallback to Showdown CDN
+  return `${SHOWDOWN_SPRITE_BASE}/${showdownId}.png`;
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────
@@ -484,7 +437,7 @@ async function main() {
     return true;
   });
 
-  // Also deduplicate by showdownId (e.g., "Toxtricity" and "Toxtricity Amped" -> same)
+  // Also deduplicate by showdownId
   const sidSeen = new Set();
   const unique = dedupedByName.filter(r => {
     if (sidSeen.has(r.showdownId)) return false;
@@ -495,22 +448,56 @@ async function main() {
   // Sort by dex number, then name
   unique.sort((a, b) => a.num !== b.num ? a.num - b.num : a.name.localeCompare(b.name));
 
-  // Assign sequential IDs
-  const entries = unique.map((e, i) => ({
-    id: i + 1,
-    name: e.name,
-    showdownId: e.showdownId,
-    types: e.types,
-    isMega: e.showdownId.includes('mega') || (e.name.startsWith('Mega ') && !e.name.endsWith(' Z')),
-    isUltra: e.showdownId.includes('-ultra') || (e.name.startsWith('Mega ') && e.name.endsWith(' Z')),
-  }));
+  // Build entries with sprite URLs
+  const entries = [];
+  const spriteCache = new Map(); // showdownId → spriteUrl cache
+
+  for (let i = 0; i < unique.length; i++) {
+    const e = unique[i];
+    const isMega = isMegaForm(e.showdownId, e.name);
+    const isUltra = isUltraForm(e.showdownId, e.name);
+    const cacheKey = `${e.num}-${e.showdownId}`;
+
+    // Determine sprite URL
+    let spriteUrl;
+    if (spriteCache.has(cacheKey)) {
+      spriteUrl = spriteCache.get(cacheKey);
+    } else {
+      // For ultra forms and Champions-exclusive forms, skip PokeAPI and use Showdown CDN
+      if (isUltra || CHAMPIONS_EXCLUSIVE[e.showdownId]) {
+        spriteUrl = `${SHOWDOWN_SPRITE_BASE}/${e.showdownId}.png`;
+        spriteCache.set(cacheKey, spriteUrl);
+      } else {
+        spriteUrl = await fetchSpriteUrl(e.num, e.showdownId);
+        spriteCache.set(cacheKey, spriteUrl);
+        // Rate limiting: 500ms base delay + jitter (0-500ms) between PokeAPI fetches
+        const delay = 500 + Math.floor(Math.random() * 500);
+        await sleep(delay);
+      }
+    }
+
+    // Log progress every 25 entries
+    if ((i + 1) % 25 === 0 || i === unique.length - 1) {
+      console.log(`  [${i + 1}/${unique.length}] ✓ sprite resolved`);
+    }
+
+    entries.push({
+      id: e.num,          // Use national dex number as ID
+      name: e.name,
+      showdownId: e.showdownId,
+      types: e.types,
+      spriteUrl,
+      isMega,
+      isUltra,
+    });
+  }
 
   // Verify
   const checks = ['Wigglytuff', 'Rillaboom', 'Cinderace', 'Inteleon', 'Indeedee',
-    'Indeedee Female', 'Indeedee Male', 'Squawkabilly', 'Mega Salamence',
-    'Mega Absol Z', 'Mega Garchomp Z', 'Mega Lucario Z', 'Persian Alola',
+    'Indeedee Female', 'Indeedee Male', 'Squawkabilly', 'Mega Absol Z',
+    'Mega Garchomp Z', 'Mega Lucario Z', 'Persian Alola',
     "Farfetch'd Galar", 'Mr Mime Galar', 'Mr Rime', 'Toxtricity Low Key',
-    'Kommo O', 'Sirfetch\'d'];
+    'Kommo O', "Sirfetch'd"];
   console.log('\n[Verification]');
   let allOk = true;
   for (const c of checks) {
@@ -519,14 +506,29 @@ async function main() {
     if (!f) allOk = false;
   }
 
+  // Check no mega entries snuck in (except Z-megas)
+  const megaEntries = entries.filter(e => e.name.startsWith('Mega ') && !e.name.endsWith(' Z'));
+  if (megaEntries.length > 0) {
+    console.log(`\n  ⚠ Mega entries still present (${megaEntries.length}):`);
+    for (const m of megaEntries) console.log(`    ❌ ${m.name}`);
+  } else {
+    console.log('\n  ✅ No mega entries present');
+  }
+
+  // Verify Meganium false positive is fixed
+  const meganium = entries.find(e => e.name === 'Meganium');
+  if (meganium) {
+    console.log(meganium.isMega ? '  ❌ Meganium falsely marked as mega!' : '  ✅ Meganium correctly not mega');
+  }
+
   // Write output
   const lines = entries.map(e => {
     const typesStr = JSON.stringify(e.types);
-    return `  { id: ${e.id}, name: ${JSON.stringify(e.name)}, showdownId: ${JSON.stringify(e.showdownId)}, types: ${typesStr}, isMega: ${e.isMega}, isUltra: ${e.isUltra} },`;
+    return `  { id: ${e.id}, name: ${JSON.stringify(e.name)}, showdownId: ${JSON.stringify(e.showdownId)}, types: ${typesStr}, isMega: ${e.isMega}, isUltra: ${e.isUltra}, spriteUrl: ${JSON.stringify(e.spriteUrl)} },`;
   });
 
   const output = `// Auto-generated by scripts/build-roster.js — do not edit manually
-// Source: MetaVGC Regulation M-C (${entries.length} legal species)
+// Source: MetaVGC Regulation M-C (${entries.length} legal species (no megas))
 export const speciesList = [
 ${lines.join('\n')}
 ];
