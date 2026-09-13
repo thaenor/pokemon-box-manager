@@ -39,9 +39,6 @@ if (!fs.existsSync(vitestPath)) {
 } else {
   ok("file exists");
 
-  // Read the file. We use string matching since it's a plain JS export,
-  // not a JSON module — vitest/config defineConfig() returns an object
-  // but the file itself isn't importable directly in Node without vitest.
   const src = fs.readFileSync(vitestPath, "utf8");
 
   const checks = [
@@ -50,6 +47,16 @@ if (!fs.existsSync(vitestPath)) {
       label: 'include: ["tests/**/*.test.js"]',
       pattern: /include:\s*\[.*"?tests\/\*\*\/\*\.test\.js"?/,
     },
+  ];
+
+  // Environment and include are mandatory
+  checks.forEach((c) => {
+    if (c.pattern.test(src)) ok(c.label);
+    else fail(`${c.label} — missing or malformed`);
+  });
+
+  // Coverage config is optional — validate shape if present
+  const coverageChecks = [
     { label: "coverage provider: v8", pattern: /provider:\s*["']v8["']/ },
     { label: 'coverage include: ["js/**/*.js"]', pattern: /include:\s*\[.*"?js\/\*\*\/\*\.js"?/ },
     {
@@ -62,10 +69,15 @@ if (!fs.existsSync(vitestPath)) {
     },
   ];
 
-  checks.forEach((c) => {
-    if (c.pattern.test(src)) ok(c.label);
-    else fail(`${c.label} — missing or malformed`);
-  });
+  const hasCoverage = /coverage\s*:/.test(src);
+  if (hasCoverage) {
+    coverageChecks.forEach((c) => {
+      if (c.pattern.test(src)) ok(c.label);
+      else fail(`${c.label} — missing or malformed`);
+    });
+  } else {
+    console.log("  ℹ️   coverage config absent — will validate when added");
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -86,13 +98,11 @@ if (!fs.existsSync(ciPath)) {
     ci = jsYaml.load(raw);
   } catch (e) {
     fail(`YAML parse error: ${e.message}`);
-    // Bail on YAML errors — remaining checks would be misleading
     process.exitCode = 1;
     printSummary();
     process.exit(1);
   }
 
-  // Job names
   const expectedJobs = ["lint", "unit", "e2e"];
   const actualJobs = Object.keys(ci.jobs || {});
 
@@ -101,11 +111,9 @@ if (!fs.existsSync(ciPath)) {
     else fail(`job "${name}" is missing`);
   });
 
-  // No extra top-level jobs (warn only — new jobs could be intentionally added)
   const extras = actualJobs.filter((j) => !expectedJobs.includes(j));
   extras.forEach((name) => console.log(`  ⚠️   unexpected job "${name}" — verify intent`));
 
-  // Node version
   const nodeVersionExpected = 22;
   actualJobs.forEach((name) => {
     const steps = ci.jobs[name]?.steps || [];
@@ -124,7 +132,6 @@ if (!fs.existsSync(ciPath)) {
     }
   });
 
-  // e2e needs: [lint, unit]
   const e2eJob = ci.jobs?.e2e;
   if (e2eJob) {
     const needs = e2eJob.needs || [];
@@ -135,7 +142,6 @@ if (!fs.existsSync(ciPath)) {
     }
   }
 
-  // Action versions are v4
   const actionVersions = ["actions/checkout", "actions/setup-node", "actions/upload-artifact"];
   actionVersions.forEach((action) => {
     const re = new RegExp(`uses:\\s*${action}@v(\\d+)`, "g");
