@@ -53,16 +53,17 @@ export function showSpeciesSearch() {
     input.type = 'text';
     input.placeholder = 'Search Pokémon...';
     input.style.width = '100%';
-    input.style.height = '40px';
-    input.style.padding = '0 var(--space-md)';
+    input.style.height = '48px';
+    input.style.padding = 'var(--space-sm) var(--space-md)';
     input.style.border = '1px solid var(--color-hairline)';
     input.style.borderRadius = 'var(--radius-default)';
     input.style.background = 'var(--color-surface-l2)';
     input.style.color = 'var(--color-text-primary)';
     input.style.fontFamily = 'var(--font-body)';
-    input.style.fontSize = 'var(--body-md)';
+    input.style.fontSize = '16px';
     input.style.outline = 'none';
     input.style.boxSizing = 'border-box';
+    input.style.marginBottom = 'var(--space-md)';
     input.addEventListener('focus', () => {
       input.style.borderColor = 'var(--color-border-active)';
     });
