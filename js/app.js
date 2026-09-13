@@ -194,9 +194,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       const score = data?.riskAnalysis?.score;
       const reasons = data?.riskAnalysis?.reasons;
-      resultEl.textContent = score !== undefined
-        ? `✅ Score: ${score}\nReasons: ${reasons?.join(", ") || "none"}`
-        : `❌ Error: ${data?.error?.message || JSON.stringify(data)}`;
+      resultEl.textContent =
+        score !== undefined
+          ? `✅ Score: ${score}\nReasons: ${reasons?.join(", ") || "none"}`
+          : `❌ Error: ${data?.error?.message || JSON.stringify(data)}`;
     } catch (e) {
       resultEl.textContent = `❌ ${e.message || e}`;
     } finally {
