@@ -607,7 +607,7 @@ img {
 .stat-gauge {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 .stat-gauge__label {
@@ -618,9 +618,11 @@ img {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  width: 32px;
+  width: 40px;
   flex-shrink: 0;
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-gauge__track {
