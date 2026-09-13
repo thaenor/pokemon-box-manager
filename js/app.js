@@ -14,7 +14,7 @@ import { showPokemonDetail } from "./ui/pokemon-detail.js";
 /* ── State ── */
 
 /** Known fields for a saved Pokémon object. Unknown fields are silently dropped. */
-const KNOWN_FIELDS = new Set([
+export const KNOWN_FIELDS = new Set([
   "species",
   "showdownId",
   "nickname",
@@ -27,7 +27,7 @@ const KNOWN_FIELDS = new Set([
   "recruitedDate",
 ]);
 
-function sanitizePokemon(obj) {
+export function sanitizePokemon(obj) {
   if (!obj || typeof obj !== "object") return null;
   const clean = {};
   for (const key of KNOWN_FIELDS) {
@@ -48,13 +48,13 @@ function sanitizePokemon(obj) {
  * localStorage key for box persistence.
  * Stores the serialized box array so it survives page reloads.
  */
-const STORAGE_KEY = "pokemon-box:slots";
+export const STORAGE_KEY = "pokemon-box:slots";
 
 /**
  * Save the current box array to localStorage.
  * Called after every mutation (add, delete, reorder).
  */
-function saveBox() {
+export function saveBox() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.box));
   } catch (e) {
@@ -66,7 +66,7 @@ function saveBox() {
  * Load the box array from localStorage.
  * Returns a clean 30-slot empty array on first visit or corrupt data.
  */
-function loadBox() {
+export function loadBox() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return new Array(30).fill(null);
