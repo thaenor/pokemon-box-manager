@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * config-validate.js — lightweight validation of vitest.config.js & .github/workflows/ci.yml
+ * config-validate.cjs — lightweight validation of vitest.config.js & .github/workflows/ci.yml
  *
  * Runs in CI as part of the `lint` job (or locally via `node tools/config-validate.cjs`).
  * No external deps beyond the project's transitive `js-yaml`.
@@ -10,7 +10,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { parse: parseYaml } = require("js-yaml");
+const jsYaml = require("js-yaml");
 
 const ROOT = path.resolve(__dirname, "..");
 
@@ -83,7 +83,7 @@ if (!fs.existsSync(ciPath)) {
   const raw = fs.readFileSync(ciPath, "utf8");
   let ci;
   try {
-    ci = parseYaml(raw);
+    ci = jsYaml.load(raw);
   } catch (e) {
     fail(`YAML parse error: ${e.message}`);
     // Bail on YAML errors — remaining checks would be misleading

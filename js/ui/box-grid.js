@@ -18,42 +18,43 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   leftPane.className = "two-pane__left";
 
   // ── Empty state overlay ──
-  const emptyOverlay = filled === 0
-    ? (() => {
-        const el = document.createElement("div");
-        el.style.cssText =
-          "display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;margin-bottom:var(--space-lg);";
+  const emptyOverlay =
+    filled === 0
+      ? (() => {
+          const el = document.createElement("div");
+          el.style.cssText =
+            "display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;margin-bottom:var(--space-lg);";
 
-        const icon = document.createElement("div");
-        icon.textContent = "📦";
-        icon.style.cssText = "font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;";
-        el.appendChild(icon);
+          const icon = document.createElement("div");
+          icon.textContent = "📦";
+          icon.style.cssText = "font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;";
+          el.appendChild(icon);
 
-        const title = document.createElement("p");
-        title.className = "headline-sm";
-        title.textContent = "Your box is empty";
-        title.style.marginBottom = "var(--space-sm)";
-        el.appendChild(title);
+          const title = document.createElement("p");
+          title.className = "headline-sm";
+          title.textContent = "Your box is empty";
+          title.style.marginBottom = "var(--space-sm)";
+          el.appendChild(title);
 
-        const subtitle = document.createElement("p");
-        subtitle.className = "body-md";
-        subtitle.style.color = "var(--color-text-muted)";
-        subtitle.style.marginBottom = "var(--space-xl)";
-        subtitle.textContent = "Tap + Add Pokémon to start building your box";
-        el.appendChild(subtitle);
+          const subtitle = document.createElement("p");
+          subtitle.className = "body-md";
+          subtitle.style.color = "var(--color-text-muted)";
+          subtitle.style.marginBottom = "var(--space-xl)";
+          subtitle.textContent = "Tap + Add Pokémon to start building your box";
+          el.appendChild(subtitle);
 
-        const addBtn = document.createElement("button");
-        addBtn.className = "btn btn-primary";
-        addBtn.textContent = "+ Add Pokémon";
-        addBtn.addEventListener("click", function () {
-          if (typeof onAddPokemon === "function") {
-            onAddPokemon();
-          }
-        });
-        el.appendChild(addBtn);
-        return el;
-      })()
-    : null;
+          const addBtn = document.createElement("button");
+          addBtn.className = "btn btn-primary";
+          addBtn.textContent = "+ Add Pokémon";
+          addBtn.addEventListener("click", function () {
+            if (typeof onAddPokemon === "function") {
+              onAddPokemon();
+            }
+          });
+          el.appendChild(addBtn);
+          return el;
+        })()
+      : null;
 
   // ── Box nav header ──
   const nav = document.createElement("div");
