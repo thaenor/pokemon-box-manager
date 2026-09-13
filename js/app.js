@@ -69,13 +69,16 @@ function saveBox() {
 function loadBox() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return new Array(30).fill(null);
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(Boolean).map(sanitizePokemon).filter(Boolean);
+    if (!Array.isArray(parsed)) return new Array(30).fill(null);
+    // Pad or trim to exactly boxSize and sanitize entries
+    const clean = parsed.slice(0, 30).map((p) => (p ? sanitizePokemon(p) : null));
+    while (clean.length < 30) clean.push(null);
+    return clean;
   } catch (e) {
     console.warn("Failed to load box from localStorage, starting fresh:", e);
-    return [];
+    return new Array(30).fill(null);
   }
 }
 
@@ -109,8 +112,8 @@ async function handleAddPokemon(slotIndex) {
   const saved = await showPokemonDetail(species);
   if (!saved) return;
 
-  // Step 3: Save to box, persist, re-render
-  state.box.push(sanitizePokemon(saved));
+  // Step 3: Save to specific slot, persist, re-render
+  state.box[slotIndex] = sanitizePokemon(saved);
   saveBox();
   showBoxView();
 }
