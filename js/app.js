@@ -193,33 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { action: "verify" },
       );
 
-      resultEl.textContent = `Token: ${token.slice(0, 32)}…\nSending assessment…`;
-
-      const res = await fetch(
-        "https://recaptchaenterprise.googleapis.com/v1/projects/pokemon-box-manager/assessments?key=AIzaSyA9nd1RsWNb4GB0LLBsUvJMRsWCdoy8IVk",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Referer: window.location.origin,
-          },
-          body: JSON.stringify({
-            event: {
-              token,
-              expectedAction: "verify",
-              siteKey: "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0",
-            },
-          }),
-        },
-      );
-
-      const data = await res.json();
-      const score = data?.riskAnalysis?.score;
-      const reasons = data?.riskAnalysis?.reasons;
-      resultEl.textContent =
-        score !== undefined
-          ? `✅ Score: ${score}\nReasons: ${reasons?.join(", ") || "none"}`
-          : `❌ Error: ${data?.error?.message || JSON.stringify(data)}`;
+      resultEl.textContent = `✅ Token generated: ${token.slice(0, 16)}…`;
     } catch (e) {
       resultEl.textContent = `❌ ${e.message || e}`;
     } finally {
