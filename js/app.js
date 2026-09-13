@@ -44,6 +44,8 @@ async function handleAddPokemon(slotIndex) {
   if (!saved) return
 
   // Step 3: Save to box, re-render
+  // TODO: Persistence hook — this is where the box saves to localStorage
+  // See #20: after detail form cleanup, write pokemon-box:slots here on every mutation
   state.box.push(saved)
   showBoxView()
 }

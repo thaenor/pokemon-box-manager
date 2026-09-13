@@ -30,21 +30,38 @@ export async function showPokemonDetail(species, existing = null) {
   document.body.appendChild(overlay);
 
   /* ── Fetch ── */
-  const pokeData = await fetchPokemon(species.showdownId);
+  const pokeData = await fetchPokemon(species.pokeApiName || species.showdownId);
 
   if (!pokeData) {
     loadingEl.textContent = `Couldn't fetch data for ${species.name} (Champions-exclusive form).`;
     loadingEl.style.color = 'var(--color-text-muted)';
-    /* Stay on loading state — user dismisses by clicking outside */
+
+    /* Champions-only forms (e.g. Mega Golisopod, Absol Z) aren't in PokéAPI.
+       This is intentional — they're managed via Champions API in a later ticket. */
+    const noteEl = document.createElement('p');
+    noteEl.className = 'body-sm';
+    noteEl.style.textAlign = 'center';
+    noteEl.style.marginTop = 'var(--space-sm)';
+    noteEl.style.color = 'var(--color-text-muted)';
+    noteEl.textContent = 'Champions-exclusive forms are not available via PokéAPI.';
+    panel.appendChild(noteEl);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn btn-secondary';
+    closeBtn.style.margin = 'var(--space-lg) auto 0';
+    closeBtn.style.display = 'block';
+    closeBtn.textContent = 'Close';
+    panel.appendChild(closeBtn);
+
     return new Promise((resolve) => {
-      const clickHandler = (e) => {
-        if (e.target === overlay) {
-          overlay.removeEventListener('click', clickHandler);
-          document.body.removeChild(overlay);
-          resolve(null);
-        }
+      const handleDismiss = () => {
+        document.body.removeChild(overlay);
+        resolve(null);
       };
-      overlay.addEventListener('click', clickHandler);
+      closeBtn.addEventListener('click', handleDismiss);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) handleDismiss();
+      });
     });
   }
 
