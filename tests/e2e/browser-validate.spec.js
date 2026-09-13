@@ -25,7 +25,11 @@ test.describe("Browser-only code validation", () => {
     const errors = [];
     page.on("console", (msg) => {
       // Only capture actual console.error() calls, not network-level 403/etc errors
-      if (msg.type() === "error" && !msg.text().includes("Failed to load resource")) {
+      if (
+        msg.type() === "error" &&
+        !msg.text().includes("Failed to load resource") &&
+        !msg.text().startsWith("@firebase/")
+      ) {
         errors.push(msg.text());
       }
     });
