@@ -24,8 +24,9 @@ export function showSpeciesSearch() {
     }
 
     /* ── Overlay ── */
-    const overlay = document.createElement("div");
-    overlay.className = "overlay";
+    const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.dataset.testid = 'species-search';
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) finish(null);
     });
@@ -77,6 +78,7 @@ export function showSpeciesSearch() {
     input.addEventListener("blur", () => {
       input.style.borderColor = "var(--color-hairline)";
     });
+    input.dataset.testid = 'search-input';
     panel.appendChild(input);
 
     /* ── Results container (scrollable) ── */
@@ -106,6 +108,7 @@ export function showSpeciesSearch() {
     /* ── Render a single species row ── */
     function createSpeciesRow(species) {
       const row = document.createElement("div");
+      row.dataset.testid = "search-result";
       row.style.display = "flex";
       row.style.alignItems = "center";
       row.style.gap = "var(--space-md)";

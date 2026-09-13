@@ -124,6 +124,7 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
     const slot = document.createElement("div");
     slot.className = "slot-cell";
     slot.dataset.index = String(i);
+    slot.dataset.testid = "box-slot";
 
     const pokemon = box[i];
     if (pokemon && pokemon.species) {
