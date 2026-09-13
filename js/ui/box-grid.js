@@ -19,58 +19,6 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   const leftPane = document.createElement('div');
   leftPane.className = 'two-pane__left';
 
-  // ── Empty state ──
-  if (filled === 0) {
-    const emptyState = document.createElement('div');
-    emptyState.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;';
-
-    const icon = document.createElement('div');
-    icon.textContent = '📦';
-    icon.style.cssText = 'font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;';
-    emptyState.appendChild(icon);
-
-    const title = document.createElement('p');
-    title.className = 'headline-sm';
-    title.textContent = 'Your box is empty';
-    title.style.marginBottom = 'var(--space-sm)';
-    emptyState.appendChild(title);
-
-    const subtitle = document.createElement('p');
-    subtitle.className = 'body-md';
-    subtitle.style.color = 'var(--color-text-muted)';
-    subtitle.style.marginBottom = 'var(--space-xl)';
-    subtitle.textContent = 'Tap + Add Pokémon to start building your box';
-    emptyState.appendChild(subtitle);
-
-    const addBtn = document.createElement('button');
-    addBtn.className = 'btn btn-primary';
-    addBtn.textContent = '+ Add Pokémon';
-    addBtn.addEventListener('click', function () {
-      if (typeof onAddPokemon === 'function') {
-        onAddPokemon();
-      }
-    });
-    emptyState.appendChild(addBtn);
-
-    leftPane.appendChild(emptyState);
-    container.appendChild(leftPane);
-
-    // ── Right pane: inspector panel ──
-    const rightPane = document.createElement('div');
-    rightPane.className = 'two-pane__right';
-    const inspector = document.createElement('aside');
-    inspector.className = 'inspector-panel';
-    const emptyMsg = document.createElement('p');
-    emptyMsg.className = 'body-sm';
-    emptyMsg.style.cssText = 'color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;';
-    emptyMsg.textContent = 'Select a Pokémon to inspect';
-    inspector.appendChild(emptyMsg);
-    rightPane.appendChild(inspector);
-    container.appendChild(rightPane);
-
-    return container;
-  }
-
   // ── Box nav header ──
   const nav = document.createElement('div');
   nav.className = 'box-nav-header';
@@ -113,6 +61,55 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   nav.appendChild(toolbar);
 
   leftPane.appendChild(nav);
+
+  // ── Empty state ──
+  if (filled === 0) {
+    const emptyState = document.createElement('div');
+    emptyState.className = 'box-empty-state';
+
+    const icon = document.createElement('div');
+    icon.textContent = '📦';
+    icon.className = 'box-empty-state__icon';
+    emptyState.appendChild(icon);
+
+    const title = document.createElement('p');
+    title.className = 'headline-sm box-empty-state__title';
+    title.textContent = 'Your box is empty';
+    emptyState.appendChild(title);
+
+    const subtitle = document.createElement('p');
+    subtitle.className = 'body-md box-empty-state__subtitle';
+    subtitle.textContent = 'Tap + Add Pokémon to start building your box';
+    emptyState.appendChild(subtitle);
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn btn-primary';
+    addBtn.textContent = '+ Add Pokémon';
+    addBtn.addEventListener('click', function () {
+      if (typeof onAddPokemon === 'function') {
+        onAddPokemon();
+      }
+    });
+    emptyState.appendChild(addBtn);
+
+    leftPane.appendChild(emptyState);
+    container.appendChild(leftPane);
+
+    // ── Right pane: inspector panel ──
+    const rightPane = document.createElement('div');
+    rightPane.className = 'two-pane__right';
+    const inspector = document.createElement('aside');
+    inspector.className = 'inspector-panel';
+    const emptyMsg = document.createElement('p');
+    emptyMsg.className = 'body-sm';
+    emptyMsg.style.cssText = 'color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;';
+    emptyMsg.textContent = 'Select a Pokémon to inspect';
+    inspector.appendChild(emptyMsg);
+    rightPane.appendChild(inspector);
+    container.appendChild(rightPane);
+
+    return container;
+  }
 
   // ── Matrix grid ──
   const grid = document.createElement('div');
