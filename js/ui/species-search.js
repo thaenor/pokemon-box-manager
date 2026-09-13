@@ -113,22 +113,53 @@ export function showSpeciesSearch() {
       });
       row.addEventListener('click', () => finish(species));
 
-      /* Sprite placeholder — initial letter in a 48px circle */
-      const spriteCircle = document.createElement('div');
-      spriteCircle.style.width = '48px';
-      spriteCircle.style.height = '48px';
-      spriteCircle.style.borderRadius = '50%';
-      spriteCircle.style.background = 'var(--color-surface-l2)';
-      spriteCircle.style.display = 'flex';
-      spriteCircle.style.alignItems = 'center';
-      spriteCircle.style.justifyContent = 'center';
-      spriteCircle.style.flexShrink = '0';
-      spriteCircle.style.fontFamily = 'var(--font-display)';
-      spriteCircle.style.fontSize = '20px';
-      spriteCircle.style.fontWeight = '600';
-      spriteCircle.style.color = 'var(--color-text-secondary)';
-      spriteCircle.textContent = species.name.charAt(0).toUpperCase();
-      row.appendChild(spriteCircle);
+      /* Sprite container — fixed 48×48, no layout shift */
+      const spriteWrap = document.createElement('div');
+      spriteWrap.style.width = '48px';
+      spriteWrap.style.height = '48px';
+      spriteWrap.style.flexShrink = '0';
+      spriteWrap.style.position = 'relative';
+
+      /* Placeholder — letter circle (shown while sprite loads) */
+      const spritePlaceholder = document.createElement('div');
+      spritePlaceholder.style.width = '48px';
+      spritePlaceholder.style.height = '48px';
+      spritePlaceholder.style.borderRadius = '50%';
+      spritePlaceholder.style.background = 'var(--color-surface-l2)';
+      spritePlaceholder.style.display = 'flex';
+      spritePlaceholder.style.alignItems = 'center';
+      spritePlaceholder.style.justifyContent = 'center';
+      spritePlaceholder.style.fontFamily = 'var(--font-display)';
+      spritePlaceholder.style.fontSize = '20px';
+      spritePlaceholder.style.fontWeight = '600';
+      spritePlaceholder.style.color = 'var(--color-text-secondary)';
+      spritePlaceholder.style.position = 'absolute';
+      spritePlaceholder.style.inset = '0';
+      spritePlaceholder.textContent = species.name.charAt(0).toUpperCase();
+      spriteWrap.appendChild(spritePlaceholder);
+
+      /* Actual sprite — hidden until loaded */
+      const spriteImg = document.createElement('img');
+      spriteImg.loading = 'lazy';
+      spriteImg.src = `https://play.pokemonshowdown.com/sprites/gen5/${species.showdownId}.png`;
+      spriteImg.alt = species.name;
+      spriteImg.style.width = '48px';
+      spriteImg.style.height = '48px';
+      spriteImg.style.objectFit = 'contain';
+      spriteImg.style.position = 'absolute';
+      spriteImg.style.inset = '0';
+      spriteImg.style.display = 'none';
+      spriteImg.addEventListener('load', () => {
+        spritePlaceholder.style.display = 'none';
+        spriteImg.style.display = 'block';
+      });
+      spriteImg.addEventListener('error', () => {
+        // Keep letter placeholder on load failure
+        spriteImg.style.display = 'none';
+      });
+      spriteWrap.appendChild(spriteImg);
+
+      row.appendChild(spriteWrap);
 
       /* Info column */
       const infoCol = document.createElement('div');
