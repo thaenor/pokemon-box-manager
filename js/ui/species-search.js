@@ -24,9 +24,9 @@ export function showSpeciesSearch() {
     }
 
     /* ── Overlay ── */
-    const overlay = document.createElement('div');
-        overlay.className = 'overlay';
-        overlay.dataset.testid = 'species-search';
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    overlay.dataset.testid = "species-search";
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) finish(null);
     });
@@ -78,7 +78,7 @@ export function showSpeciesSearch() {
     input.addEventListener("blur", () => {
       input.style.borderColor = "var(--color-hairline)";
     });
-    input.dataset.testid = 'search-input';
+    input.dataset.testid = "search-input";
     panel.appendChild(input);
 
     /* ── Results container (scrollable) ── */
