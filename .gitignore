@@ -6,3 +6,8 @@
 
 # Node
 node_modules/
+
+# Test artifacts
+.vitest/
+playwright-report/
+test-results/
