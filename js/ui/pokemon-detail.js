@@ -273,6 +273,12 @@ export async function showPokemonDetail(species, existing = null) {
     return fieldRow;
   }
 
+  /* Nickname */
+  const defaultNickname = existing ? existing.nickname : '';
+  editSection.appendChild(
+    createTextField('Nickname', 'detail-nickname', 'Optional nickname', defaultNickname)
+  );
+
   /* Ability */
   const abilityOptions = pokeData.abilities.map((a) => ({
     value: a,
@@ -291,66 +297,6 @@ export async function showPokemonDetail(species, existing = null) {
   const defaultNature = existing ? existing.nature : 'Serious';
   editSection.appendChild(
     createSelectField('Nature', 'detail-nature', natureOptions, defaultNature)
-  );
-
-  /* Moves — 4 slots */
-  const movesHeader = document.createElement('h3');
-  movesHeader.textContent = 'Moves';
-  movesHeader.className = 'headline-sm';
-  movesHeader.style.marginTop = 'var(--space-sm)';
-  editSection.appendChild(movesHeader);
-
-  for (let i = 0; i < 4; i++) {
-    const existingMove = existing && existing.moves ? existing.moves[i] : '';
-    editSection.appendChild(
-      createTextField('', `detail-move-${i}`, `Move ${i + 1}`, existingMove)
-    );
-  }
-
-  /* Held Item */
-  const defaultItem = existing ? existing.heldItem : '';
-  editSection.appendChild(
-    createTextField('Held Item', 'detail-held-item', 'e.g. Choice Scarf', defaultItem)
-  );
-
-  /* Trial / Permanent */
-  const trialField = document.createElement('div');
-  trialField.style.display = 'flex';
-  trialField.style.alignItems = 'center';
-  trialField.style.gap = 'var(--space-sm)';
-
-  const trialLabel = document.createElement('span');
-  trialLabel.className = 'label-caps';
-  trialLabel.textContent = 'Trial';
-  trialLabel.style.width = '120px';
-  trialLabel.style.flexShrink = '0';
-  trialField.appendChild(trialLabel);
-
-  const trialCheckbox = document.createElement('input');
-  trialCheckbox.type = 'checkbox';
-  trialCheckbox.id = 'detail-trial';
-  if (existing && existing.isTrial) {
-    trialCheckbox.checked = true;
-  }
-  trialField.appendChild(trialCheckbox);
-
-  const trialText = document.createElement('label');
-  trialText.htmlFor = 'detail-trial';
-  trialText.className = 'body-sm';
-  trialText.textContent = 'Trial Pokémon (not permanent)';
-  trialField.appendChild(trialText);
-
-  editSection.appendChild(trialField);
-
-  /* Source */
-  const sourceOptions = [
-    { value: 'Ranch', label: 'Recruited from Ranch' },
-    { value: 'HOME', label: 'Transferred from HOME' },
-    { value: 'Event', label: 'Event' },
-  ];
-  const defaultSource = existing ? existing.source : 'Ranch';
-  editSection.appendChild(
-    createSelectField('Source', 'detail-source', sourceOptions, defaultSource)
   );
 
   /* ── Action buttons ── */
@@ -388,26 +334,18 @@ export async function showPokemonDetail(species, existing = null) {
 
     saveBtn.addEventListener('click', () => {
       const isShiny = document.getElementById('detail-shiny').checked;
-      const moves = [];
-      for (let i = 0; i < 4; i++) {
-        const input = document.getElementById(`detail-move-${i}`);
-        moves.push(input ? input.value : '');
-      }
 
+      /* Key: pokemon-box:slots (localStorage key for box persistence — see #20) */
       const saved = {
         species,
         showdownId: species.showdownId,
-        nickname: '',
+        nickname: document.getElementById('detail-nickname').value,
         sprite: isShiny ? pokeData.spriteShiny : pokeData.sprite,
         spriteShiny: pokeData.spriteShiny,
         isShiny,
         stats: pokeData.stats,
         ability: document.getElementById('detail-ability').value,
         nature: document.getElementById('detail-nature').value,
-        moves,
-        heldItem: document.getElementById('detail-held-item').value,
-        isTrial: document.getElementById('detail-trial').checked,
-        source: document.getElementById('detail-source').value,
         recruitedDate: new Date().toISOString().split('T')[0],
       };
       cleanup();

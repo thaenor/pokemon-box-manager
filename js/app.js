@@ -13,6 +13,29 @@ import { showPokemonDetail } from './ui/pokemon-detail.js'
 
 /* ── State ── */
 
+/** Known fields for a saved Pokémon object. Unknown fields are silently dropped. */
+const KNOWN_FIELDS = new Set([
+  'species', 'showdownId', 'nickname', 'sprite', 'spriteShiny', 'isShiny',
+  'stats', 'ability', 'nature', 'recruitedDate',
+])
+
+function sanitizePokemon(obj) {
+  if (!obj || typeof obj !== 'object') return null
+  const clean = {}
+  for (const key of KNOWN_FIELDS) {
+    if (key in obj) clean[key] = obj[key]
+  }
+  // Ensure required fields exist — fallback to defaults
+  if (!clean.species) return null
+  clean.nickname = clean.nickname || ''
+  clean.isShiny = !!clean.isShiny
+  clean.ability = clean.ability || ''
+  clean.nature = clean.nature || 'Serious'
+  clean.stats = clean.stats || []
+  clean.recruitedDate = clean.recruitedDate || new Date().toISOString().split('T')[0]
+  return clean
+}
+
 const state = {
   box: [],
   boxSize: 30,
@@ -46,7 +69,7 @@ async function handleAddPokemon(slotIndex) {
   // Step 3: Save to box, re-render
   // TODO: Persistence hook — this is where the box saves to localStorage
   // See #20: after detail form cleanup, write pokemon-box:slots here on every mutation
-  state.box.push(saved)
+  state.box.push(sanitizePokemon(saved))
   showBoxView()
 }
 

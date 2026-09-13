@@ -420,17 +420,6 @@ img {
   pointer-events: none;
 }
 
-.slot-cell__item-pill {
-  position: absolute;
-  bottom: 3px;
-  right: 3px;
-  width: 4px;
-  height: 4px;
-  border-radius: var(--radius-full);
-  background: var(--color-tertiary);
-  pointer-events: none;
-}
-
 /* ── Matrix Grid ── */
 .matrix-grid {
   display: grid;

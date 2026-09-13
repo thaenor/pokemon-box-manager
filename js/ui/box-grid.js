@@ -109,13 +109,6 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
         slot.appendChild(shinyDot);
       }
 
-      // ── Held item pill ──
-      if (pokemon.heldItem) {
-        const itemPill = document.createElement('span');
-        itemPill.className = 'slot-cell__item-pill';
-        slot.appendChild(itemPill);
-      }
-
       // ── Click handler ──
       slot.addEventListener('click', function () {
         if (typeof onSelectPokemon === 'function') {
