@@ -151,8 +151,6 @@ export function showSpeciesSearch() {
 
       /* Actual sprite — hidden until loaded */
       const spriteImg = document.createElement("img");
-      spriteImg.loading = "lazy";
-      spriteImg.src = species.spriteUrl;
       spriteImg.alt = species.name;
       spriteImg.style.width = "48px";
       spriteImg.style.height = "48px";
@@ -160,6 +158,7 @@ export function showSpeciesSearch() {
       spriteImg.style.position = "absolute";
       spriteImg.style.inset = "0";
       spriteImg.style.display = "none";
+      // Attach listeners BEFORE setting src so cached images don't fire load before the handler
       spriteImg.addEventListener("load", () => {
         spritePlaceholder.style.display = "none";
         spriteImg.style.display = "block";
@@ -168,6 +167,7 @@ export function showSpeciesSearch() {
         // Keep letter placeholder on load failure
         spriteImg.style.display = "none";
       });
+      spriteImg.src = species.spriteUrl;
       spriteWrap.appendChild(spriteImg);
 
       row.appendChild(spriteWrap);

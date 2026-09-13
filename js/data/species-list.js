@@ -248,7 +248,7 @@ export const speciesList = [
     types: ["Psychic", "Fairy"],
     isMega: false,
     isUltra: false,
-    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/mr-mime.png",
+    spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/122.png",
   },
   {
     id: 122,
@@ -257,7 +257,7 @@ export const speciesList = [
     types: ["Ice", "Psychic"],
     isMega: false,
     isUltra: false,
-    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/mr-mime-galar.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/mrmime-galar.png",
   },
   {
     id: 127,
@@ -746,7 +746,7 @@ export const speciesList = [
     types: ["Dark"],
     isMega: false,
     isUltra: true,
-    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/absol-ultra.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/absol-mega.png",
   },
   {
     id: 362,
@@ -895,7 +895,7 @@ export const speciesList = [
     types: ["Dragon", "Ground"],
     isMega: false,
     isUltra: true,
-    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/garchomp-ultra.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/garchomp-mega.png",
   },
   {
     id: 448,
@@ -914,7 +914,7 @@ export const speciesList = [
     types: ["Fighting", "Steel"],
     isMega: false,
     isUltra: true,
-    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/lucario-ultra.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/lucario-mega.png",
   },
   {
     id: 450,
