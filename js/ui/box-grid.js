@@ -17,59 +17,43 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   const leftPane = document.createElement("div");
   leftPane.className = "two-pane__left";
 
-  // ── Empty state ──
-  if (filled === 0) {
-    const emptyState = document.createElement("div");
-    emptyState.style.cssText =
-      "display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;";
+  // ── Empty state overlay ──
+  const emptyOverlay = filled === 0
+    ? (() => {
+        const el = document.createElement("div");
+        el.style.cssText =
+          "display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-2xl);text-align:center;background:var(--color-surface-l1);border:1px solid var(--color-hairline);border-radius:var(--radius-lg);min-height:320px;margin-bottom:var(--space-lg);";
 
-    const icon = document.createElement("div");
-    icon.textContent = "📦";
-    icon.style.cssText = "font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;";
-    emptyState.appendChild(icon);
+        const icon = document.createElement("div");
+        icon.textContent = "📦";
+        icon.style.cssText = "font-size:48px;margin-bottom:var(--space-lg);opacity:0.5;";
+        el.appendChild(icon);
 
-    const title = document.createElement("p");
-    title.className = "headline-sm";
-    title.textContent = "Your box is empty";
-    title.style.marginBottom = "var(--space-sm)";
-    emptyState.appendChild(title);
+        const title = document.createElement("p");
+        title.className = "headline-sm";
+        title.textContent = "Your box is empty";
+        title.style.marginBottom = "var(--space-sm)";
+        el.appendChild(title);
 
-    const subtitle = document.createElement("p");
-    subtitle.className = "body-md";
-    subtitle.style.color = "var(--color-text-muted)";
-    subtitle.style.marginBottom = "var(--space-xl)";
-    subtitle.textContent = "Tap + Add Pokémon to start building your box";
-    emptyState.appendChild(subtitle);
+        const subtitle = document.createElement("p");
+        subtitle.className = "body-md";
+        subtitle.style.color = "var(--color-text-muted)";
+        subtitle.style.marginBottom = "var(--space-xl)";
+        subtitle.textContent = "Tap + Add Pokémon to start building your box";
+        el.appendChild(subtitle);
 
-    const addBtn = document.createElement("button");
-    addBtn.className = "btn btn-primary";
-    addBtn.textContent = "+ Add Pokémon";
-    addBtn.addEventListener("click", function () {
-      if (typeof onAddPokemon === "function") {
-        onAddPokemon();
-      }
-    });
-    emptyState.appendChild(addBtn);
-
-    leftPane.appendChild(emptyState);
-    container.appendChild(leftPane);
-
-    // ── Right pane: inspector panel ──
-    const rightPane = document.createElement("div");
-    rightPane.className = "two-pane__right";
-    const inspector = document.createElement("aside");
-    inspector.className = "inspector-panel";
-    const emptyMsg = document.createElement("p");
-    emptyMsg.className = "body-sm";
-    emptyMsg.style.cssText =
-      "color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;";
-    emptyMsg.textContent = "Select a Pokémon to inspect";
-    inspector.appendChild(emptyMsg);
-    rightPane.appendChild(inspector);
-    container.appendChild(rightPane);
-
-    return container;
-  }
+        const addBtn = document.createElement("button");
+        addBtn.className = "btn btn-primary";
+        addBtn.textContent = "+ Add Pokémon";
+        addBtn.addEventListener("click", function () {
+          if (typeof onAddPokemon === "function") {
+            onAddPokemon();
+          }
+        });
+        el.appendChild(addBtn);
+        return el;
+      })()
+    : null;
 
   // ── Box nav header ──
   const nav = document.createElement("div");
@@ -117,6 +101,9 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   // ── Matrix grid ──
   const grid = document.createElement("div");
   grid.className = "matrix-grid";
+
+  // ── Empty state overlay (when box is empty — before grid and nav) ──
+  if (emptyOverlay) leftPane.insertBefore(emptyOverlay, nav);
 
   for (let i = 0; i < boxSize; i++) {
     const slot = document.createElement("div");
