@@ -119,7 +119,6 @@ async function handleAddPokemon(slotIndex) {
 }
 
 function handleSelectPokemon(pokemon, index) {
-  console.log("Selected:", pokemon.name, "at slot", index);
   // Future: open detail form in edit mode, or highlight in inspector
 }
 

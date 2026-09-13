@@ -1,5 +1,3 @@
-import { speciesList, findSpecies } from "../data/species-list.js";
-
 /**
  * Creates the box grid view — main view after login.
  * @param {Array} box — array of Pokémon objects in the box (initially empty)
