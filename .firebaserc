@@ -5,6 +5,9 @@
   "targets": {
     "pokemon-box-manager": {
       "hosting": {
+        "default": [
+          "pokemon-box-manager"
+        ],
         "staging": [
           "pokemon-box-manager-staging"
         ]
