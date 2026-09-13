@@ -1,0 +1,5 @@
+# Generated Pokémon data (re-generate via scripts/fetch-data.js)
+/data/
+
+# Node
+node_modules/
