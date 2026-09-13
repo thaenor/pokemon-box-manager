@@ -16,8 +16,7 @@ const db = firebase.firestore(app);
 // Disabled in CI/Playwright environments (navigator.webdriver is set by automated browsers)
 const RECAPTCHA_SITE_KEY = "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0";
 if (!navigator.webdriver) {
-  firebase.appCheck().activate(
-    new firebase.appCheck.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),
-    true,
-  );
+  firebase
+    .appCheck()
+    .activate(new firebase.appCheck.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), true);
 }
