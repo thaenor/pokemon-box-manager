@@ -9,3 +9,7 @@ const firebaseConfig = {
 
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(app);
+
+// App Check with reCAPTCHA Enterprise (score-based, invisible)
+const RECAPTCHA_SITE_KEY = "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0";
+firebase.appCheck().activate(RECAPTCHA_SITE_KEY, true);
