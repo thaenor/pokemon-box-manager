@@ -2,13 +2,13 @@
 
 ## Quick Reference: 5 Key Things This API Provides
 
-| # | What | How |
-|---|------|-----|
-| 1 | **Sprite URLs** for every Pokémon (front, back, shiny, female, official artwork) | `GET /api/v2/pokemon/{id}` → `response.sprites.front_default` |
-| 2 | **Base stats** (HP/Atk/Def/SpA/SpD/Spe) | `response.stats[n].base_stat` with `response.stats[n].stat.name` |
-| 3 | **Types & abilities** (including hidden abilities) | `response.types[n].type.name`, `response.abilities[n].ability.name` |
-| 4 | **Flavor text, evolution chain, egg groups** | `GET /api/v2/pokemon-species/{id}` → `response.flavor_text_entries`, `response.evolution_chain` |
-| 5 | **Regional forms** (Alolan, Galarian, Hisuian, Paldean) | Separate endpoint entries e.g. `/api/v2/pokemon/raichu-alola` |
+| #   | What                                                                             | How                                                                                             |
+| --- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 1   | **Sprite URLs** for every Pokémon (front, back, shiny, female, official artwork) | `GET /api/v2/pokemon/{id}` → `response.sprites.front_default`                                   |
+| 2   | **Base stats** (HP/Atk/Def/SpA/SpD/Spe)                                          | `response.stats[n].base_stat` with `response.stats[n].stat.name`                                |
+| 3   | **Types & abilities** (including hidden abilities)                               | `response.types[n].type.name`, `response.abilities[n].ability.name`                             |
+| 4   | **Flavor text, evolution chain, egg groups**                                     | `GET /api/v2/pokemon-species/{id}` → `response.flavor_text_entries`, `response.evolution_chain` |
+| 5   | **Regional forms** (Alolan, Galarian, Hisuian, Paldean)                          | Separate endpoint entries e.g. `/api/v2/pokemon/raichu-alola`                                   |
 
 ---
 
@@ -39,16 +39,14 @@
       "ability": { "name": "lightning-rod", "url": "https://pokeapi.co/api/v2/ability/31/" }
     }
   ],
-  "forms": [
-    { "name": "pikachu", "url": "https://pokeapi.co/api/v2/pokemon-form/25/" }
-  ],
-  "moves": [ /* see §1.5 */ ],
+  "forms": [{ "name": "pikachu", "url": "https://pokeapi.co/api/v2/pokemon-form/25/" }],
+  "moves": [/* see §1.5 */],
   "species": {
     "name": "pikachu",
     "url": "https://pokeapi.co/api/v2/pokemon-species/25/"
   },
-  "sprites": { /* see §1.7 */ },
-  "stats": [ /* see §1.4 */ ],
+  "sprites": {/* see §1.7 */},
+  "stats": [/* see §1.4 */],
   "types": [
     {
       "slot": 1,
@@ -60,22 +58,22 @@
 
 ### 1.1 Field path reference
 
-| Field path | Type | Description |
-|---|---|---|
-| `response.id` | int | National Pokédex number (1–1025+) |
-| `response.name` | string | API name (lowercase, hyphenated) |
-| `response.height` | int | Height in decimetres (dm ÷ 10 = metres) |
-| `response.weight` | int | Weight in hectograms (hg ÷ 10 = kg) |
-| `response.base_experience` | int | Base EXP awarded when fainted |
-| `response.is_default` | bool | `true` = the standard form, `false` = regional/alternate form |
-| `response.order` | int | Sort order within the API |
-| `response.abilities` | array | Array of ability objects (see 1.2) |
-| `response.types` | array | Array of type objects (see 1.3) |
-| `response.stats` | array | Array of stat objects (see 1.4) |
-| `response.moves` | array | Array of move objects (see 1.5) |
-| `response.forms` | array | References to `/api/v2/pokemon-form/{id}` |
-| `response.species` | object | Reference to `/api/v2/pokemon-species/{id}` |
-| `response.sprites` | object | Sprite URL objects (see 1.7) |
+| Field path                 | Type   | Description                                                   |
+| -------------------------- | ------ | ------------------------------------------------------------- |
+| `response.id`              | int    | National Pokédex number (1–1025+)                             |
+| `response.name`            | string | API name (lowercase, hyphenated)                              |
+| `response.height`          | int    | Height in decimetres (dm ÷ 10 = metres)                       |
+| `response.weight`          | int    | Weight in hectograms (hg ÷ 10 = kg)                           |
+| `response.base_experience` | int    | Base EXP awarded when fainted                                 |
+| `response.is_default`      | bool   | `true` = the standard form, `false` = regional/alternate form |
+| `response.order`           | int    | Sort order within the API                                     |
+| `response.abilities`       | array  | Array of ability objects (see 1.2)                            |
+| `response.types`           | array  | Array of type objects (see 1.3)                               |
+| `response.stats`           | array  | Array of stat objects (see 1.4)                               |
+| `response.moves`           | array  | Array of move objects (see 1.5)                               |
+| `response.forms`           | array  | References to `/api/v2/pokemon-form/{id}`                     |
+| `response.species`         | object | Reference to `/api/v2/pokemon-species/{id}`                   |
+| `response.sprites`         | object | Sprite URL objects (see 1.7)                                  |
 
 ### 1.2 Abilities
 
@@ -110,31 +108,33 @@
 
 ```json
 [
-  { "base_stat": 35,  "effort": 0, "stat": { "name": "hp", "url": "..." } },
-  { "base_stat": 55,  "effort": 0, "stat": { "name": "attack", "url": "..." } },
-  { "base_stat": 40,  "effort": 0, "stat": { "name": "defense", "url": "..." } },
-  { "base_stat": 50,  "effort": 0, "stat": { "name": "special-attack", "url": "..." } },
-  { "base_stat": 50,  "effort": 0, "stat": { "name": "special-defense", "url": "..." } },
-  { "base_stat": 90,  "effort": 2, "stat": { "name": "speed", "url": "..." } }
+  { "base_stat": 35, "effort": 0, "stat": { "name": "hp", "url": "..." } },
+  { "base_stat": 55, "effort": 0, "stat": { "name": "attack", "url": "..." } },
+  { "base_stat": 40, "effort": 0, "stat": { "name": "defense", "url": "..." } },
+  { "base_stat": 50, "effort": 0, "stat": { "name": "special-attack", "url": "..." } },
+  { "base_stat": 50, "effort": 0, "stat": { "name": "special-defense", "url": "..." } },
+  { "base_stat": 90, "effort": 2, "stat": { "name": "speed", "url": "..." } }
 ]
 ```
 
 **Stat name mapping:**
 
-| `stat.name` | Abbreviation | Meaning |
-|---|---|---|
-| `hp` | HP | Hit Points |
-| `attack` | Atk | Physical Attack |
-| `defense` | Def | Physical Defense |
-| `special-attack` | SpA | Special Attack |
-| `special-defense` | SpD | Special Defense |
-| `speed` | Spe | Speed |
+| `stat.name`       | Abbreviation | Meaning          |
+| ----------------- | ------------ | ---------------- |
+| `hp`              | HP           | Hit Points       |
+| `attack`          | Atk          | Physical Attack  |
+| `defense`         | Def          | Physical Defense |
+| `special-attack`  | SpA          | Special Attack   |
+| `special-defense` | SpD          | Special Defense  |
+| `speed`           | Spe          | Speed            |
 
 **Lookup pattern:**
 
 ```js
 const statMap = {};
-response.stats.forEach(s => { statMap[s.stat.name] = s.base_stat; });
+response.stats.forEach((s) => {
+  statMap[s.stat.name] = s.base_stat;
+});
 // statMap.hp = 35, statMap.attack = 55, etc.
 ```
 
@@ -161,6 +161,7 @@ response.stats.forEach(s => { statMap[s.stat.name] = s.base_stat; });
 ```
 
 **Learn method names** (`move_learn_method.name`):
+
 - `level-up` — learned naturally at `level_learned_at`
 - `machine` — TM/HM/TR
 - `tutor` — move tutor
@@ -168,6 +169,7 @@ response.stats.forEach(s => { statMap[s.stat.name] = s.base_stat; });
 - `form-change` — form-specific move
 
 **Notes:**
+
 - The move array is large (100+ entries). Filter by `version_group` for a specific generation.
 - `level_learned_at: 0` means TM/tutor/egg (not level-up).
 - For latest-generation filtering, filter `version_group_details` by `version_group.name`
@@ -191,13 +193,13 @@ The `sprites` object has three tiers:
 
 ```json
 {
-  "front_default":      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-  "front_shiny":       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/25.png",
-  "front_female":      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/female/25.png",
-  "front_shiny_female":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/female/25.png",
-  "back_default":      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/25.png",
-  "back_shiny":        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/shiny/25.png",
-  "back_female":       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/female/25.png",
+  "front_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+  "front_shiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/25.png",
+  "front_female": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/female/25.png",
+  "front_shiny_female": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/female/25.png",
+  "back_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/25.png",
+  "back_shiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/shiny/25.png",
+  "back_female": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/female/25.png",
   "back_shiny_female": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/shiny/female/25.png"
 }
 ```
@@ -237,13 +239,13 @@ All are 96×96 (or close) PNG. These are the **default sprites** — Gen VII/VII
 
 **Sprite size reference:**
 
-| Source | Format | Size | Best for |
-|---|---|---|---|
-| `sprites.front_default` | PNG | 96×96 | List thumbnails, battle previews |
-| `sprites.other.official-artwork.front_default` | PNG | ~475×475 | Detail view, Pokédex card hero image |
-| `sprites.other.home.front_default` | PNG | ~256×256 | Medium-sized detail view |
-| `sprites.other.dream_world.front_default` | SVG | Scalable | Vector art (smaller set, not all species) |
-| `sprites.other.showdown.front_default` | GIF | ~120×120 | Animated sprites (Gen V style) |
+| Source                                         | Format | Size     | Best for                                  |
+| ---------------------------------------------- | ------ | -------- | ----------------------------------------- |
+| `sprites.front_default`                        | PNG    | 96×96    | List thumbnails, battle previews          |
+| `sprites.other.official-artwork.front_default` | PNG    | ~475×475 | Detail view, Pokédex card hero image      |
+| `sprites.other.home.front_default`             | PNG    | ~256×256 | Medium-sized detail view                  |
+| `sprites.other.dream_world.front_default`      | SVG    | Scalable | Vector art (smaller set, not all species) |
+| `sprites.other.showdown.front_default`         | GIF    | ~120×120 | Animated sprites (Gen V style)            |
 
 **Context-specific sprite selection:**
 
@@ -252,11 +254,13 @@ All are 96×96 (or close) PNG. These are the **default sprites** — Gen VII/VII
 img.src = pokemon.sprites.front_default;
 
 // For detail page hero (full-size official art):
-const artwork = pokemon.sprites.other['official-artwork'].front_default;
-if (!artwork) { fallback = pokemon.sprites.front_default; }
+const artwork = pokemon.sprites.other["official-artwork"].front_default;
+if (!artwork) {
+  fallback = pokemon.sprites.front_default;
+}
 
 // For shiny toggle on detail page:
-const shinyArt = pokemon.sprites.other['official-artwork'].front_shiny;
+const shinyArt = pokemon.sprites.other["official-artwork"].front_shiny;
 
 // For female variant (where applicable):
 const femaleArt = pokemon.sprites.front_female ?? pokemon.sprites.front_default;
@@ -265,6 +269,7 @@ const femaleArt = pokemon.sprites.front_female ?? pokemon.sprites.front_default;
 #### Tier 3: `sprites.versions` — Per-generation sprites
 
 Contains sprites for every game generation. Structure:
+
 ```
 sprites.versions.generation-{i..ix}.{game-pair}.{front/back/shiny/...}
 ```
@@ -314,7 +319,7 @@ OGG audio files. `legacy` is the Gen I–V style cry; `latest` is the Gen VI+ st
   ],
   "egg_groups": [
     { "name": "ground", "url": "https://pokeapi.co/api/v2/egg-group/5/" },
-    { "name": "fairy",  "url": "https://pokeapi.co/api/v2/egg-group/6/" }
+    { "name": "fairy", "url": "https://pokeapi.co/api/v2/egg-group/6/" }
   ],
   "color": { "name": "yellow", "url": "..." },
   "shape": { "name": "quadruped", "url": "..." },
@@ -328,12 +333,12 @@ OGG audio files. `legacy` is the Gen I–V style cry; `latest` is the Gen VI+ st
   "habitat": { "name": "forest", "url": "..." },
   "generation": { "name": "generation-i", "url": "..." },
   "names": [
-    { "name": "Pikachu",  "language": { "name": "en", "url": "..." } },
+    { "name": "Pikachu", "language": { "name": "en", "url": "..." } },
     { "name": "ピカチュウ", "language": { "name": "ja", "url": "..." } }
   ],
   "genera": [
     { "genus": "Mouse Pokémon", "language": { "name": "en", "url": "..." } },
-    { "genus": "ねずみポケモン",  "language": { "name": "ja", "url": "..." } }
+    { "genus": "ねずみポケモン", "language": { "name": "ja", "url": "..." } }
   ],
   "flavor_text_entries": [
     {
@@ -343,66 +348,74 @@ OGG audio files. `legacy` is the Gen I–V style cry; `latest` is the Gen VI+ st
     }
   ],
   "varieties": [
-    { "is_default": true,  "pokemon": { "name": "pikachu",         "url": "/api/v2/pokemon/25/" } },
-    { "is_default": false, "pokemon": { "name": "pikachu-rock-star","url": "/api/v2/pokemon/10080/" } },
-    { "is_default": false, "pokemon": { "name": "pikachu-belle",   "url": "/api/v2/pokemon/10081/" } },
-    { "is_default": false, "pokemon": { "name": "pikachu-gmax",    "url": "/api/v2/pokemon/10199/" } }
+    { "is_default": true, "pokemon": { "name": "pikachu", "url": "/api/v2/pokemon/25/" } },
+    {
+      "is_default": false,
+      "pokemon": { "name": "pikachu-rock-star", "url": "/api/v2/pokemon/10080/" }
+    },
+    {
+      "is_default": false,
+      "pokemon": { "name": "pikachu-belle", "url": "/api/v2/pokemon/10081/" }
+    },
+    { "is_default": false, "pokemon": { "name": "pikachu-gmax", "url": "/api/v2/pokemon/10199/" } }
   ]
 }
 ```
 
 ### 2.1 Field path reference
 
-| Field path | Type | Description |
-|---|---|---|
-| `response.gender_rate` | int | Female ratio (0–8, -1=genderless). Value ÷ 8 = female proportion. |
-| `response.capture_rate` | int | Base capture rate (0–255, higher = easier) |
-| `response.base_happiness` | int | Base friendship (0–255) |
-| `response.hatch_counter` | int | Egg cycles to hatch (× 256 steps) |
-| `response.is_baby` | bool | Is a baby Pokémon |
-| `response.is_legendary` | bool | Is a legendary Pokémon |
-| `response.is_mythical` | bool | Is a mythical Pokémon |
-| `response.evolves_from_species` | object/null | Pre-evolution species reference |
-| `response.evolution_chain.url` | string | Full evolution chain endpoint |
-| `response.genera` | array | "Genus" (e.g. "Mouse Pokémon") per language |
-| `response.flavor_text_entries` | array | Pokédex entries per game version and language |
-| `response.egg_groups` | array | Egg groups (breeding compatibility) |
-| `response.varieties` | array | All forms/varieties with `is_default` flag |
-| `response.growth_rate` | object | Leveling rate (slow/medium/fast/parabolic/erratic/fluctuating) |
-| `response.color` | object | Pokédex color category |
-| `response.shape` | object | Pokémon body shape |
-| `response.habitat` | object/null | Habitat type |
-| `response.generation` | object | Debut generation |
+| Field path                      | Type        | Description                                                       |
+| ------------------------------- | ----------- | ----------------------------------------------------------------- |
+| `response.gender_rate`          | int         | Female ratio (0–8, -1=genderless). Value ÷ 8 = female proportion. |
+| `response.capture_rate`         | int         | Base capture rate (0–255, higher = easier)                        |
+| `response.base_happiness`       | int         | Base friendship (0–255)                                           |
+| `response.hatch_counter`        | int         | Egg cycles to hatch (× 256 steps)                                 |
+| `response.is_baby`              | bool        | Is a baby Pokémon                                                 |
+| `response.is_legendary`         | bool        | Is a legendary Pokémon                                            |
+| `response.is_mythical`          | bool        | Is a mythical Pokémon                                             |
+| `response.evolves_from_species` | object/null | Pre-evolution species reference                                   |
+| `response.evolution_chain.url`  | string      | Full evolution chain endpoint                                     |
+| `response.genera`               | array       | "Genus" (e.g. "Mouse Pokémon") per language                       |
+| `response.flavor_text_entries`  | array       | Pokédex entries per game version and language                     |
+| `response.egg_groups`           | array       | Egg groups (breeding compatibility)                               |
+| `response.varieties`            | array       | All forms/varieties with `is_default` flag                        |
+| `response.growth_rate`          | object      | Leveling rate (slow/medium/fast/parabolic/erratic/fluctuating)    |
+| `response.color`                | object      | Pokédex color category                                            |
+| `response.shape`                | object      | Pokémon body shape                                                |
+| `response.habitat`              | object/null | Habitat type                                                      |
+| `response.generation`           | object      | Debut generation                                                  |
 
 ### 2.2 Key data extraction patterns
 
 **English flavor text (latest version):**
+
 ```js
-const enEntries = response.flavor_text_entries.filter(
-  e => e.language.name === 'en'
-);
+const enEntries = response.flavor_text_entries.filter((e) => e.language.name === "en");
 // Last entry is often the most recent game
 const latestFlavor = enEntries[enEntries.length - 1].flavor_text;
 // Replace hard-wrapped newlines (\f) and soft-wrapped newlines (\n)
-const cleanText = latestFlavor.replace(/\\f|\\n/g, ' ');
+const cleanText = latestFlavor.replace(/\\f|\\n/g, " ");
 ```
 
 **English genus:**
+
 ```js
-const genus = response.genera.find(g => g.language.name === 'en')?.genus;
+const genus = response.genera.find((g) => g.language.name === "en")?.genus;
 // e.g. "Mouse Pokémon"
 ```
 
 **Evolution chain URL (fetch separately):**
+
 ```js
 const evoUrl = response.evolution_chain.url;
 // Fetch this to get the full chain (prevos, evolutions, conditions)
 ```
 
 **Varieties → forms mapping:**
+
 ```js
-const defaultForm = response.varieties.find(v => v.is_default);
-const alternateForms = response.varieties.filter(v => !v.is_default);
+const defaultForm = response.varieties.find((v) => v.is_default);
+const alternateForms = response.varieties.filter((v) => !v.is_default);
 ```
 
 ### 2.3 How to use species alongside the pokemon endpoint
@@ -413,6 +426,7 @@ The two endpoints are complementary. The general pattern:
 2. **`GET /api/v2/pokemon-species/{id}`** → get flavor text, evolution chain, egg groups, gender ratio, varieties
 
 The species endpoint also tells you:
+
 - Whether the species has gender differences (`has_gender_differences`)
 - What the pre-evolution is (`evolves_from_species`)
 - The full evolution chain endpoint (`evolution_chain.url`)
@@ -431,8 +445,8 @@ The species endpoint also tells you:
   "previous": null,
   "results": [
     { "name": "bulbasaur", "url": "https://pokeapi.co/api/v2/pokemon/1/" },
-    { "name": "ivysaur",   "url": "https://pokeapi.co/api/v2/pokemon/2/" },
-    { "name": "venusaur",  "url": "https://pokeapi.co/api/v2/pokemon/3/" }
+    { "name": "ivysaur", "url": "https://pokeapi.co/api/v2/pokemon/2/" },
+    { "name": "venusaur", "url": "https://pokeapi.co/api/v2/pokemon/3/" }
   ]
 }
 ```
@@ -446,36 +460,38 @@ The species endpoint also tells you:
   "previous": null,
   "results": [
     { "name": "bulbasaur", "url": "https://pokeapi.co/api/v2/pokemon-species/1/" },
-    { "name": "ivysaur",   "url": "https://pokeapi.co/api/v2/pokemon-species/2/" },
-    { "name": "venusaur",  "url": "https://pokeapi.co/api/v2/pokemon-species/3/" }
+    { "name": "ivysaur", "url": "https://pokeapi.co/api/v2/pokemon-species/2/" },
+    { "name": "venusaur", "url": "https://pokeapi.co/api/v2/pokemon-species/3/" }
   ]
 }
 ```
 
 ### 3.3 Field reference
 
-| Field | Type | Description |
-|---|---|---|
-| `response.count` | int | Total number of items (including forms) |
-| `response.next` | string/null | URL for the next page (null when at end) |
-| `response.previous` | string/null | URL for the previous page (null when at start) |
-| `response.results[]` | array | Objects with `name` and `url` |
-| `response.results[].name` | string | API name (use this to fetch full data) |
-| `response.results[].url` | string | Full endpoint URL |
+| Field                     | Type        | Description                                    |
+| ------------------------- | ----------- | ---------------------------------------------- |
+| `response.count`          | int         | Total number of items (including forms)        |
+| `response.next`           | string/null | URL for the next page (null when at end)       |
+| `response.previous`       | string/null | URL for the previous page (null when at start) |
+| `response.results[]`      | array       | Objects with `name` and `url`                  |
+| `response.results[].name` | string      | API name (use this to fetch full data)         |
+| `response.results[].url`  | string      | Full endpoint URL                              |
 
 **Important:** The **count differs** between the two endpoints:
+
 - `/api/v2/pokemon` returns ~1351 entries — this **includes regional forms** (e.g. `raichu-alola`, `meowth-galar`), alternate forms (cosplay, G-Max), and Megas as separate numbered entries.
 - `/api/v2/pokemon-species` returns ~1025 entries — this is the **unique species count** (one entry per species, ignoring forms).
 
 **Pagination pattern:**
+
 ```js
 async function fetchAllPokemon() {
-  let url = 'https://pokeapi.co/api/v2/pokemon?limit=100&offset=0';
+  let url = "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0";
   const allNames = [];
   while (url) {
     const res = await fetch(url);
     const data = await res.json();
-    allNames.push(...data.results.map(r => r.name));
+    allNames.push(...data.results.map((r) => r.name));
     url = data.next;
   }
   return allNames; // all 1351+ names
@@ -490,14 +506,15 @@ async function fetchAllPokemon() {
 
 PokéAPI treats each regional form as a **separate Pokémon entry** in the `/api/v2/pokemon` endpoint. The name follows the pattern `{species}-{region}`:
 
-| Form convention | API path | Example ID |
-|---|---|---|
-| Alolan (Sun/Moon) | `/api/v2/pokemon/raichu-alola` | 10100 |
-| Galarian (Sword/Shield) | `/api/v2/pokemon/meowth-galar` | 10161 |
-| Hisuian (Legends: Arceus) | `/api/v2/pokemon/growlithe-hisui` | — |
-| Paldean (Scarlet/Violet) | `/api/v2/pokemon/tauros-paldea-combat` | — |
+| Form convention           | API path                               | Example ID |
+| ------------------------- | -------------------------------------- | ---------- |
+| Alolan (Sun/Moon)         | `/api/v2/pokemon/raichu-alola`         | 10100      |
+| Galarian (Sword/Shield)   | `/api/v2/pokemon/meowth-galar`         | 10161      |
+| Hisuian (Legends: Arceus) | `/api/v2/pokemon/growlithe-hisui`      | —          |
+| Paldean (Scarlet/Violet)  | `/api/v2/pokemon/tauros-paldea-combat` | —          |
 
 **Key characteristics of regional form entries:**
+
 - `is_default: false` — distinguishes from the base form
 - **Different types, abilities, stats** from the base form
 - Different sprites (distinct artwork)
@@ -513,13 +530,14 @@ The `species.varieties` array links a species to all its forms:
 // From /api/v2/pokemon-species/26/ (Raichu species)
 {
   "varieties": [
-    { "is_default": true,  "pokemon": { "name": "raichu",      "url": "/api/v2/pokemon/26/" } },
+    { "is_default": true, "pokemon": { "name": "raichu", "url": "/api/v2/pokemon/26/" } },
     { "is_default": false, "pokemon": { "name": "raichu-alola", "url": "/api/v2/pokemon/10100/" } }
   ]
 }
 ```
 
 So to discover all regional forms for a species:
+
 1. Fetch `species.varieties`
 2. Filter varieties (the ones where `is_default === false` are regional/alternate forms)
 3. Fetch each non-default form's data from its `pokemon.url`
@@ -543,6 +561,7 @@ Regional forms get **completely separate sprite images**. Example — Alolan Rai
 ```
 
 Compare with base Raichu (id=26):
+
 - Base: `.../sprites/pokemon/26.png`
 - Alola: `.../sprites/pokemon/10100.png`
 
@@ -552,13 +571,13 @@ The sprite ID matches the Pokémon ID, so you never need to manually construct U
 
 ### 4.4 Known regional form species
 
-| Region | Known species |
-|---|---|
-| **Alola** | Rattata, Raticate, Raichu, Sandshrew, Sandslash, Vulpix, Ninetales, Diglett, Dugtrio, Meowth, Persian, Geodude, Graveler, Golem, Grimer, Muk, Exeggutor, Marowak |
-| **Galar** | Meowth, Ponyta, Rapidash, Slowpoke, Slowbro, Slowking, Farfetch'd, Mr. Mime, Corsola, Zigzagoon, Linoone, Darumaka, Darmanitan, Yamask, Stunfisk |
-| **Hisui** | Growlithe, Arcanine, Voltorb, Electrode, Typhlosion, Qwilfish, Sneasel, Samurott, Lilligant, Zorua, Zoroark, Braviary, Sliggoo, Goodra, Avalugg, Decidueye, Ursaluna, Enamorus |
-| **Paldea** | Tauros (Combat/Blaze/Aqua), Wooper, Farigiraf |
-| **Kitakami** | (Regional variants of existing species in The Teal Mask DLC) |
+| Region       | Known species                                                                                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Alola**    | Rattata, Raticate, Raichu, Sandshrew, Sandslash, Vulpix, Ninetales, Diglett, Dugtrio, Meowth, Persian, Geodude, Graveler, Golem, Grimer, Muk, Exeggutor, Marowak               |
+| **Galar**    | Meowth, Ponyta, Rapidash, Slowpoke, Slowbro, Slowking, Farfetch'd, Mr. Mime, Corsola, Zigzagoon, Linoone, Darumaka, Darmanitan, Yamask, Stunfisk                               |
+| **Hisui**    | Growlithe, Arcanine, Voltorb, Electrode, Typhlosion, Qwilfish, Sneasel, Samurott, Lilligant, Zorua, Zoroark, Braviary, Sliggoo, Goodra, Avalugg, Decidueye, Ursaluna, Enamorus |
+| **Paldea**   | Tauros (Combat/Blaze/Aqua), Wooper, Farigiraf                                                                                                                                  |
+| **Kitakami** | (Regional variants of existing species in The Teal Mask DLC)                                                                                                                   |
 
 ---
 
@@ -568,48 +587,49 @@ The sprite ID matches the Pokémon ID, so you never need to manually construct U
 
 The APIs use different naming conventions:
 
-| Aspect | PokéAPI | Pokémon Showdown |
-|---|---|---|
-| Separator | hyphen (`-`) | no separator or uppercase |
-| Case | lowercase | CamelCase or lowercase |
-| Regional forms | `raichu-alola` | `Raichu-Alola` (internal: `Raichualola`) |
-| Special characters | `mr-mime` | `Mr. Mime` or `Mr. Mime` |
-| Gender forms | `meowstic-f` | `Meowstic-F` |
-| Mega forms | `charizard-mega-x` | `Charizard-Mega-X` |
-| Base Pokémon | lowercase, hyphenated | lowercase, no hyphen |
+| Aspect             | PokéAPI               | Pokémon Showdown                         |
+| ------------------ | --------------------- | ---------------------------------------- |
+| Separator          | hyphen (`-`)          | no separator or uppercase                |
+| Case               | lowercase             | CamelCase or lowercase                   |
+| Regional forms     | `raichu-alola`        | `Raichu-Alola` (internal: `Raichualola`) |
+| Special characters | `mr-mime`             | `Mr. Mime` or `Mr. Mime`                 |
+| Gender forms       | `meowstic-f`          | `Meowstic-F`                             |
+| Mega forms         | `charizard-mega-x`    | `Charizard-Mega-X`                       |
+| Base Pokémon       | lowercase, hyphenated | lowercase, no hyphen                     |
 
 ### 5.2 Name mapping table for common species
 
-| Dex # | Species | PokéAPI name | Showdown name | Showdown alias |
-|---|---|---|---|---|
-| 25 | Pikachu | `pikachu` | `Pikachu` | — |
-| 26 | Raichu | `raichu` | `Raichu` | — |
-| 26-A | Raichu (Alola) | `raichu-alola` | `Raichu-Alola` | `aloraichu` |
-| 37 | Vulpix | `vulpix` | `Vulpix` | — |
-| 37-A | Vulpix (Alola) | `vulpix-alola` | `Vulpix-Alola` | `alovulpix` |
-| 52 | Meowth | `meowth` | `Meowth` | — |
-| 52-G | Meowth (Galar) | `meowth-galar` | `Meowth-Galar` | — |
-| 133 | Eevee | `eevee` | `Eevee` | — |
-| 150 | Mewtwo | `mewtwo` | `Mewtwo` | — |
-| 150-MX | Mewtwo (Mega X) | `mewtwo-mega-x` | `Mewtwo-Mega-X` | `mmx`, `megamewtwox` |
-| 172 | Pichu | `pichu` | `Pichu` | — |
-| 448 | Lucario | `lucario` | `Lucario` | — |
-| 448-M | Lucario (Mega) | `lucario-mega` | `Lucario-Mega` | `mluc`, `megaluc` |
-| 658 | Greninja | `greninja` | `Greninja` | — |
-| 658-A | Greninja (Ash) | `greninja-ash` | `Greninja-Ash` | `ashgreninja` |
-| 745 | Lycanroc | `lycanroc` | `Lycanroc` | `lycanrocmidday` |
-| 745-N | Lycanroc (Night) | `lycanroc-midnight` | `Lycanroc-Midnight` | `lycanm` |
-| 745-D | Lycanroc (Dusk) | `lycanroc-dusk` | `Lycanroc-Dusk` | `duskroc` |
-| 778 | Mimikyu | `mimikyu` | `Mimikyu` | — |
-| 778-D | Mimikyu (Disguised) | `mimikyu-disguised` | `Mimikyu-Disguised` | — |
-| 849 | Toxtricity | `toxtricity` | `Toxtricity` | — |
-| 849-L | Toxtricity (Low Key) | `toxtricity-low-key` | `Toxtricity-Low-Key` | `toxtricitylk` |
+| Dex #  | Species              | PokéAPI name         | Showdown name        | Showdown alias       |
+| ------ | -------------------- | -------------------- | -------------------- | -------------------- |
+| 25     | Pikachu              | `pikachu`            | `Pikachu`            | —                    |
+| 26     | Raichu               | `raichu`             | `Raichu`             | —                    |
+| 26-A   | Raichu (Alola)       | `raichu-alola`       | `Raichu-Alola`       | `aloraichu`          |
+| 37     | Vulpix               | `vulpix`             | `Vulpix`             | —                    |
+| 37-A   | Vulpix (Alola)       | `vulpix-alola`       | `Vulpix-Alola`       | `alovulpix`          |
+| 52     | Meowth               | `meowth`             | `Meowth`             | —                    |
+| 52-G   | Meowth (Galar)       | `meowth-galar`       | `Meowth-Galar`       | —                    |
+| 133    | Eevee                | `eevee`              | `Eevee`              | —                    |
+| 150    | Mewtwo               | `mewtwo`             | `Mewtwo`             | —                    |
+| 150-MX | Mewtwo (Mega X)      | `mewtwo-mega-x`      | `Mewtwo-Mega-X`      | `mmx`, `megamewtwox` |
+| 172    | Pichu                | `pichu`              | `Pichu`              | —                    |
+| 448    | Lucario              | `lucario`            | `Lucario`            | —                    |
+| 448-M  | Lucario (Mega)       | `lucario-mega`       | `Lucario-Mega`       | `mluc`, `megaluc`    |
+| 658    | Greninja             | `greninja`           | `Greninja`           | —                    |
+| 658-A  | Greninja (Ash)       | `greninja-ash`       | `Greninja-Ash`       | `ashgreninja`        |
+| 745    | Lycanroc             | `lycanroc`           | `Lycanroc`           | `lycanrocmidday`     |
+| 745-N  | Lycanroc (Night)     | `lycanroc-midnight`  | `Lycanroc-Midnight`  | `lycanm`             |
+| 745-D  | Lycanroc (Dusk)      | `lycanroc-dusk`      | `Lycanroc-Dusk`      | `duskroc`            |
+| 778    | Mimikyu              | `mimikyu`            | `Mimikyu`            | —                    |
+| 778-D  | Mimikyu (Disguised)  | `mimikyu-disguised`  | `Mimikyu-Disguised`  | —                    |
+| 849    | Toxtricity           | `toxtricity`         | `Toxtricity`         | —                    |
+| 849-L  | Toxtricity (Low Key) | `toxtricity-low-key` | `Toxtricity-Low-Key` | `toxtricitylk`       |
 
 ### 5.3 Mapping between Showdown and PokéAPI names
 
 **Showdown → PokéAPI (with `-` separator adjustment):**
 
 Showdown internal names typically use CamelCase with hyphenated suffixes. The main difference is:
+
 1. Showdown uses `raichualola` (conjoined) as internal form **aliases**
 2. But Showdown's canonical species names use `Raichu-Alola` (hyphenated, CamelCase)
 
@@ -631,8 +651,8 @@ const toPokeApi = (showdownName) => showdownName.toLowerCase();
 
 // PokéAPI → Showdown canonical
 const toShowdown = (pokeApiName) => {
-  const words = pokeApiName.split('-').map(w => w[0].toUpperCase() + w.slice(1));
-  return words.join('-');
+  const words = pokeApiName.split("-").map((w) => w[0].toUpperCase() + w.slice(1));
+  return words.join("-");
 };
 
 // For Showdown aliases, you must resolve via aliases.ts first
@@ -641,9 +661,10 @@ const toShowdown = (pokeApiName) => {
 ### 5.4 Which forms exist in PokéAPI
 
 PokéAPI includes entries for:
+
 - **All standard Pokémon** (#1–1025)
 - **Mega Evolutions** (as separate entries)
-- **Regional forms** (Alola, Galar, Hisui, Paldea) 
+- **Regional forms** (Alola, Galar, Hisui, Paldea)
 - **Alternate forms** (Deoxys, Rotom, Cherrim, Keldeo, etc.)
 - **Cosplay forms** (Pikachu hats, etc.)
 - **Gigantamax forms** (as separate entries)
@@ -651,6 +672,7 @@ PokéAPI includes entries for:
 - **Fused forms** (Necrozma-Dusk-Mane etc.)
 
 Forms that do NOT exist as PokéAPI entries:
+
 - **Spinda spot patterns** (only one entry for Spinda; spots are handled client-side)
 - **Unown letter variants** (only one entry for Unown; no individual letter endpoints)
 - **Vivillon patterns / Furfrou trims** (handled as form values, not separate endpoints)
@@ -675,6 +697,7 @@ As of 2018, PokéAPI **removed all rate limits**. The current policy:
 > – PokéAPI team (2018)
 
 Fair use expectations:
+
 - Cache responses aggressively — do not fetch the same Pokémon repeatedly
 - Reasonable request volume is fine (the API sits behind Cloudflare)
 - If you are scraping all 1351 entries, batch requests and add small delays (100ms–500ms between batches)
@@ -685,6 +708,7 @@ Fair use expectations:
 Since the data is immutable (Pokémon stats, sprites, and types never change), cache aggressively:
 
 **Recommended cache layers:**
+
 1. **Local cache** (e.g. IndexedDB / localStorage in browser, or a JSON file in Node):
    - Cache key: `pokeapi-v2-{endpoint-path}` (e.g. `pokeapi-v2-pokemon-25`)
    - TTL: Never expires (data is permanent)
@@ -699,16 +723,17 @@ Since the data is immutable (Pokémon stats, sprites, and types never change), c
    - Node: Use `Cache-Control` headers or a dedicated sprite download cache
 
 **Loading strategy for large lists:**
+
 ```js
 // Batch fetches and cache
 const BATCH_DELAY = 100; // ms between requests
 async function fetchPokemonBatch(ids) {
   const results = [];
   for (const id of ids) {
-    const data = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(r => r.json());
+    const data = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((r) => r.json());
     cache.set(id, data);
     results.push(data);
-    await new Promise(r => setTimeout(r, BATCH_DELAY));
+    await new Promise((r) => setTimeout(r, BATCH_DELAY));
   }
   return results;
 }
@@ -718,32 +743,32 @@ async function fetchPokemonBatch(ids) {
 
 **Official / community libraries:**
 
-| Library | Platform | Features |
-|---|---|---|
+| Library                | Platform       | Features                                                   |
+| ---------------------- | -------------- | ---------------------------------------------------------- |
 | **pokeapi-js-wrapper** | Browser / Node | Auto-caching, concurrent requests, TTL config, sprite URLs |
-| **PokeAPI Python** | Python | Wrapper with caching (not actively maintained) |
-| **PokeAPI Kotlin** | Android/Kotlin | JVM wrapper |
+| **PokeAPI Python**     | Python         | Wrapper with caching (not actively maintained)             |
+| **PokeAPI Kotlin**     | Android/Kotlin | JVM wrapper                                                |
 
 **Recommended: `pokeapi-js-wrapper`**
 
 npm: `pokeapi-js-wrapper`
 
 ```js
-import { Pokedex } from 'pokeapi-js-wrapper';
+import { Pokedex } from "pokeapi-js-wrapper";
 
 const P = new Pokedex({
-  protocol: 'https',
+  protocol: "https",
   timeout: 30000,
   cache: true,
   // Optional: custom cache TTL
 });
 
 // Returns cached result on second call
-const pikachu = await P.getPokemonByName('pikachu');
-const species = await P.getPokemonSpeciesByName('pikachu');
+const pikachu = await P.getPokemonByName("pikachu");
+const species = await P.getPokemonSpeciesByName("pikachu");
 
 // Sprite URL extraction
-const sprite = pikachu.sprites.other['official-artwork'].front_default;
+const sprite = pikachu.sprites.other["official-artwork"].front_default;
 ```
 
 The wrapper handles caching, rate-limiting safeguards, and pagination helpers.
@@ -764,17 +789,17 @@ Never construct sprite URLs manually — always use the URLs returned in the API
 
 ## Appendix: Complete Endpoint Summary
 
-| Endpoint | Purpose | Key fields |
-|---|---|---|
-| `GET /api/v2/pokemon/{id}` | Core Pokémon data | sprites, stats, types, abilities, moves |
-| `GET /api/v2/pokemon-species/{id}` | Species metadata | flavor text, evolution chain, egg groups, gender |
-| `GET /api/v2/pokemon-form/{id}` | Form-specific data | form name, form sprites, type overrides |
-| `GET /api/v2/evolution-chain/{id}` | Full evolution tree | chain of species with evolution conditions |
-| `GET /api/v2/pokemon?limit=L&offset=O` | List all Pokémon | paginated list of name+url |
-| `GET /api/v2/pokemon-species?limit=L&offset=O` | List all species | species-only paginated list |
-| `GET /api/v2/type/{id}` | Type data | damage relations, move list |
-| `GET /api/v2/ability/{id}` | Ability data | effect text, Pokémon with this ability |
-| `GET /api/v2/move/{id}` | Move data | power, accuracy, PP, type, category, effect |
+| Endpoint                                       | Purpose             | Key fields                                       |
+| ---------------------------------------------- | ------------------- | ------------------------------------------------ |
+| `GET /api/v2/pokemon/{id}`                     | Core Pokémon data   | sprites, stats, types, abilities, moves          |
+| `GET /api/v2/pokemon-species/{id}`             | Species metadata    | flavor text, evolution chain, egg groups, gender |
+| `GET /api/v2/pokemon-form/{id}`                | Form-specific data  | form name, form sprites, type overrides          |
+| `GET /api/v2/evolution-chain/{id}`             | Full evolution tree | chain of species with evolution conditions       |
+| `GET /api/v2/pokemon?limit=L&offset=O`         | List all Pokémon    | paginated list of name+url                       |
+| `GET /api/v2/pokemon-species?limit=L&offset=O` | List all species    | species-only paginated list                      |
+| `GET /api/v2/type/{id}`                        | Type data           | damage relations, move list                      |
+| `GET /api/v2/ability/{id}`                     | Ability data        | effect text, Pokémon with this ability           |
+| `GET /api/v2/move/{id}`                        | Move data           | power, accuracy, PP, type, category, effect      |
 
 ### Recommended fetch order for a full Pokémon detail view:
 

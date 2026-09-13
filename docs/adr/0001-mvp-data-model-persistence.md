@@ -9,6 +9,7 @@
 Ticket #6 (Box Data Model & UI) requires decisions on how Pokémon data is stored, persisted, and resolved in the Pokémon Box Manager MVP. The app is a client-side SPA hosted on Firebase Hosting with an existing Firestore config but no auth or persistence logic.
 
 Key questions:
+
 - How does the user authenticate and own their data?
 - Where does saved box data live between sessions?
 - How much Pokémon data is stored locally vs. fetched live from PokéAPI?
@@ -69,16 +70,19 @@ Deferred to a follow-up ticket. The 5 Champions-exclusive forms (Mega Golisopod,
 ## Consequences
 
 **Positive:**
+
 - Zero backend cost and zero auth friction for users
 - Page loads are instant once species have been cached
 - Simple architecture — two localStorage keys, no async persistence pipeline
 - Easy to add auth + Firestore later (the existing `firebase-config.js` is already wired)
 
 **Negative:**
+
 - Data is device-local — no cross-device sync without a future Firestore migration
 - Cached PokéAPI data never auto-evicts; manual DevTools clear is the escape hatch
 - 5-10MB localStorage limit could become a constraint if the roster grows to 1000+ species with cached data (mitigated by storing URLs not images)
 
 **Risks:**
+
 - A user clearing browser data loses their box. This is acceptable for MVP; a future export/backup feature can mitigate it.
 - Migrating from localStorage to Firestore later requires a one-time data migration script — manageable as long as the schema of saved objects is stable.

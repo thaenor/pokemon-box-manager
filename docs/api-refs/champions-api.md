@@ -2,7 +2,7 @@
 
 > **Base URL:** `https://championsbattledata.com`  
 > **Asset root:** `https://championsbattledata.com/pokemon_champions_assets/`  
-> **API guide:** `https://championsbattledata.com/api_guide`  
+> **API guide:** `https://championsbattledata.com/api_guide`
 >
 > — Use this reference when implementing `js/api/champions.js` or any client that fetches battle usage data.
 
@@ -10,16 +10,16 @@
 
 ## Quick-start: which endpoint for what
 
-| What you need | Use |
-|---|---|
-| List all Pokémon in the game, their IDs, stats, types, sprites | `GET /api` (index) |
-| Battle usage stats for one Pokémon (moves, items, teammates, etc.) | `GET /api/battle/{format}/{showdownId}` |
-| Summary (top move/item/teammate, base stats, sprite path) for one Pokémon | `GET /api/pokemon/{showdownId}?format={format}` |
-| Metadata (all forms, per-form stats, types, abilities, sprite paths) | `GET /api/metadata/{baseName}` |
-| Latest daily snapshots of battle data | `GET /api/battle/{format}/{showdownId}?days=N` |
-| Raw CSV for spreadsheets/data analysis | `GET /pokemon_champions_assets/battle_data/{format}/{ShowdownName}.csv` |
-| Sprite image | `GET /pokemon_champions_assets/pokemon/{saved_name}.png` |
-| Type icon | `GET /pokemon_champions_assets/types/{TypeName}.png` |
+| What you need                                                             | Use                                                                     |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| List all Pokémon in the game, their IDs, stats, types, sprites            | `GET /api` (index)                                                      |
+| Battle usage stats for one Pokémon (moves, items, teammates, etc.)        | `GET /api/battle/{format}/{showdownId}`                                 |
+| Summary (top move/item/teammate, base stats, sprite path) for one Pokémon | `GET /api/pokemon/{showdownId}?format={format}`                         |
+| Metadata (all forms, per-form stats, types, abilities, sprite paths)      | `GET /api/metadata/{baseName}`                                          |
+| Latest daily snapshots of battle data                                     | `GET /api/battle/{format}/{showdownId}?days=N`                          |
+| Raw CSV for spreadsheets/data analysis                                    | `GET /pokemon_champions_assets/battle_data/{format}/{ShowdownName}.csv` |
+| Sprite image                                                              | `GET /pokemon_champions_assets/pokemon/{saved_name}.png`                |
+| Type icon                                                                 | `GET /pokemon_champions_assets/types/{TypeName}.png`                    |
 
 ---
 
@@ -40,15 +40,40 @@ Load this first — it's the entry point that lists every Pokémon with their ID
   "defaultSeason": "Current",
   "battleDataFolders": ["M6", "M5", "M4"],
   "dailyDataFolders": [
-    "M6/12_09_2026", "M6/11_09_2026",
-    "M5/09_09_2026", "M5/08_09_2026", "M5/07_09_2026", "M5/06_09_2026",
-    "M5/05_09_2026", "M5/04_09_2026", "M5/03_09_2026", "M5/02_09_2026",
-    "M5/01_09_2026", "M5/31_08_2026", "M5/30_08_2026", "M5/29_08_2026",
-    "M5/24_08_2026", "M5/22_08_2026", "M5/21_08_2026", "M5/18_08_2026",
-    "M4/18_08_2026", "M4/04_08_2026", "M4/30_07_2026", "M4/29_07_2026",
-    "M4/28_07_2026", "M4/27_07_2026", "M4/26_07_2026", "M4/25_07_2026",
-    "M4/24_07_2026", "M4/23_07_2026", "M4/22_07_2026", "M4/21_07_2026",
-    "M4/20_07_2026", "M4/19_07_2026", "M4/18_07_2026", "M4/17_07_2026",
+    "M6/12_09_2026",
+    "M6/11_09_2026",
+    "M5/09_09_2026",
+    "M5/08_09_2026",
+    "M5/07_09_2026",
+    "M5/06_09_2026",
+    "M5/05_09_2026",
+    "M5/04_09_2026",
+    "M5/03_09_2026",
+    "M5/02_09_2026",
+    "M5/01_09_2026",
+    "M5/31_08_2026",
+    "M5/30_08_2026",
+    "M5/29_08_2026",
+    "M5/24_08_2026",
+    "M5/22_08_2026",
+    "M5/21_08_2026",
+    "M5/18_08_2026",
+    "M4/18_08_2026",
+    "M4/04_08_2026",
+    "M4/30_07_2026",
+    "M4/29_07_2026",
+    "M4/28_07_2026",
+    "M4/27_07_2026",
+    "M4/26_07_2026",
+    "M4/25_07_2026",
+    "M4/24_07_2026",
+    "M4/23_07_2026",
+    "M4/22_07_2026",
+    "M4/21_07_2026",
+    "M4/20_07_2026",
+    "M4/19_07_2026",
+    "M4/18_07_2026",
+    "M4/17_07_2026",
     "M4/16_07_2026"
   ],
   "pokemon": [
@@ -88,25 +113,52 @@ Load this first — it's the entry point that lists every Pokémon with their ID
             "saved_name": "Garchomp",
             "types": ["Dragon", "Ground"],
             "abilities": "Rough Skin|Sand Veil",
-            "hp": 220, "attack": 170, "defense": 125,
-            "sp_attack": 100, "sp_defense": 105, "speed": 150,
+            "hp": 220,
+            "attack": 170,
+            "defense": 125,
+            "sp_attack": 100,
+            "sp_defense": 105,
+            "speed": 150,
             "base_stat_total": 660
           }
         ],
-        "baseStats": {"hp": 220, "attack": 170, "defense": 125, "sp_attack": 100, "sp_defense": 105, "speed": 150},
+        "baseStats": {
+          "hp": 220,
+          "attack": 170,
+          "defense": 125,
+          "sp_attack": 100,
+          "sp_defense": 105,
+          "speed": 150
+        },
         "baseStatTotal": 660,
         "battleSummary": {
           "Current": {
             "Doubles": {
               "top": {
-                "move": {"name": "Protect", "percentage": "77.8%", "percentage_value": 77.8},
-                "held_item": {"name": "Garchompite Z", "percentage": "56.5%", "percentage_value": 56.5},
-                "teammate": {"name": "Sneasler"},
-                "stat_alignment": {"name": "Jolly", "percentage": "56.6%", "percentage_value": 56.6},
-                "stat_points": {"name": "", "percentage": "36.3%", "percentage_value": 36.3,
-                  "hp_points": 2, "attack_points": 32, "defense_points": 0, "sp_atk_points": 0,
-                  "sp_def_points": 0, "speed_points": 32},
-                "ability": {"name": "Rough Skin", "percentage": "97.8%", "percentage_value": 97.8}
+                "move": { "name": "Protect", "percentage": "77.8%", "percentage_value": 77.8 },
+                "held_item": {
+                  "name": "Garchompite Z",
+                  "percentage": "56.5%",
+                  "percentage_value": 56.5
+                },
+                "teammate": { "name": "Sneasler" },
+                "stat_alignment": {
+                  "name": "Jolly",
+                  "percentage": "56.6%",
+                  "percentage_value": 56.6
+                },
+                "stat_points": {
+                  "name": "",
+                  "percentage": "36.3%",
+                  "percentage_value": 36.3,
+                  "hp_points": 2,
+                  "attack_points": 32,
+                  "defense_points": 0,
+                  "sp_atk_points": 0,
+                  "sp_def_points": 0,
+                  "speed_points": 32
+                },
+                "ability": { "name": "Rough Skin", "percentage": "97.8%", "percentage_value": 97.8 }
               }
             }
           }
@@ -116,8 +168,20 @@ Load this first — it's the entry point that lists every Pokémon with their ID
     // ... more Pokémon entries ...
   ],
   "pokemonPages": [
-    {"name": "Garchomp", "slug": "garchomp", "battleName": "Garchomp", "baseName": "Garchomp", "isForm": false},
-    {"name": "Hisuian Arcanine", "slug": "hisuian-arcanine", "battleName": "Arcanine", "baseName": "Arcanine", "isForm": true},
+    {
+      "name": "Garchomp",
+      "slug": "garchomp",
+      "battleName": "Garchomp",
+      "baseName": "Garchomp",
+      "isForm": false
+    },
+    {
+      "name": "Hisuian Arcanine",
+      "slug": "hisuian-arcanine",
+      "battleName": "Arcanine",
+      "baseName": "Arcanine",
+      "isForm": true
+    }
     // ... all species ...
   ]
 }
@@ -125,20 +189,20 @@ Load this first — it's the entry point that lists every Pokémon with their ID
 
 ### Key fields
 
-| Path | Type | Meaning |
-|---|---|---|
-| `.seasons[]` | `string[]` | Available season codes: `Current`, `M4`, `M5`, `M6` |
-| `.dailyDataFolders[]` | `string[]` | All available daily snapshot folders |
-| `.pokemon[].showdownId` | `string` | **Showdown internal ID** — use this in API route paths |
-| `.pokemon[].showdownName` | `string` | Standard Showdown species name (e.g. `Raichu-Alola`) |
-| `.pokemon[].battleName` | `string` | Canonical name used in CSV filenames |
-| `.pokemon[].baseName` | `string` | Base Pokémon name (groups forms together) |
-| `.pokemon[].summary.sprite` | `string` | Path to sprite, relative to asset root |
-| `.pokemon[].summary.types` | `string[]` | Primary typing |
-| `.pokemon[].summary.baseStats` | `object` | `{hp, attack, defense, sp_attack, sp_defense, speed}` |
-| `.pokemon[].summary.battleSummary.Current.{format}.top` | `object` | Top-ranked item in each category for Current season |
-| `.pokemon[].summary.battleSummary.Current.{format}.values` | `object` | All values in each category (top 10) |
-| `.pokemon[].battleDataCsvs[]` | `object[]` | All available CSV paths per season+format+date |
+| Path                                                       | Type       | Meaning                                                |
+| ---------------------------------------------------------- | ---------- | ------------------------------------------------------ |
+| `.seasons[]`                                               | `string[]` | Available season codes: `Current`, `M4`, `M5`, `M6`    |
+| `.dailyDataFolders[]`                                      | `string[]` | All available daily snapshot folders                   |
+| `.pokemon[].showdownId`                                    | `string`   | **Showdown internal ID** — use this in API route paths |
+| `.pokemon[].showdownName`                                  | `string`   | Standard Showdown species name (e.g. `Raichu-Alola`)   |
+| `.pokemon[].battleName`                                    | `string`   | Canonical name used in CSV filenames                   |
+| `.pokemon[].baseName`                                      | `string`   | Base Pokémon name (groups forms together)              |
+| `.pokemon[].summary.sprite`                                | `string`   | Path to sprite, relative to asset root                 |
+| `.pokemon[].summary.types`                                 | `string[]` | Primary typing                                         |
+| `.pokemon[].summary.baseStats`                             | `object`   | `{hp, attack, defense, sp_attack, sp_defense, speed}`  |
+| `.pokemon[].summary.battleSummary.Current.{format}.top`    | `object`   | Top-ranked item in each category for Current season    |
+| `.pokemon[].summary.battleSummary.Current.{format}.values` | `object`   | All values in each category (top 10)                   |
+| `.pokemon[].battleDataCsvs[]`                              | `object[]` | All available CSV paths per season+format+date         |
 
 ### Form handling in the index
 
@@ -188,7 +252,7 @@ const topTeammate = entry.summary?.battleSummary?.Current?.Doubles?.top?.teammat
 const spriteUrl = `https://championsbattledata.com/${entry.summary.sprite}`;
 
 // List of all available daily CSVs
-const dailyCsvs = entry.battleDataCsvs.filter(c => c.daily);
+const dailyCsvs = entry.battleDataCsvs.filter((c) => c.daily);
 
 // All forms
 const forms = entry.summary?.forms ?? [];
@@ -205,11 +269,11 @@ Returns a single indexed Pokémon with format-filtered summary. This is a lighte
 
 ### Parameters
 
-| Param | Required | Values | Default |
-|---|---|---|---|
-| `format` | If battle data needed | `Doubles` or `Singles` | (no format-filtered data) |
-| `season` | No | `Current`, `M4`, `M5`, `M6` | `Current` |
-| `days` | No | 1–31 | (no daily snapshots) |
+| Param    | Required              | Values                      | Default                   |
+| -------- | --------------------- | --------------------------- | ------------------------- |
+| `format` | If battle data needed | `Doubles` or `Singles`      | (no format-filtered data) |
+| `season` | No                    | `Current`, `M4`, `M5`, `M6` | `Current`                 |
+| `days`   | No                    | 1–31                        | (no daily snapshots)      |
 
 ### JSON shape (with `format=Doubles`)
 
@@ -260,8 +324,9 @@ If `season=M4&days=7` is appended, the response includes `dailyBattleSummary` �
 - **With `format=Singles`**: Battle summary is scoped to Singles usage.
 
 Example without format (includes learnableMoveNames):
+
 ```js
-const res = await fetch('https://championsbattledata.com/api/pokemon/garchomp');
+const res = await fetch("https://championsbattledata.com/api/pokemon/garchomp");
 const d = await res.json();
 console.log(d.learnableMoveNames); // ~58 moves for Garchomp
 ```
@@ -275,7 +340,7 @@ const currentCsvUrl = `https://championsbattledata.com/${currentCsv}`;
 
 // Daily snapshots
 const dailySummaries = data.dailyBattleSummary ?? [];
-dailySummaries.forEach(d => {
+dailySummaries.forEach((d) => {
   const { date, season, format, source, summary } = d;
   const topMove = summary?.top?.move?.name;
 });
@@ -293,12 +358,12 @@ This is the workhorse endpoint — returns parsed rows from the battle-data CSV.
 
 ### Parameters
 
-| Param | Required | Values | Default | Description |
-|---|---|---|---|---|
-| `format` | Path param | `Doubles` or `Singles` | — | Format scope |
-| `showdownId` | Path param | Showdown internal ID | — | Target Pokémon |
-| `days` | No | 1–31 | (none → current root folder) | Number of most-recent daily snapshots to include |
-| `season` | No | `Current`, `M4`, `M5`, `M6` | (all seasons) | Season folder to search in |
+| Param        | Required   | Values                      | Default                      | Description                                      |
+| ------------ | ---------- | --------------------------- | ---------------------------- | ------------------------------------------------ |
+| `format`     | Path param | `Doubles` or `Singles`      | —                            | Format scope                                     |
+| `showdownId` | Path param | Showdown internal ID        | —                            | Target Pokémon                                   |
+| `days`       | No         | 1–31                        | (none → current root folder) | Number of most-recent daily snapshots to include |
+| `season`     | No         | `Current`, `M4`, `M5`, `M6` | (all seasons)                | Season folder to search in                       |
 
 ### JSON shape — current data (no `days` param)
 
@@ -311,10 +376,20 @@ This is the workhorse endpoint — returns parsed rows from the battle-data CSV.
   "date": null,
   "source": "pokemon_champions_assets/battle_data/Doubles/Garchomp.csv",
   "columns": [
-    "pokemon", "column_position", "category", "rank",
-    "name", "percentage", "stat_up", "stat_down",
-    "hp_points", "attack_points", "defense_points",
-    "sp_atk_points", "sp_def_points", "speed_points"
+    "pokemon",
+    "column_position",
+    "category",
+    "rank",
+    "name",
+    "percentage",
+    "stat_up",
+    "stat_down",
+    "hp_points",
+    "attack_points",
+    "defense_points",
+    "sp_atk_points",
+    "sp_def_points",
+    "speed_points"
   ],
   "rows": [
     {
@@ -388,14 +463,14 @@ This is the workhorse endpoint — returns parsed rows from the battle-data CSV.
 
 ### Row categories
 
-| `category` | What it contains | Percentage gauge |
-|---|---|---|
-| `move` | Most-used moves | % of sets that include it |
-| `held_item` | Most-used held items | % of sets using it |
-| `teammate` | Most common teammates | Empty string (no %), `percentage_value: null` |
-| `stat_alignment` | Most common natures | % of sets |
-| `stat_points` | Most common EV spreads | % of sets; individual stats in `*_points` fields |
-| `ability` | Most common abilities | % of sets |
+| `category`       | What it contains       | Percentage gauge                                 |
+| ---------------- | ---------------------- | ------------------------------------------------ |
+| `move`           | Most-used moves        | % of sets that include it                        |
+| `held_item`      | Most-used held items   | % of sets using it                               |
+| `teammate`       | Most common teammates  | Empty string (no %), `percentage_value: null`    |
+| `stat_alignment` | Most common natures    | % of sets                                        |
+| `stat_points`    | Most common EV spreads | % of sets; individual stats in `*_points` fields |
+| `ability`        | Most common abilities  | % of sets                                        |
 
 ### Daily snapshots (with `days=N`)
 
@@ -412,7 +487,7 @@ This is the workhorse endpoint — returns parsed rows from the battle-data CSV.
       "date": "23_07_2026",
       "source": "pokemon_champions_assets/battle_data/M4/23_07_2026/Doubles/Garchomp.csv",
       "columns": ["pokemon", "column_position", "category", "rank", "name", "percentage"],
-      "rows": [ /* same structure as above */ ]
+      "rows": [/* same structure as above */]
     }
   ]
 }
@@ -428,12 +503,12 @@ Finished seasons (e.g., `M4`) are flagged with `"archived": true` on their CSV e
 
 ```js
 // Filter by category
-const moves = data.rows.filter(r => r.category === 'move');
-const items = data.rows.filter(r => r.category === 'held_item');
-const teammates = data.rows.filter(r => r.category === 'teammate');
-const natures = data.rows.filter(r => r.category === 'stat_alignment');
-const evSpreads = data.rows.filter(r => r.category === 'stat_points');
-const abilities = data.rows.filter(r => r.category === 'ability');
+const moves = data.rows.filter((r) => r.category === "move");
+const items = data.rows.filter((r) => r.category === "held_item");
+const teammates = data.rows.filter((r) => r.category === "teammate");
+const natures = data.rows.filter((r) => r.category === "stat_alignment");
+const evSpreads = data.rows.filter((r) => r.category === "stat_points");
+const abilities = data.rows.filter((r) => r.category === "ability");
 
 // Top item (rank=1)
 const topItem = items[0]?.name;
@@ -443,8 +518,8 @@ const topSpread = evSpreads[0]; // {hp_points, attack_points, defense_points, ..
 
 // Daily snapshots
 const daily3 = data.daily ?? [];
-daily3.forEach(day => {
-  const topMoves = day.rows.filter(r => r.category === 'move');
+daily3.forEach((day) => {
+  const topMoves = day.rows.filter((r) => r.category === "move");
 });
 ```
 
@@ -457,6 +532,7 @@ daily3.forEach(day => {
 Returns all forms for a base Pokémon. Request by **base name** (e.g. `tauros`) — the response contains one row per form, each identified by its form-specific `saved_name`.
 
 The `saved_name` is the key to:
+
 - **Sprite paths**: `pokemon_champions_assets/pokemon/{saved_name}.png`
 - **Battle data CSVs** (battleName, not saved_name): `battle_data/Doubles/{battleName}.csv`
 
@@ -475,8 +551,13 @@ The `saved_name` is the key to:
       "abilities": "Intimidate|Anger Point|Cud Chew",
       "image_path": "pokemon_champions_assets/pokemon/Paldean Tauros Aqua Breed.png",
       "form": "Paldean Aqua Breed",
-      "hp": 150, "atk": 130, "def": 125,
-      "spa": 50, "spd": 90, "spe": 120, "total": 610
+      "hp": 150,
+      "atk": 130,
+      "def": 125,
+      "spa": 50,
+      "spd": 90,
+      "spe": 120,
+      "total": 610
     },
     {
       "title": "Tauros [Paldean Form (Blaze Breed)]",
@@ -486,8 +567,13 @@ The `saved_name` is the key to:
       "abilities": "Intimidate|Anger Point|Cud Chew",
       "image_path": "pokemon_champions_assets/pokemon/Paldean Tauros Blaze Breed.png",
       "form": "Paldean Blaze Breed",
-      "hp": 150, "atk": 130, "def": 125,
-      "spa": 50, "spd": 90, "spe": 120, "total": 610
+      "hp": 150,
+      "atk": 130,
+      "def": 125,
+      "spa": 50,
+      "spd": 90,
+      "spe": 120,
+      "total": 610
     },
     {
       "title": "Tauros [Paldean Form (Combat Breed)]",
@@ -497,8 +583,13 @@ The `saved_name` is the key to:
       "abilities": "Intimidate|Anger Point|Cud Chew",
       "image_path": "pokemon_champions_assets/pokemon/Paldean Tauros Combat Breed.png",
       "form": "Paldean Combat Breed",
-      "hp": 150, "atk": 130, "def": 125,
-      "spa": 50, "spd": 90, "spe": 120, "total": 610
+      "hp": 150,
+      "atk": 130,
+      "def": 125,
+      "spa": 50,
+      "spd": 90,
+      "spe": 120,
+      "total": 610
     },
     {
       "title": "Tauros",
@@ -508,8 +599,13 @@ The `saved_name` is the key to:
       "abilities": "Intimidate|Anger Point|Sheer Force",
       "image_path": "pokemon_champions_assets/pokemon/Tauros.png",
       "form": "",
-      "hp": 150, "atk": 120, "def": 115,
-      "spa": 60, "spd": 90, "spe": 130, "total": 610
+      "hp": 150,
+      "atk": 120,
+      "def": 115,
+      "spa": 60,
+      "spd": 90,
+      "spe": 130,
+      "total": 610
     }
   ]
 }
@@ -517,15 +613,15 @@ The `saved_name` is the key to:
 
 ### Key fields
 
-| Field | Meaning |
-|---|---|
-| `base_name` | Shared name for all forms; matches the metadata filename and route parameter |
-| `saved_name` | Form-specific name used for sprite PNGs and CSV files |
-| `form` | Human-readable form label, empty string for the base form |
-| `abilities` | Pipe-separated list of all abilities for this form |
-| `types` | Type string in `"Type/Type"` format |
-| `image_path` | Relative path to the sprite image |
-| `hp`, `atk`, `def`, `spa`, `spd`, `spe`, `total` | Base stats for this form |
+| Field                                            | Meaning                                                                      |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `base_name`                                      | Shared name for all forms; matches the metadata filename and route parameter |
+| `saved_name`                                     | Form-specific name used for sprite PNGs and CSV files                        |
+| `form`                                           | Human-readable form label, empty string for the base form                    |
+| `abilities`                                      | Pipe-separated list of all abilities for this form                           |
+| `types`                                          | Type string in `"Type/Type"` format                                          |
+| `image_path`                                     | Relative path to the sprite image                                            |
+| `hp`, `atk`, `def`, `spa`, `spd`, `spe`, `total` | Base stats for this form                                                     |
 
 ### Use this endpoint when you need
 
@@ -537,17 +633,17 @@ The `saved_name` is the key to:
 
 ```js
 // Find specific form
-const aquaBreed = data.rows.find(r => r.form === 'Paldean Aqua Breed');
-const baseForm = data.rows.find(r => r.form === '');
+const aquaBreed = data.rows.find((r) => r.form === "Paldean Aqua Breed");
+const baseForm = data.rows.find((r) => r.form === "");
 
 // Abilities as array
-const abilities = baseForm.abilities.split('|'); // ["Intimidate", "Anger Point", "Sheer Force"]
+const abilities = baseForm.abilities.split("|"); // ["Intimidate", "Anger Point", "Sheer Force"]
 
 // Sprite URL
 const spriteUrl = `https://championsbattledata.com/${baseForm.image_path}`;
 
 // All form names
-const formNames = data.rows.map(r => r.saved_name);
+const formNames = data.rows.map((r) => r.saved_name);
 ```
 
 ---
@@ -558,20 +654,20 @@ The API accepts **Pokémon Showdown internal IDs** — lowercase, stripped of pu
 
 ### Rules
 
-| Species name (display) | Showdown internal ID (API) |
-|---|---|
-| Garchomp | `garchomp` |
-| Raichu-Alola (Alolan Raichu) | `raichualola` |
-| Incineroar | `incineroar` |
-| Arcanine-Hisui (Hisuian Arcanine) | `arcaninehisui` |
-| Tauros-Paldea-Aqua-Breed (Paldean Tauros Aqua Breed) | `taurospaldeaaqua` |
-| Tauros-Paldea-Blaze-Breed | `taurospaldeablaze` |
-| Rotom-Wash | `rotomwash` |
-| Basculegion-Female | `basculegionf` |
-| Flutter Mane | `fluttermane` | **NOT in Champions API** | Check index for correct ID if added later |
-| Raging Bolt | `ragingbolt` | **NOT in Champions API** | Check index for correct ID if added later |
-| Urshifu-Rapid-Strike | `urshifurapidstrike` | **NOT in Champions API** | Gen 8/9 DLC — not yet in game |
-| Amoonguss | `amoonguss` |
+| Species name (display)                               | Showdown internal ID (API) |
+| ---------------------------------------------------- | -------------------------- |
+| Garchomp                                             | `garchomp`                 |
+| Raichu-Alola (Alolan Raichu)                         | `raichualola`              |
+| Incineroar                                           | `incineroar`               |
+| Arcanine-Hisui (Hisuian Arcanine)                    | `arcaninehisui`            |
+| Tauros-Paldea-Aqua-Breed (Paldean Tauros Aqua Breed) | `taurospaldeaaqua`         |
+| Tauros-Paldea-Blaze-Breed                            | `taurospaldeablaze`        |
+| Rotom-Wash                                           | `rotomwash`                |
+| Basculegion-Female                                   | `basculegionf`             |
+| Flutter Mane                                         | `fluttermane`              | **NOT in Champions API** | Check index for correct ID if added later |
+| Raging Bolt                                          | `ragingbolt`               | **NOT in Champions API** | Check index for correct ID if added later |
+| Urshifu-Rapid-Strike                                 | `urshifurapidstrike`       | **NOT in Champions API** | Gen 8/9 DLC — not yet in game             |
+| Amoonguss                                            | `amoonguss`                |
 
 ### Algorithm: display name → Showdown ID
 
@@ -589,14 +685,14 @@ The API is **case-insensitive** — `GARCHOMP` and `garchomp` both work. Route n
 
 ### Mapping for the example team (6 known species)
 
-| Display name (Showdown format) | Showdown ID (API) | Battle data CSV name |
-|---|---|---|
-| `Incineroar` | `incineroar` | `Incineroar.csv` |
-| `Raging Bolt` | `ragingbolt` | `Raging Bolt.csv` | ⚠️ NOT in Champions API |
-| `Urshifu-Rapid-Strike` | `urshifurapidstrike` | `Urshifu Rapid Strike.csv` | ⚠️ NOT in Champions API |
-| `Flutter Mane` | `fluttermane` | `Flutter Mane.csv` | ⚠️ NOT in Champions API |
-| `Amoonguss` | `amoonguss` | `Amoonguss.csv` |
-| `Arcanine-Hisui` | `arcaninehisui` | `Hisuian Arcanine.csv` *(confirm via index)* |
+| Display name (Showdown format) | Showdown ID (API)    | Battle data CSV name                         |
+| ------------------------------ | -------------------- | -------------------------------------------- |
+| `Incineroar`                   | `incineroar`         | `Incineroar.csv`                             |
+| `Raging Bolt`                  | `ragingbolt`         | `Raging Bolt.csv`                            | ⚠️ NOT in Champions API |
+| `Urshifu-Rapid-Strike`         | `urshifurapidstrike` | `Urshifu Rapid Strike.csv`                   | ⚠️ NOT in Champions API |
+| `Flutter Mane`                 | `fluttermane`        | `Flutter Mane.csv`                           | ⚠️ NOT in Champions API |
+| `Amoonguss`                    | `amoonguss`          | `Amoonguss.csv`                              |
+| `Arcanine-Hisui`               | `arcaninehisui`      | `Hisuian Arcanine.csv` _(confirm via index)_ |
 
 **NOTE:** The `saved_name` used for CSV filenames and sprite images may differ from the Showdown ID. Use the `battleName` from the index entry to construct raw CSV URLs, and `saved_name` from metadata for sprite URLs.
 
@@ -605,21 +701,22 @@ The API is **case-insensitive** — `GARCHOMP` and `garchomp` both work. Route n
 Always load the **index** once at app startup, then use it as a lookup table:
 
 ```js
-const index = await (await fetch('https://championsbattledata.com/api')).json();
+const index = await (await fetch("https://championsbattledata.com/api")).json();
 
 // Find a Pokémon by any display name
 function resolvePokemon(nameOrShowdownId) {
   const normalized = nameOrShowdownId.toLowerCase();
-  return index.pokemon.find(p =>
-    p.showdownId === normalized ||
-    p.showdownName?.toLowerCase() === normalized ||
-    p.name.toLowerCase() === normalized ||
-    p.slug === normalized
+  return index.pokemon.find(
+    (p) =>
+      p.showdownId === normalized ||
+      p.showdownName?.toLowerCase() === normalized ||
+      p.name.toLowerCase() === normalized ||
+      p.slug === normalized,
   );
 }
 
 // Then use .showdownId for API routes
-const entry = resolvePokemon('Arcanine-Hisui');
+const entry = resolvePokemon("Arcanine-Hisui");
 const battleUrl = `https://championsbattledata.com/api/battle/Doubles/${entry.showdownId}`;
 ```
 
@@ -629,12 +726,12 @@ Each form has its own `battleName`, which is used for CSV filenames. This means 
 
 The API uses three naming schemes:
 
-| Concept | Example | Used for |
-|---|---|---|
-| `showdownId` | `arcaninehisui` | API routes: `/api/battle/Doubles/arcaninehisui` |
-| `showdownName` | `Arcanine-Hisui` | Pokémon Showdown's canonical display name |
-| `battleName` | `Hisuian Arcanine` | CSV filename: `battle_data/Doubles/Hisuian Arcanine.csv` |
-| `saved_name` | `Hisuian Arcanine` | Sprite filename: `pokemon/Hisuian Arcanine.png` |
+| Concept        | Example            | Used for                                                 |
+| -------------- | ------------------ | -------------------------------------------------------- |
+| `showdownId`   | `arcaninehisui`    | API routes: `/api/battle/Doubles/arcaninehisui`          |
+| `showdownName` | `Arcanine-Hisui`   | Pokémon Showdown's canonical display name                |
+| `battleName`   | `Hisuian Arcanine` | CSV filename: `battle_data/Doubles/Hisuian Arcanine.csv` |
+| `saved_name`   | `Hisuian Arcanine` | Sprite filename: `pokemon/Hisuian Arcanine.png`          |
 
 To construct static asset URLs:
 
@@ -693,7 +790,7 @@ Type icon:         /pokemon_champions_assets/types/{TypeName}.png
 Sprite and CSV filenames contain spaces. Always `encodeURIComponent()` the filename when constructing URLs in JavaScript.
 
 ```js
-const spriteUrl = `https://championsbattledata.com/pokemon_champions_assets/pokemon/${encodeURIComponent('Paldean Tauros Aqua Breed')}.png`;
+const spriteUrl = `https://championsbattledata.com/pokemon_champions_assets/pokemon/${encodeURIComponent("Paldean Tauros Aqua Breed")}.png`;
 ```
 
 ### Type icon filenames
@@ -705,20 +802,25 @@ Type icons use the type name as written in English with capital first letter: `D
 ## 7. CORS, rate limits, auth
 
 ### CORS
+
 ✅ **Enabled** — all API endpoints return `Access-Control-Allow-Origin: *`. Works directly from browser fetch.
 
 ### Authentication
+
 🔓 **None required** — no API key, no OAuth, no token. All endpoints are public.
 
 ### Rate limits
+
 ⚠️ **No documented rate limits** — however, the static CSV files and JSON endpoints are production assets. Be reasonable with polling frequency. For periodic data fetch, cache aggressively and poll no more than once per hour.
 
 ### Response format
+
 - JSON API endpoints always return `Content-Type: application/json`
 - CSV and image endpoints serve with appropriate MIME types
 - No `Content-Encoding` specific to the API; standard HTTP/1.1+ caching headers may be added in the future
 
 ### Error handling
+
 - 404 is returned if the Pokémon or format is not found
 - Malformed requests return descriptive error JSON
 - Network errors should be retried with exponential backoff (standard practice for HTTPS APIs)
@@ -729,37 +831,36 @@ Type icons use the type name as written in English with capital first letter: `D
 
 This table should be filled with the user's 34 tracked Pokémon. The 6 known species from the project's example team are provided.
 
-| # | Display name | Showdown internal ID (`showdownId`) | Base name (`baseName`) | Battle name (`battleName`) | Has forms? |
-|---|---|---|---|---|---|
-| 1 | Incineroar | `incineroar` | Incineroar | Incineroar | No |
-| 2 | Raging Bolt | `ragingbolt` | Raging Bolt | Raging Bolt | No |
-| 3 | Urshifu-Rapid-Strike | `urshifurapidstrike` | Urshifu | Urshifu Rapid Strike | Yes (2 styles) |
-| 4 | Flutter Mane | `fluttermane` | Flutter Mane | Flutter Mane | No |
-| 5 | Amoonguss | `amoonguss` | Amoonguss | Amoonguss | No |
-| 6 | Arcanine-Hisui | `arcaninehisui` | Arcanine | Arcanine | Yes (regular + Hisuian) |
+| #   | Display name         | Showdown internal ID (`showdownId`) | Base name (`baseName`) | Battle name (`battleName`) | Has forms?              |
+| --- | -------------------- | ----------------------------------- | ---------------------- | -------------------------- | ----------------------- |
+| 1   | Incineroar           | `incineroar`                        | Incineroar             | Incineroar                 | No                      |
+| 2   | Raging Bolt          | `ragingbolt`                        | Raging Bolt            | Raging Bolt                | No                      |
+| 3   | Urshifu-Rapid-Strike | `urshifurapidstrike`                | Urshifu                | Urshifu Rapid Strike       | Yes (2 styles)          |
+| 4   | Flutter Mane         | `fluttermane`                       | Flutter Mane           | Flutter Mane               | No                      |
+| 5   | Amoonguss            | `amoonguss`                         | Amoonguss              | Amoonguss                  | No                      |
+| 6   | Arcanine-Hisui       | `arcaninehisui`                     | Arcanine               | Arcanine                   | Yes (regular + Hisuian) |
 
 ### Name resolution helper functions
 
 ```js
 // After loading the index:
 function getShowdownId(displayName) {
-  const entry = index.pokemon.find(p =>
-    p.showdownName?.toLowerCase() === displayName.toLowerCase() ||
-    p.name.toLowerCase() === displayName.toLowerCase() ||
-    p.showdownId === displayName.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const entry = index.pokemon.find(
+    (p) =>
+      p.showdownName?.toLowerCase() === displayName.toLowerCase() ||
+      p.name.toLowerCase() === displayName.toLowerCase() ||
+      p.showdownId === displayName.toLowerCase().replace(/[^a-z0-9]/g, ""),
   );
   return entry?.showdownId;
 }
 
 function getBattleName(showdownId) {
-  return index.pokemon.find(p => p.showdownId === showdownId)?.battleName;
+  return index.pokemon.find((p) => p.showdownId === showdownId)?.battleName;
 }
 
 function getSpriteUrl(showdownId) {
-  const entry = index.pokemon.find(p => p.showdownId === showdownId);
-  return entry?.summary?.sprite
-    ? `https://championsbattledata.com/${entry.summary.sprite}`
-    : null;
+  const entry = index.pokemon.find((p) => p.showdownId === showdownId);
+  return entry?.summary?.sprite ? `https://championsbattledata.com/${entry.summary.sprite}` : null;
 }
 ```
 
@@ -769,12 +870,12 @@ function getSpriteUrl(showdownId) {
 
 ## Appendix B: Season reference
 
-| Season | Status | Date range (approx) | Note |
-|---|---|---|---|
-| `Current` | Active latest | Ongoing | Root `Doubles/` and `Singles/` folders |
-| `M6` | Active | Sep 2026 | Current season being collected |
-| `M5` | Recent | Aug–Sep 2026 | Finished, CSVs still hosted |
-| `M4` | Archived | Jul 2026 | CSVs **not hosted**, use JSON API |
+| Season    | Status        | Date range (approx) | Note                                   |
+| --------- | ------------- | ------------------- | -------------------------------------- |
+| `Current` | Active latest | Ongoing             | Root `Doubles/` and `Singles/` folders |
+| `M6`      | Active        | Sep 2026            | Current season being collected         |
+| `M5`      | Recent        | Aug–Sep 2026        | Finished, CSVs still hosted            |
+| `M4`      | Archived      | Jul 2026            | CSVs **not hosted**, use JSON API      |
 
 Daily CSVs for the current season are hosted individually under `{Season}/{DD_MM_YYYY}/{Format}/{battleName}.csv`.
 
@@ -817,42 +918,42 @@ Source: [championsbattledata.com/api_guide](https://championsbattledata.com/api_
 
 The 34 Pokémon in the initial roster, with their user-facing name, Showdown ID (used in Champions API routes), and PokéAPI name.
 
-| User-facing name | Showdown ID | PokéAPI name |
-|---|---|---|
-| Wigglytuff | `wigglytuff` | wigglytuff |
-| Persian | `persian` | persian |
-| Alolan Persian | `persianalola` | persian-alola |
-| Farfetch'd | `farfetchd` | farfetchd |
-| Mr. Mime | `mrmime` | mr-mime |
-| Swalot | `swalot` | swalot |
-| Salamence | `salamence` | salamence |
-| Gogoat | `gogoat` | gogoat |
-| Golisopod | `golisopod` | golisopod |
-| Rillaboom | `rillaboom` | rillaboom |
-| Cinderace | `cinderace` | cinderace |
-| Inteleon | `inteleon` | inteleon |
-| Thievul | `thievul` | thievul |
-| Toxtricity (Amped) | `toxtricity` | toxtricity |
-| Toxtricity (Low Key) | `toxtricitylowkey` | toxtricity-low-key |
-| Grapploct | `grapploct` | grapploct |
-| Perrserker | `perrserker` | perrserker |
-| Sirfetch'd | `sirfetchd` | sirfetchd |
-| Pincurchin | `pincurchin` | pincurchin |
-| Indeedee (Male) | `indeedee` | indeedee |
-| Indeedee (Female) | `indeedeef` | indeedee-female |
-| Pawmot | `pawmot` | pawmot |
-| Arboliva | `arboliva` | arboliva |
-| Squawkabilly (Green) | `squawkabilly` | squawkabilly |
-| Squawkabilly (Blue) | `squawkabillyblue` | squawkabilly-blue |
+| User-facing name      | Showdown ID          | PokéAPI name        |
+| --------------------- | -------------------- | ------------------- |
+| Wigglytuff            | `wigglytuff`         | wigglytuff          |
+| Persian               | `persian`            | persian             |
+| Alolan Persian        | `persianalola`       | persian-alola       |
+| Farfetch'd            | `farfetchd`          | farfetchd           |
+| Mr. Mime              | `mrmime`             | mr-mime             |
+| Swalot                | `swalot`             | swalot              |
+| Salamence             | `salamence`          | salamence           |
+| Gogoat                | `gogoat`             | gogoat              |
+| Golisopod             | `golisopod`          | golisopod           |
+| Rillaboom             | `rillaboom`          | rillaboom           |
+| Cinderace             | `cinderace`          | cinderace           |
+| Inteleon              | `inteleon`           | inteleon            |
+| Thievul               | `thievul`            | thievul             |
+| Toxtricity (Amped)    | `toxtricity`         | toxtricity          |
+| Toxtricity (Low Key)  | `toxtricitylowkey`   | toxtricity-low-key  |
+| Grapploct             | `grapploct`          | grapploct           |
+| Perrserker            | `perrserker`         | perrserker          |
+| Sirfetch'd            | `sirfetchd`          | sirfetchd           |
+| Pincurchin            | `pincurchin`         | pincurchin          |
+| Indeedee (Male)       | `indeedee`           | indeedee            |
+| Indeedee (Female)     | `indeedeef`          | indeedee-female     |
+| Pawmot                | `pawmot`             | pawmot              |
+| Arboliva              | `arboliva`           | arboliva            |
+| Squawkabilly (Green)  | `squawkabilly`       | squawkabilly        |
+| Squawkabilly (Blue)   | `squawkabillyblue`   | squawkabilly-blue   |
 | Squawkabilly (Yellow) | `squawkabillyyellow` | squawkabilly-yellow |
-| Squawkabilly (White) | `squawkabillywhite` | squawkabilly-white |
-| Mabosstiff | `mabosstiff` | mabosstiff |
-| Baxcalibur | `baxcalibur` | baxcalibur |
-| Mega Salamence | `salamencemega` | salamence-mega |
-| Mega Golisopod | `golisopodmega` | golisopod-mega |
-| Mega Baxcalibur | `baxcaliburmega` | baxcalibur-mega |
-| Mega Absol Z | `absolzmega` | absol-z |
-| Mega Garchomp Z | `garchompzmega` | garchomp-z |
-| Mega Lucario Z | `lucariozmega` | lucario-z |
+| Squawkabilly (White)  | `squawkabillywhite`  | squawkabilly-white  |
+| Mabosstiff            | `mabosstiff`         | mabosstiff          |
+| Baxcalibur            | `baxcalibur`         | baxcalibur          |
+| Mega Salamence        | `salamencemega`      | salamence-mega      |
+| Mega Golisopod        | `golisopodmega`      | golisopod-mega      |
+| Mega Baxcalibur       | `baxcaliburmega`     | baxcalibur-mega     |
+| Mega Absol Z          | `absolzmega`         | absol-z             |
+| Mega Garchomp Z       | `garchompzmega`      | garchomp-z          |
+| Mega Lucario Z        | `lucariozmega`       | lucario-z           |
 
 **Name rules:** Showdown IDs are lowercase, no hyphens/apostrophes, region suffix appended directly (e.g. `persian` → `persianalola`). Verify new IDs against `GET /api/pokemon/{id}?format=Doubles` before use.

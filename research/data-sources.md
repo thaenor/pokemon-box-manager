@@ -7,14 +7,14 @@
 
 ## 1. PokéAPI
 
-| Field | Value |
-|---|---|
-| **URL** | https://pokeapi.co/ |
-| **Docs** | https://pokeapi.co/docs/v2 |
-| **Auth** | None (public, no API key) |
+| Field           | Value                                                                           |
+| --------------- | ------------------------------------------------------------------------------- |
+| **URL**         | https://pokeapi.co/                                                             |
+| **Docs**        | https://pokeapi.co/docs/v2                                                      |
+| **Auth**        | None (public, no API key)                                                       |
 | **Rate limits** | None (removed after move to static hosting in Nov 2018; 100/hr GraphQL variant) |
-| **Data format** | RESTful JSON |
-| **License** | Custom (free, no explicit commercial restriction) |
+| **Data format** | RESTful JSON                                                                    |
+| **License**     | Custom (free, no explicit commercial restriction)                               |
 
 **What it provides:**
 
@@ -40,14 +40,14 @@
 
 ## 2. Smogon Stats / @pkmn Ecosystem
 
-| Field | Value |
-|---|---|
-| **URLs** | https://www.smogon.com/stats/ (raw monthly dumps) |
-| | https://data.pkmn.cc/stats/ (processed JSON) |
-| | https://github.com/pkmn/smogon (community wrapper) |
-| **Auth** | None (public files) |
+| Field           | Value                                                 |
+| --------------- | ----------------------------------------------------- |
+| **URLs**        | https://www.smogon.com/stats/ (raw monthly dumps)     |
+|                 | https://data.pkmn.cc/stats/ (processed JSON)          |
+|                 | https://github.com/pkmn/smogon (community wrapper)    |
+| **Auth**        | None (public files)                                   |
 | **Rate limits** | None documented (be conservative; cache aggressively) |
-| **Data format** | Raw: `.txt` + `chaos.json`; Processed: JSON |
+| **Data format** | Raw: `.txt` + `chaos.json`; Processed: JSON           |
 
 **What it provides:**
 
@@ -68,6 +68,7 @@
 **Reliability:** Good aggregate data but no official API — Smogon can change file formats. The `@pkmn` wrapper provides stability. Data is monthly snapshots, not real-time.
 
 **Community usage-stats API (unofficial):**
+
 - `https://smogon-usage-stats.herokuapp.com/gen9ou/clefable` — simple per-Pokémon endpoint (may be defunct; Heroku sunset)
 - Better to use raw `data.pkmn.cc/stats/` JSON directly
 
@@ -77,13 +78,13 @@
 
 ## 3. Pikalytics
 
-| Field | Value |
-|---|---|
-| **URL** | https://www.pikalytics.com/ |
+| Field            | Value                                                            |
+| ---------------- | ---------------------------------------------------------------- |
+| **URL**          | https://www.pikalytics.com/                                      |
 | **AI endpoints** | `GET /ai/pokedex/{format}`, `GET /ai/pokedex/{format}/{pokemon}` |
-| **Auth** | None (public Markdown endpoints) |
-| **Rate limits** | None documented (use conservative rates + caching) |
-| **Data format** | Markdown (AI endpoints); JSON-LD embedded on HTML pages |
+| **Auth**         | None (public Markdown endpoints)                                 |
+| **Rate limits**  | None documented (use conservative rates + caching)               |
+| **Data format**  | Markdown (AI endpoints); JSON-LD embedded on HTML pages          |
 
 **What it provides:**
 
@@ -96,6 +97,7 @@
 - Tournament-specific pages (limitless integration)
 
 **Data sources (as stated by Pikalytics):**
+
 1. Pokémon HOME Battle Stadium ranked ladder
 2. Pokémon Showdown (Smogon)
 3. RK9 Tournament data (official VGC team sheets)
@@ -109,28 +111,28 @@
 
 ## 4. Pokémon Showdown Data Files
 
-| Field | Value |
-|---|---|
-| **URL** | https://play.pokemonshowdown.com/data/ |
-| **GitHub** | https://github.com/smogon/pokemon-showdown |
-| **Auth** | None (public static files) |
-| **Rate limits** | None documented (be respectful) |
-| **Data format** | JS modules + JSON |
+| Field           | Value                                      |
+| --------------- | ------------------------------------------ |
+| **URL**         | https://play.pokemonshowdown.com/data/     |
+| **GitHub**      | https://github.com/smogon/pokemon-showdown |
+| **Auth**        | None (public static files)                 |
+| **Rate limits** | None documented (be respectful)            |
+| **Data format** | JS modules + JSON                          |
 
 **What it provides (publicly served at `/data/`):**
 
-| File | Size | Content |
-|---|---|---|
-| `pokedex.json` | 512 KiB | All species: stats, types, abilities, base species, forms |
-| `moves.json` | 479 KiB | All moves: type, power, accuracy, PP, category, effects |
-| `abilities.js` | 106 KiB | All abilities with descriptions |
-| `items.js` | 152 KiB | All items with effects |
-| `learnsets.json` | 3.04 MiB | Egg moves, TMs, tutor, level-up moves per species+form |
-| `formats-data.js` | 69 KiB | Tier banlists, clauses, format rules |
-| `formats.js` | 157 KiB | Format definitions, tiers, ladder data |
-| `typechart.js` | 4 KiB | Type effectiveness chart |
-| `aliases.js` | 56 KiB | Name aliases (different lang, form suffixes) |
-| `graphics.js` | 704 KiB | All sprites (icons) |
+| File              | Size     | Content                                                   |
+| ----------------- | -------- | --------------------------------------------------------- |
+| `pokedex.json`    | 512 KiB  | All species: stats, types, abilities, base species, forms |
+| `moves.json`      | 479 KiB  | All moves: type, power, accuracy, PP, category, effects   |
+| `abilities.js`    | 106 KiB  | All abilities with descriptions                           |
+| `items.js`        | 152 KiB  | All items with effects                                    |
+| `learnsets.json`  | 3.04 MiB | Egg moves, TMs, tutor, level-up moves per species+form    |
+| `formats-data.js` | 69 KiB   | Tier banlists, clauses, format rules                      |
+| `formats.js`      | 157 KiB  | Format definitions, tiers, ladder data                    |
+| `typechart.js`    | 4 KiB    | Type effectiveness chart                                  |
+| `aliases.js`      | 56 KiB   | Name aliases (different lang, form suffixes)              |
+| `graphics.js`     | 704 KiB  | All sprites (icons)                                       |
 
 **Reliability:** Excellent. These files ship with every Pokémon Showdown client and are updated with every game release. Always current.
 
@@ -140,14 +142,14 @@
 
 ## 5. Pokékipe
 
-| Field | Value |
-|---|---|
-| **URL** | https://pokekipe.com/api |
-| **Docs** | https://pokekipe.com/api-reference-frame.html |
-| **Auth** | Optional (60req/min anonymous; 600req/min with free key; 5K/day → 100K/day) |
-| **Rate limits** | Published: 60/min, 5,000/day anonymous; 600/min, 100K/day authenticated |
-| **Data format** | RESTful JSON |
-| **License** | CC BY 4.0 |
+| Field           | Value                                                                       |
+| --------------- | --------------------------------------------------------------------------- |
+| **URL**         | https://pokekipe.com/api                                                    |
+| **Docs**        | https://pokekipe.com/api-reference-frame.html                               |
+| **Auth**        | Optional (60req/min anonymous; 600req/min with free key; 5K/day → 100K/day) |
+| **Rate limits** | Published: 60/min, 5,000/day anonymous; 600/min, 100K/day authenticated     |
+| **Data format** | RESTful JSON                                                                |
+| **License**     | CC BY 4.0                                                                   |
 
 **What it provides:**
 
@@ -166,12 +168,12 @@
 
 ## 6. Bulbapedia Scraping
 
-| Field | Value |
-|---|---|
-| **URL** | https://bulbapedia.bulbagarden.net/ |
-| **MediaWiki API** | `https://bulbapedia.bulbagarden.net/w/api.php` |
-| **Auth** | User-agent recommended; no API key |
-| **Rate limits** | Per MediaWiki standard (unregistered: ~500 req/min per IP) |
+| Field             | Value                                                      |
+| ----------------- | ---------------------------------------------------------- |
+| **URL**           | https://bulbapedia.bulbagarden.net/                        |
+| **MediaWiki API** | `https://bulbapedia.bulbagarden.net/w/api.php`             |
+| **Auth**          | User-agent recommended; no API key                         |
+| **Rate limits**   | Per MediaWiki standard (unregistered: ~500 req/min per IP) |
 
 **What it provides:**
 
@@ -181,6 +183,7 @@
 - Detailed flavor text, anime references
 
 **PWA suitability:** ⚠️ **Not recommended as primary source.** Data is unstructured HTML. MediaWiki API can extract text, but parsing is fragile. PokéAPI already covers this data better. Use only for:
+
 - Official high-res artwork (but these are Nintendo IP — check redistribution)
 - Data not yet in PokéAPI (very rare)
 - Supplementary flavor text
@@ -189,15 +192,15 @@
 
 ## 7. Other Sources
 
-| Source | URL | Usefulness | Note |
-|---|---|---|---|
-| **data.pkmn.cc** | https://data.pkmn.cc/ | ✅ Excellent | Curated datasets: analyses, formats, sets, stats, teams — efficient batch access |
-| **@pkmn/data** (npm) | https://www.npmjs.com/package/@pkmn/data | ✅ Excellent | TypeScript/JS library for parsing Showdown data — MIT license |
-| **Pokémon Showdown replays** | https://replay.pokemonshowdown.com/ | ⚠️ Research only | Replay logs; bulk download for analysis; not suitable for runtime |
-| **Metamon datasets** | https://github.com/UT-Austin-RPL/metamon | ⚠️ Research only | Million-battle datasets for ML; too large for PWA |
-| **Trainer Tower** | https://trainertower.com/ | ⚠️ Manual curation | VGC tournament results, rental teams; no API; scrape with permission |
-| **Victory Road** | https://victoryroadvgc.com/ | ⚠️ Manual curation | Tournament articles, usage trends; editorial content, no API |
-| **Limitless TCG** | https://play.limitlesstcg.com/ | ⚠️ Manual curation | Tournament team sheets; no public API for VGC |
+| Source                       | URL                                      | Usefulness         | Note                                                                             |
+| ---------------------------- | ---------------------------------------- | ------------------ | -------------------------------------------------------------------------------- |
+| **data.pkmn.cc**             | https://data.pkmn.cc/                    | ✅ Excellent       | Curated datasets: analyses, formats, sets, stats, teams — efficient batch access |
+| **@pkmn/data** (npm)         | https://www.npmjs.com/package/@pkmn/data | ✅ Excellent       | TypeScript/JS library for parsing Showdown data — MIT license                    |
+| **Pokémon Showdown replays** | https://replay.pokemonshowdown.com/      | ⚠️ Research only   | Replay logs; bulk download for analysis; not suitable for runtime                |
+| **Metamon datasets**         | https://github.com/UT-Austin-RPL/metamon | ⚠️ Research only   | Million-battle datasets for ML; too large for PWA                                |
+| **Trainer Tower**            | https://trainertower.com/                | ⚠️ Manual curation | VGC tournament results, rental teams; no API; scrape with permission             |
+| **Victory Road**             | https://victoryroadvgc.com/              | ⚠️ Manual curation | Tournament articles, usage trends; editorial content, no API                     |
+| **Limitless TCG**            | https://play.limitlesstcg.com/           | ⚠️ Manual curation | Tournament team sheets; no public API for VGC                                    |
 
 ---
 
@@ -205,12 +208,12 @@
 
 ### Primary data sources (in order of importance)
 
-| # | Source | What to use | Pre-caching strategy |
-|---|---|---|---|
-| **1** | **Pokémon Showdown `/data/` files** | `pokedex.json`, `moves.json`, `abilities.js`, `items.js`, `typechart.js`, `learnsets.json` | **Bundle at build time.** JSON files are 500KB–3MB each, ideal for offline. |
-| **2** | **Smogon usage stats (data.pkmn.cc)** | Monthly usage JSON per format (e.g. `gen9ou.json`) | **Pre-cache latest 1-2 months** for supported formats. Update via background sync. |
-| **3** | **PokéAPI** | Sprites (get sprite URLs), form data, species data not in Showdown | Use for **initial sync only** — fetch and cache sprites + species details, then go offline. |
-| **4** | **Pikalytics AI endpoints** | Metagame usage, movesets, items for current regulation | **Server-side fetch + cache** — not directly from browser. Use for "what's meta right now" features. |
+| #     | Source                                | What to use                                                                                | Pre-caching strategy                                                                                 |
+| ----- | ------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **1** | **Pokémon Showdown `/data/` files**   | `pokedex.json`, `moves.json`, `abilities.js`, `items.js`, `typechart.js`, `learnsets.json` | **Bundle at build time.** JSON files are 500KB–3MB each, ideal for offline.                          |
+| **2** | **Smogon usage stats (data.pkmn.cc)** | Monthly usage JSON per format (e.g. `gen9ou.json`)                                         | **Pre-cache latest 1-2 months** for supported formats. Update via background sync.                   |
+| **3** | **PokéAPI**                           | Sprites (get sprite URLs), form data, species data not in Showdown                         | Use for **initial sync only** — fetch and cache sprites + species details, then go offline.          |
+| **4** | **Pikalytics AI endpoints**           | Metagame usage, movesets, items for current regulation                                     | **Server-side fetch + cache** — not directly from browser. Use for "what's meta right now" features. |
 
 ### Offline-first architecture
 

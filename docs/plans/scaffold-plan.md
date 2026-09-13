@@ -27,6 +27,7 @@ ticket: "#5"
    - Ready for PR
 
 ### Firebase Config
+
 ```js
 const firebaseConfig = {
   apiKey: "AIzaSyA9nd1RsWNb4GB0LLBsUvJMRsWCdoy8IVk",
@@ -34,11 +35,12 @@ const firebaseConfig = {
   projectId: "pokemon-box-manager",
   storageBucket: "pokemon-box-manager.firebasestorage.app",
   messagingSenderId: "645423843887",
-  appId: "1:645423843887:web:c7290dc720a05791e9d4da"
+  appId: "1:645423843887:web:c7290dc720a05791e9d4da",
 };
 ```
 
 ### Notes
+
 - Vanilla HTML/CSS/JS — no build step
 - Use v9 Firebase SDK (compat mode via CDN)
 - PWA icons can use placeholder SVGs initially (will swap later)

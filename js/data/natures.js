@@ -27,9 +27,7 @@ export const natures = [
 ];
 
 export function findNature(name) {
-  return natures.find(
-    (n) => n.name.toLowerCase() === name.toLowerCase()
-  ) || null;
+  return natures.find((n) => n.name.toLowerCase() === name.toLowerCase()) || null;
 }
 
 export function natureModifier(nature, stat) {

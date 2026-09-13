@@ -4,7 +4,7 @@ const firebaseConfig = {
   projectId: "pokemon-box-manager",
   storageBucket: "pokemon-box-manager.firebasestorage.app",
   messagingSenderId: "645423843887",
-  appId: "1:645423843887:web:c7290dc720a05791e9d4da"
+  appId: "1:645423843887:web:c7290dc720a05791e9d4da",
 };
 
 const app = firebase.initializeApp(firebaseConfig);
