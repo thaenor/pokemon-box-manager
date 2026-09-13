@@ -232,7 +232,7 @@ export async function showPokemonDetail(species, existing = null) {
     select.style.borderRadius = "var(--radius-default)";
     select.style.fontFamily = "var(--font-body)";
     select.style.fontSize = "var(--body-md)";
-    select.style.height = "32px";
+    select.style.height = "44px";
 
     options.forEach((opt) => {
       const optionEl = document.createElement("option");
@@ -276,7 +276,7 @@ export async function showPokemonDetail(species, existing = null) {
     input.style.borderRadius = "var(--radius-default)";
     input.style.fontFamily = "var(--font-body)";
     input.style.fontSize = "var(--body-md)";
-    input.style.height = "32px";
+    input.style.height = "44px";
 
     fieldRow.appendChild(input);
     return fieldRow;
