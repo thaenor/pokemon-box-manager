@@ -157,6 +157,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Load reCAPTCHA Enterprise script if not already loaded
       if (typeof grecaptcha === "undefined" || !grecaptcha.enterprise) {
+        // Remove any existing reCAPTCHA script to avoid conflicts
+        document.querySelectorAll('script[src*="recaptcha/enterprise"]').forEach((s) => s.remove());
+        delete window.grecaptcha;
+
         await new Promise((resolve, reject) => {
           const s = document.createElement("script");
           s.src =
@@ -164,6 +168,21 @@ document.addEventListener("DOMContentLoaded", () => {
           s.onload = resolve;
           s.onerror = reject;
           document.head.appendChild(s);
+        });
+        // Wait for grecaptcha.enterprise to be ready
+        await new Promise((resolve) => {
+          const check = () => {
+            if (
+              typeof grecaptcha !== "undefined" &&
+              grecaptcha.enterprise &&
+              typeof grecaptcha.enterprise.execute === "function"
+            ) {
+              resolve();
+            } else {
+              setTimeout(check, 100);
+            }
+          };
+          check();
         });
       }
 
