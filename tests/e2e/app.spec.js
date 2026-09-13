@@ -12,7 +12,7 @@ test.describe("Pokémon Box Manager", () => {
     await page.goto("/");
 
     // Click the "+ Add Pokémon" button (opens search overlay)
-    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" });
+    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" }).first();
     await addBtn.click();
 
     const searchOverlay = page.locator('[data-testid="species-search"]');
@@ -23,7 +23,7 @@ test.describe("Pokémon Box Manager", () => {
     await page.goto("/");
 
     // Open search overlay
-    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" });
+    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" }).first();
     await addBtn.click();
 
     // Type a search query — Charizard
@@ -41,7 +41,7 @@ test.describe("Pokémon Box Manager", () => {
     await page.goto("/");
 
     // Open species search
-    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" });
+    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" }).first();
     await addBtn.click();
     await expect(page.locator('[data-testid="species-search"]')).toBeVisible({ timeout: 3000 });
 
