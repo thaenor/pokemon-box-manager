@@ -208,6 +208,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   container.appendChild(resultEl);
   container.appendChild(btn);
+
+  // ── Force Refresh button ──
+  const refreshBtn = document.createElement("button");
+  refreshBtn.textContent = "Force Refresh";
+  refreshBtn.style.cssText =
+    "background:var(--color-accent,#6c63ff);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;";
+
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "Clearing cache…";
+    // Unregister all service workers
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+    // Clear all caches
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => caches.delete(k)));
+    refreshBtn.textContent = "Reloading…";
+    window.location.reload();
+  });
+
+  container.appendChild(refreshBtn);
   // Append after DOM ready
   const inject = () => document.body.appendChild(container);
   if (document.body) inject();
