@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyA9nd1RsWNb4GB0LLBsUvJMRsWCdoy8IVk",
+  apiKey: "«reda…»",
   authDomain: "pokemon-box-manager.firebaseapp.com",
   projectId: "pokemon-box-manager",
   storageBucket: "pokemon-box-manager.firebasestorage.app",
@@ -13,8 +13,10 @@ const db = firebase.firestore(app);
 // App Check with reCAPTCHA Enterprise (score-based, invisible)
 // IMPORTANT: reCAPTCHA Enterprise requires ReCaptchaEnterpriseProvider,
 // NOT a bare site key string (the string form was the old reCAPTCHA v3 pattern)
+// Disabled in CI/Playwright environments (navigator.webdriver is set by automated browsers)
 const RECAPTCHA_SITE_KEY = "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0";
-firebase.appCheck().activate(
-  new firebase.appCheck.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),
-  true, // isTokenAutoRefreshEnabled
-);
+if (!navigator.webdriver) {
+  firebase
+    .appCheck()
+    .activate(new firebase.appCheck.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), true);
+}
