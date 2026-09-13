@@ -131,3 +131,84 @@ document.addEventListener("DOMContentLoaded", () => {
   if (restored.length > 0) state.box = restored;
   showBoxView();
 });
+
+/* ── reCAPTCHA Test Button (temporary debug) ── */
+
+(function addRecaptchaTest() {
+  const container = document.createElement("div");
+  container.style.cssText =
+    "position:fixed;bottom:12px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:4px;align-items:end;";
+
+  const resultEl = document.createElement("div");
+  resultEl.style.cssText =
+    "display:none;background:var(--color-surface-l2,#1a1a2e);border:1px solid var(--color-hairline,#333);border-radius:8px;padding:8px 12px;font-size:13px;max-width:280px;word-break:break-all;color:var(--color-text-primary,#eee);font-family:monospace;";
+
+  const btn = document.createElement("button");
+  btn.textContent = "Verify reCAPTCHA";
+  btn.style.cssText =
+    "background:var(--color-accent,#6c63ff);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;";
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Verifying…";
+    resultEl.style.display = "block";
+    resultEl.textContent = "Loading reCAPTCHA…";
+
+    try {
+      // Load reCAPTCHA Enterprise script if not already loaded
+      if (typeof grecaptcha === "undefined" || !grecaptcha.enterprise) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src =
+            "https://www.google.com/recaptcha/enterprise.js?render=6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0";
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      resultEl.textContent = "Executing reCAPTCHA…";
+
+      const token = await grecaptcha.enterprise.execute(
+        "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0",
+        { action: "verify" },
+      );
+
+      resultEl.textContent = `Token: ${token.slice(0, 32)}…\nSending assessment…`;
+
+      const res = await fetch(
+        "https://recaptchaenterprise.googleapis.com/v1/projects/pokemon-box-manager/assessments?key=AIzaSyA9nd1RsWNb4GB0LLBsUvJMRsWCdoy8IVk",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: {
+              token,
+              expectedAction: "verify",
+              siteKey: "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0",
+            },
+          }),
+        },
+      );
+
+      const data = await res.json();
+      const score = data?.riskAnalysis?.score;
+      const reasons = data?.riskAnalysis?.reasons;
+      resultEl.textContent = score !== undefined
+        ? `✅ Score: ${score}\nReasons: ${reasons?.join(", ") || "none"}`
+        : `❌ Error: ${data?.error?.message || JSON.stringify(data)}`;
+    } catch (e) {
+      resultEl.textContent = `❌ ${e.message || e}`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Verify reCAPTCHA";
+    }
+  });
+
+  container.appendChild(resultEl);
+  container.appendChild(btn);
+  // Append after DOM ready
+  const inject = () => document.body.appendChild(container);
+  if (document.body) inject();
+  else document.addEventListener("DOMContentLoaded", inject);
+})();
