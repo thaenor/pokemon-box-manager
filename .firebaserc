@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "pokemon-box-manager"
+  },
+  "targets": {
+    "pokemon-box-manager": {
+      "hosting": {
+        "staging": [
+          "pokemon-box-manager-staging"
+        ]
+      }
+    }
   }
 }
