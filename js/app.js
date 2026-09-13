@@ -36,6 +36,41 @@ function sanitizePokemon(obj) {
   return clean
 }
 
+/**
+ * localStorage key for box persistence.
+ * Stores the serialized box array so it survives page reloads.
+ */
+const STORAGE_KEY = 'pokemon-box:slots'
+
+/**
+ * Save the current box array to localStorage.
+ * Called after every mutation (add, delete, reorder).
+ */
+function saveBox() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.box))
+  } catch (e) {
+    console.warn('Failed to save box to localStorage:', e)
+  }
+}
+
+/**
+ * Load the box array from localStorage.
+ * Returns a clean 30-slot empty array on first visit or corrupt data.
+ */
+function loadBox() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter(Boolean).map(sanitizePokemon).filter(Boolean)
+  } catch (e) {
+    console.warn('Failed to load box from localStorage, starting fresh:', e)
+    return []
+  }
+}
+
 const state = {
   box: [],
   boxSize: 30,
@@ -66,10 +101,9 @@ async function handleAddPokemon(slotIndex) {
   const saved = await showPokemonDetail(species)
   if (!saved) return
 
-  // Step 3: Save to box, re-render
-  // TODO: Persistence hook — this is where the box saves to localStorage
-  // See #20: after detail form cleanup, write pokemon-box:slots here on every mutation
+  // Step 3: Save to box, persist, re-render
   state.box.push(sanitizePokemon(saved))
+  saveBox()
   showBoxView()
 }
 
@@ -82,5 +116,8 @@ function handleSelectPokemon(pokemon, index) {
 
 document.addEventListener('DOMContentLoaded', () => {
   state.appEl = document.getElementById('app')
+  // Load persisted box BEFORE first render
+  const restored = loadBox()
+  if (restored.length > 0) state.box = restored
   showBoxView()
 })
