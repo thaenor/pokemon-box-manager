@@ -248,7 +248,8 @@ export const speciesList = [
     types: ["Psychic", "Fairy"],
     isMega: false,
     isUltra: false,
-    spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/122.png",
+    spriteUrl:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/122.png",
   },
   {
     id: 122,
