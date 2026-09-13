@@ -21,11 +21,19 @@ export async function showPokemonDetail(species, existing = null) {
 
   /* ── Loading state ── */
   const loadingEl = document.createElement('div');
-  loadingEl.textContent = 'Loading Pokémon data…';
-  loadingEl.className = 'body-lg';
   loadingEl.style.textAlign = 'center';
   loadingEl.style.padding = '2rem';
   panel.appendChild(loadingEl);
+
+  const spinner = document.createElement('div');
+  spinner.style.cssText = 'width:32px;height:32px;border:3px solid var(--color-hairline);border-top-color:var(--color-primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto var(--space-md) auto;';
+  loadingEl.appendChild(spinner);
+
+  const loadingText = document.createElement('div');
+  loadingText.textContent = 'Loading Pokémon data…';
+  loadingText.className = 'body-lg';
+  loadingText.style.color = 'var(--color-text-secondary)';
+  loadingEl.appendChild(loadingText);
 
   document.body.appendChild(overlay);
 
