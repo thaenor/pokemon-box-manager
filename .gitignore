@@ -1,5 +1,8 @@
 # Generated Pokémon data (re-generate via scripts/fetch-data.js)
 /data/
 
+# Firebase deployment cache
+.firebase/
+
 # Node
 node_modules/
