@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "«reda…»",
+  apiKey: "AIzaSyA9nd1RsWNb4GB0LLBsUvJMRsWCdoy8IVk",
   authDomain: "pokemon-box-manager.firebaseapp.com",
   projectId: "pokemon-box-manager",
   storageBucket: "pokemon-box-manager.firebasestorage.app",
