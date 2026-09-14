@@ -1,4 +1,4 @@
-const CACHE_NAME = "pkmn-box-v2";
+const CACHE_NAME = "pkmn-box-v3";
 
 const PRECACHE_URLS = [
   "/",
@@ -56,9 +56,31 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets: Cache-first
+  // JavaScript files: network-first — always try fresh, fall back to cache
+  if (url.pathname.match(/\.(js|mjs)$/)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // All other static assets (CSS, images, fonts): cache-first
   event.respondWith(cacheFirst(request));
 });
+
+/* ── Network-first strategy (for JS files) ── */
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    if (response && response.ok && response.type === "basic") {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (err) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    return new Response("Offline", { status: 503, statusText: "Offline" });
+  }
+}
 
 /* ── Cache-first strategy ── */
 async function cacheFirst(request) {
