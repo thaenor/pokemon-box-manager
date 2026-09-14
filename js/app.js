@@ -5,8 +5,6 @@
  *   Login → Box Grid → Species Search → Pokémon Detail → Save → Box Grid
  */
 
-import { speciesList } from "./data/species-list.js";
-import { fetchPokemon } from "./api/pokeapi.js";
 import { renderBoxGrid } from "./ui/box-grid.js";
 import { showSpeciesSearch } from "./ui/species-search.js";
 import { showPokemonDetail } from "./ui/pokemon-detail.js";
@@ -213,32 +211,6 @@ function showBoxView() {
   );
   grid.classList.add("view-fade-in");
   state.appEl.appendChild(grid);
-}
-
-/**
- * Show/hide a spinner on a button during async operations.
- * @param {HTMLElement} btn — the button element
- * @param {boolean} loading — true to show spinner, false to restore label
- * @param {string} [originalText] — text to restore when loading=false
- */
-/** Reserved for auth login flow (see #36). */
-function setButtonLoading(btn, loading, originalText) {
-  if (loading) {
-    btn.dataset.originalText = btn.textContent;
-    btn.textContent = "";
-    const spinner = document.createElement("span");
-    spinner.className = "spinner";
-    spinner.setAttribute("aria-hidden", "true");
-    spinner.dataset.spinner = "";
-    btn.appendChild(spinner);
-    btn.disabled = true;
-  } else {
-    const spinner = btn.querySelector("[data-spinner]");
-    if (spinner) spinner.remove();
-    btn.textContent = originalText || btn.dataset.originalText || "";
-    btn.disabled = false;
-    delete btn.dataset.originalText;
-  }
 }
 
 /* ── Handlers ── */
