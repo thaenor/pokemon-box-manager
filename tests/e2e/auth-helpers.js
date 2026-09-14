@@ -5,7 +5,9 @@
  */
 
 /**
- * Set auth state before navigating to the app.
+ * Set auth state in the browser context.
+ * Call AFTER page.goto() — the fixture's default addInitScript overrides
+ * __authState on every navigation, so setting it before goto() is discarded.
  * @param {import('@playwright/test').Page} page — Playwright page object
  * @param {object|null} user — mock user object, or null for unauthenticated
  */

@@ -49,7 +49,6 @@
 
       signOut() {
         window.__authState = null;
-        listeners.forEach((cb) => cb(null));
         return Promise.resolve();
       },
 
@@ -75,7 +74,9 @@
     firebase.auth = function () {
       return authStub;
     };
-    // Preserve any extra properties on firebase.auth
+    // Make GoogleAuthProvider accessible from both the function and its return value
+    firebase.auth.GoogleAuthProvider = authStub.GoogleAuthProvider;
+    // Preserve any extra properties from the original firebase.auth
     if (origAuth) {
       Object.keys(origAuth).forEach((key) => {
         if (!(key in firebase.auth)) {
