@@ -20,7 +20,7 @@ export function saveFocus() {
  */
 export function trapTab(container, e) {
   const focusable = container.querySelectorAll(
-    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
   );
   if (focusable.length === 0) return;
 
