@@ -134,7 +134,7 @@ describe("showPokemonDetail", () => {
     await promise;
   });
 
-  it("save button collects form data and resolves with object", async () => {
+  it("save button collects form data and resolves with {action,save}", async () => {
     const promise = showPokemonDetail(species);
     await vi.waitFor(() => {
       expect(document.querySelector(".btn-primary")).not.toBeNull();
@@ -147,13 +147,14 @@ describe("showPokemonDetail", () => {
 
     const saveBtn = document.querySelector(".btn-primary");
     saveBtn.click();
-    const saved = await promise;
-    expect(saved).not.toBeNull();
-    expect(saved.nickname).toBe("Sparky");
-    expect(saved.ability).toBe("lightning-rod");
-    expect(saved.nature).toBe("Timid");
-    expect(saved.species).toBe(species);
-    expect(saved.isShiny).toBe(false);
+    const result = await promise;
+    expect(result).not.toBeNull();
+    expect(result.action).toBe("save");
+    expect(result.pokemon.nickname).toBe("Sparky");
+    expect(result.pokemon.ability).toBe("lightning-rod");
+    expect(result.pokemon.nature).toBe("Timid");
+    expect(result.pokemon.species).toBe(species);
+    expect(result.pokemon.isShiny).toBe(false);
   });
 
   it("cancel button resolves null", async () => {

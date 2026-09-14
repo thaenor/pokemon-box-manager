@@ -109,17 +109,28 @@ async function handleAddPokemon(slotIndex) {
   if (!species) return;
 
   // Step 2: Fetch + detail/edit form
-  const saved = await showPokemonDetail(species);
-  if (!saved) return;
+  const result = await showPokemonDetail(species);
+  if (!result || result.action !== "save") return;
 
   // Step 3: Save to specific slot, persist, re-render
-  state.box[slotIndex] = sanitizePokemon(saved);
+  state.box[slotIndex] = sanitizePokemon(result.pokemon);
   saveBox();
   showBoxView();
 }
 
-function handleSelectPokemon(pokemon, index) {
-  // Future: open detail form in edit mode, or highlight in inspector
+async function handleSelectPokemon(pokemon, index) {
+  // Open the detail form in edit mode with existing data
+  const result = await showPokemonDetail(pokemon.species, pokemon);
+  if (!result) return; // cancelled (clicked outside)
+
+  if (result.action === "save") {
+    state.box[index] = sanitizePokemon(result.pokemon);
+  } else if (result.action === "remove") {
+    state.box[index] = null;
+  }
+
+  saveBox();
+  showBoxView();
 }
 
 /* ── Init ── */
