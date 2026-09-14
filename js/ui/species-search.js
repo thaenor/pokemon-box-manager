@@ -6,6 +6,7 @@
  */
 
 import { speciesList } from "../data/species-list.js";
+import { saveFocus, trapTab } from "./focus-trap.js";
 
 /**
  * Show the species search overlay. Returns a promise that resolves with the selected species object or null (dismissed).
@@ -14,11 +15,13 @@ import { speciesList } from "../data/species-list.js";
 export function showSpeciesSearch() {
   return new Promise((resolve) => {
     let resolved = false;
+    const restoreFocus = saveFocus();
 
     function finish(result) {
       if (resolved) return;
       resolved = true;
       document.removeEventListener("keydown", onKeyDown);
+      restoreFocus();
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
       resolve(result);
     }
@@ -27,6 +30,9 @@ export function showSpeciesSearch() {
     const overlay = document.createElement("div");
     overlay.className = "overlay";
     overlay.dataset.testid = "species-search";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "species-search-title");
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) finish(null);
     });
@@ -47,6 +53,7 @@ export function showSpeciesSearch() {
     const title = document.createElement("div");
     title.className = "headline-md";
     title.textContent = "Select Pokémon";
+    title.id = "species-search-title";
     panel.appendChild(title);
 
     /* ── Search input ── */
@@ -89,6 +96,7 @@ export function showSpeciesSearch() {
     resultsEl.style.display = "flex";
     resultsEl.style.flexDirection = "column";
     resultsEl.style.gap = "2px";
+    resultsEl.setAttribute("role", "listbox");
     panel.appendChild(resultsEl);
 
     /* ── Footer with cancel button ── */
@@ -101,6 +109,7 @@ export function showSpeciesSearch() {
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "btn btn-secondary";
     cancelBtn.textContent = "Cancel";
+    cancelBtn.type = "button";
     cancelBtn.addEventListener("click", () => finish(null));
     footer.appendChild(cancelBtn);
     panel.appendChild(footer);
@@ -109,6 +118,8 @@ export function showSpeciesSearch() {
     function createSpeciesRow(species) {
       const row = document.createElement("div");
       row.dataset.testid = "search-result";
+      row.setAttribute("tabindex", "0");
+      row.setAttribute("role", "option");
       row.style.display = "flex";
       row.style.alignItems = "center";
       row.style.gap = "var(--space-md)";
@@ -124,6 +135,16 @@ export function showSpeciesSearch() {
         row.style.background = "transparent";
       });
       row.addEventListener("click", () => finish(species));
+      row.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          finish(species);
+        }
+      });
+      row.addEventListener("focus", () => {
+        highlightedIndex = Array.from(resultsEl.children).indexOf(row);
+        applyHighlight(highlightedIndex);
+      });
 
       /* Sprite container — fixed 48×48, no layout shift */
       const spriteWrap = document.createElement("div");
@@ -296,6 +317,10 @@ export function showSpeciesSearch() {
 
     /* ── Keyboard: Escape dismisses ── */
     function onKeyDown(e) {
+      if (e.key === "Tab") {
+        trapTab(panel, e);
+        return;
+      }
       if (e.key === "Escape") {
         e.preventDefault();
         finish(null);
