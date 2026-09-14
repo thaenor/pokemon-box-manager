@@ -11,6 +11,6 @@ test.describe("Box flow E2E", () => {
   test("box slots have data-testid attribute", async ({ page }) => {
     await page.goto("/");
     const slots = page.locator('[data-testid="box-slot"]');
-    await expect(slots).toHaveCount(30);
+    await expect(slots).toHaveCount(40);
   });
 });
