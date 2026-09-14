@@ -142,6 +142,9 @@ function showLoginView() {
   logo.setAttribute("height", "20");
   logo.setAttribute("alt", "");
   logo.setAttribute("aria-hidden", "true");
+  logo.onerror = () => {
+    logo.style.display = "none";
+  };
 
   const label = document.createTextNode("Sign in with Google");
 
