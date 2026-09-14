@@ -5,7 +5,7 @@ test.describe("Box flow E2E", () => {
     await page.goto("/");
     // Wait for app to render: empty state text
     await expect(page.locator("text=Your box is empty")).toBeVisible();
-    await expect(page.locator("text=Tap + Add Pokémon")).toBeVisible();
+    await expect(page.locator("text=Tap an empty slot to add a Pokémon")).toBeVisible();
   });
 
   test("box slots have data-testid attribute", async ({ page }) => {

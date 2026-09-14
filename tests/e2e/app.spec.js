@@ -11,9 +11,9 @@ test.describe("Pokémon Box Manager", () => {
   test("can open species search overlay", async ({ page }) => {
     await page.goto("/");
 
-    // Click the "+ Add Pokémon" button (opens search overlay)
-    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" }).first();
-    await addBtn.click();
+    // Click the first empty grid slot (opens search overlay)
+    const firstSlot = page.locator('[data-testid="box-slot"]').first();
+    await firstSlot.click();
 
     const searchOverlay = page.locator('[data-testid="species-search"]');
     await expect(searchOverlay).toBeVisible({ timeout: 3000 });
@@ -22,9 +22,9 @@ test.describe("Pokémon Box Manager", () => {
   test("can search by name and see results", async ({ page }) => {
     await page.goto("/");
 
-    // Open search overlay
-    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" }).first();
-    await addBtn.click();
+    // Open search overlay by clicking first empty grid slot
+    const firstSlot = page.locator('[data-testid="box-slot"]').first();
+    await firstSlot.click();
 
     // Type a search query — Charizard
     const searchInput = page.locator('[data-testid="search-input"]');
@@ -40,9 +40,9 @@ test.describe("Pokémon Box Manager", () => {
   test("sprite loads in search results after typing a query", async ({ page }) => {
     await page.goto("/");
 
-    // Open species search
-    const addBtn = page.getByRole("button", { name: "+ Add Pokémon" }).first();
-    await addBtn.click();
+    // Open species search by clicking first empty grid slot
+    const firstSlot = page.locator('[data-testid="box-slot"]').first();
+    await firstSlot.click();
     await expect(page.locator('[data-testid="species-search"]')).toBeVisible({ timeout: 3000 });
 
     // Type "Charizard" — should render exactly 1 result

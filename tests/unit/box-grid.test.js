@@ -21,13 +21,14 @@ describe("renderBoxGrid", () => {
     const el = renderBoxGrid([], vi.fn(), vi.fn());
     expect(el.className).toBe("two-pane");
     expect(el.textContent).toContain("Your box is empty");
-    expect(el.textContent).toContain("+ Add Pokémon");
+    expect(el.textContent).toContain("Tap an empty slot to add a Pokémon");
   });
 
-  it("empty state shows 'Your box is empty' text and add button", () => {
+  it("empty state shows 'Your box is empty' text and guidance", () => {
     const el = renderBoxGrid([], vi.fn(), vi.fn());
     expect(el.innerHTML).toContain("Your box is empty");
-    expect(el.innerHTML).toContain("Tap + Add Pokémon");
+    expect(el.innerHTML).toContain("Tap an empty slot to add a Pokémon");
+    expect(el.innerHTML).not.toContain("+ Add Pokémon");
   });
 
   it("rendered slots have data-testid='box-slot'", () => {
@@ -81,13 +82,5 @@ describe("renderBoxGrid", () => {
     const el = renderBoxGrid([pokemon], vi.fn(), vi.fn());
     const slots = el.querySelectorAll('[data-testid="box-slot"]');
     expect(slots.length).toBe(30);
-  });
-
-  it("add button in empty state calls onAddPokemon with no index", () => {
-    const onAdd = vi.fn();
-    const el = renderBoxGrid([], onAdd, vi.fn());
-    const btn = el.querySelector("button");
-    btn.click();
-    expect(onAdd).toHaveBeenCalled();
   });
 });
