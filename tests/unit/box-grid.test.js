@@ -35,7 +35,7 @@ describe("renderBoxGrid", () => {
     const box = [makeBoxPokemon("Pikachu", "pikachu")];
     const el = renderBoxGrid(box, vi.fn(), vi.fn());
     const slots = el.querySelectorAll('[data-testid="box-slot"]');
-    expect(slots.length).toBe(30);
+    expect(slots.length).toBe(40);
   });
 
   it("filled slots show species name and sprite", () => {
@@ -53,7 +53,7 @@ describe("renderBoxGrid", () => {
     const pokemon = makeBoxPokemon("Pikachu", "pikachu");
     const el = renderBoxGrid([pokemon, null], onAdd, vi.fn());
     const slots = el.querySelectorAll('[data-testid="box-slot"]');
-    expect(slots.length).toBe(30);
+    expect(slots.length).toBe(40);
     slots[1].click();
     expect(onAdd).toHaveBeenCalledWith(1);
   });
@@ -74,14 +74,14 @@ describe("renderBoxGrid", () => {
       makeBoxPokemon("Charizard", "charizard"),
     ];
     const el = renderBoxGrid(box, vi.fn(), vi.fn());
-    expect(el.textContent).toContain("2/30");
+    expect(el.textContent).toContain("2/40");
   });
 
-  it("creates correct number of slots (30)", () => {
+  it("creates correct number of slots (40)", () => {
     const pokemon = makeBoxPokemon("Pikachu", "pikachu");
     const el = renderBoxGrid([pokemon], vi.fn(), vi.fn());
     const slots = el.querySelectorAll('[data-testid="box-slot"]');
-    expect(slots.length).toBe(30);
+    expect(slots.length).toBe(40);
   });
 
   it("renders grid size dropdown with 30/35/40 options", () => {
