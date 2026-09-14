@@ -10,6 +10,7 @@ import { fetchPokemon } from "./api/pokeapi.js";
 import { renderBoxGrid } from "./ui/box-grid.js";
 import { showSpeciesSearch } from "./ui/species-search.js";
 import { showPokemonDetail } from "./ui/pokemon-detail.js";
+import { showToast } from "./ui/toast.js";
 
 /* ── State ── */
 
@@ -98,23 +99,56 @@ function showBoxView() {
     (pokemon, index) => handleSelectPokemon(pokemon, index),
     state.boxSize,
   );
+  grid.classList.add("view-fade-in");
   state.appEl.appendChild(grid);
+}
+
+/**
+ * Show/hide a spinner on a button during async operations.
+ * @param {HTMLElement} btn — the button element
+ * @param {boolean} loading — true to show spinner, false to restore label
+ * @param {string} [originalText] — text to restore when loading=false
+ */
+/** Reserved for auth login flow (see #36). */
+function setButtonLoading(btn, loading, originalText) {
+  if (loading) {
+    btn.dataset.originalText = btn.textContent;
+    btn.textContent = "";
+    const spinner = document.createElement("span");
+    spinner.className = "spinner";
+    spinner.setAttribute("aria-hidden", "true");
+    spinner.dataset.spinner = "";
+    btn.appendChild(spinner);
+    btn.disabled = true;
+  } else {
+    const spinner = btn.querySelector("[data-spinner]");
+    if (spinner) spinner.remove();
+    btn.textContent = originalText || btn.dataset.originalText || "";
+    btn.disabled = false;
+    delete btn.dataset.originalText;
+  }
 }
 
 /* ── Handlers ── */
 
 async function handleAddPokemon(slotIndex) {
-  // Step 1: Species search
-  const species = await showSpeciesSearch();
-  if (!species) return;
+  try {
+    // Step 1: Species search
+    const species = await showSpeciesSearch();
+    if (!species) return;
 
-  // Step 2: Fetch + detail/edit form
-  const result = await showPokemonDetail(species);
-  if (!result || result.action !== "save") return;
+    // Step 2: Fetch + detail/edit form
+    const result = await showPokemonDetail(species);
+    if (!result || result.action !== "save") return;
 
-  // Step 3: Save to specific slot, persist, re-render
-  state.box[slotIndex] = sanitizePokemon(result.pokemon);
-  saveBox();
+    // Step 3: Save to specific slot, persist, re-render
+    state.box[slotIndex] = sanitizePokemon(result.pokemon);
+    saveBox();
+    showToast(`${result.pokemon.species.name} added to box!`, "success");
+  } catch (e) {
+    console.error("handleAddPokemon:", e);
+    showToast("Failed to add Pokémon", "error");
+  }
   showBoxView();
 }
 
@@ -125,10 +159,13 @@ async function handleSelectPokemon(pokemon, index) {
 
   if (result.action === "save") {
     state.box[index] = sanitizePokemon(result.pokemon);
+    showToast(`${result.pokemon.species.name} updated`, "success");
   } else if (result.action === "remove") {
     state.box[index] = null;
+    showToast(`${pokemon.species.name} removed from box`, "info");
   } else {
     console.warn("handleSelectPokemon: unknown action", result);
+    showToast("Something went wrong", "error");
   }
 
   saveBox();
