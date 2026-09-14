@@ -230,10 +230,7 @@ function handleBoxSizeChange(newSize) {
 
   if (newSize < currentSize) {
     const fillCount = currentSize - newSize;
-    const msg =
-      newSize === 30
-        ? `Reduce grid to 30 slots? The last ${fillCount} Pokémon will be removed. Continue?`
-        : `Reduce grid to ${newSize} slots? The last ${fillCount} Pokémon will be removed. Continue?`;
+    const msg = `Reduce grid to ${newSize} slots? The last ${fillCount} Pokémon will be removed. Continue?`;
     if (!confirm(msg)) {
       // Revert the dropdown — the next re-render will pick up the unchanged boxSize
       showBoxView();

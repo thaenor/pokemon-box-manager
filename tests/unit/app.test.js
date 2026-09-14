@@ -84,6 +84,38 @@ describe("saveBox / loadBox", () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  it("loadBox pads with nulls when stored box is shorter than boxSize", () => {
+    const stored = [{ species: { name: "Pikachu", showdownId: "pikachu" }, nickname: "", isShiny: false, nature: "Serious", ability: "", stats: [], recruitedDate: "2025-01-01" }];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    const result = loadBox();
+    // state.boxSize defaults to 40, so 1 stored + 39 nulls
+    expect(result).toHaveLength(40);
+    expect(result[0]).not.toBeNull();
+    expect(result[1]).toBeNull();
+  });
+
+  it("loadBox truncates stored data longer than boxSize", () => {
+    const stored = Array.from({ length: 50 }, (_, i) => ({
+      species: { name: "Pokémon", showdownId: "pokemon-" + i },
+      nickname: "", isShiny: false, nature: "Serious", ability: "", stats: [], recruitedDate: "2025-01-01",
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    const result = loadBox();
+    expect(result).toHaveLength(40);
+    expect(result[39]).not.toBeNull();
+  });
+
+  it("loadBox handles box exactly matching boxSize", () => {
+    const stored = Array.from({ length: 40 }, (_, i) => ({
+      species: { name: "Pokémon", showdownId: "pokemon-" + i },
+      nickname: "", isShiny: false, nature: "Serious", ability: "", stats: [], recruitedDate: "2025-01-01",
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    const result = loadBox();
+    expect(result).toHaveLength(40);
+    expect(result.every((s) => s !== null)).toBe(true);
+  });
+
   it("loadBox returns clean array of 40 nulls when localStorage empty", () => {
     localStorage.clear();
     const result = loadBox();
