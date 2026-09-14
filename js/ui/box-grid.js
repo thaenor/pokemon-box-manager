@@ -60,31 +60,10 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, 
   const nav = document.createElement("div");
   nav.className = "box-nav-header";
 
-  const navInner = document.createElement("div");
-  navInner.className = "box-nav-header__nav";
-
-  const prevBtn = document.createElement("button");
-  prevBtn.className = "box-nav-header__arrow";
-  prevBtn.textContent = "\u2039";
-  prevBtn.setAttribute("aria-label", "Previous box");
-
-  const nextBtn = document.createElement("button");
-  nextBtn.className = "box-nav-header__arrow";
-  nextBtn.textContent = "\u203A";
-  nextBtn.setAttribute("aria-label", "Next box");
-
-  const indexSpan = document.createElement("span");
-  indexSpan.className = "box-nav-header__index";
-  indexSpan.textContent = "BOX 01 / 32";
-
   const capacitySpan = document.createElement("span");
   capacitySpan.className = "box-nav-header__capacity";
   capacitySpan.textContent = filled + "/" + boxSize;
 
-  navInner.appendChild(prevBtn);
-  navInner.appendChild(indexSpan);
-  navInner.appendChild(nextBtn);
-  nav.appendChild(navInner);
   nav.appendChild(capacitySpan);
 
   // ── Toolbar (right side of nav) ──
