@@ -21,3 +21,6 @@ Single-context layout. See `docs/agents/domain.md`.
 - Firebase enforces security via **App Check** (reCAPTCHA) + **Security Rules** (Firestore/Storage), not by hiding config values
 
 **Previous bug:** An agent replaced the real `apiKey` with a `«reda…»` placeholder, which broke all Firebase calls (`auth/api-key-not-valid`). The file has been restored — never do this. If you see a value that looks like a placeholder or redaction mark (`«reda…»`, `***`, `REDACTED`), it's broken — restore from git history or ask the user.
+
+## Important rules - before committing any code
+- always run linters and prettier to make sure code is in good shape.
