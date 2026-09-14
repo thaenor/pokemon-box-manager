@@ -85,7 +85,17 @@ describe("saveBox / loadBox", () => {
   });
 
   it("loadBox pads with nulls when stored box is shorter than boxSize", () => {
-    const stored = [{ species: { name: "Pikachu", showdownId: "pikachu" }, nickname: "", isShiny: false, nature: "Serious", ability: "", stats: [], recruitedDate: "2025-01-01" }];
+    const stored = [
+      {
+        species: { name: "Pikachu", showdownId: "pikachu" },
+        nickname: "",
+        isShiny: false,
+        nature: "Serious",
+        ability: "",
+        stats: [],
+        recruitedDate: "2025-01-01",
+      },
+    ];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
     const result = loadBox();
     // state.boxSize defaults to 40, so 1 stored + 39 nulls
@@ -97,7 +107,12 @@ describe("saveBox / loadBox", () => {
   it("loadBox truncates stored data longer than boxSize", () => {
     const stored = Array.from({ length: 50 }, (_, i) => ({
       species: { name: "Pokémon", showdownId: "pokemon-" + i },
-      nickname: "", isShiny: false, nature: "Serious", ability: "", stats: [], recruitedDate: "2025-01-01",
+      nickname: "",
+      isShiny: false,
+      nature: "Serious",
+      ability: "",
+      stats: [],
+      recruitedDate: "2025-01-01",
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
     const result = loadBox();
@@ -108,7 +123,12 @@ describe("saveBox / loadBox", () => {
   it("loadBox handles box exactly matching boxSize", () => {
     const stored = Array.from({ length: 40 }, (_, i) => ({
       species: { name: "Pokémon", showdownId: "pokemon-" + i },
-      nickname: "", isShiny: false, nature: "Serious", ability: "", stats: [], recruitedDate: "2025-01-01",
+      nickname: "",
+      isShiny: false,
+      nature: "Serious",
+      ability: "",
+      stats: [],
+      recruitedDate: "2025-01-01",
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
     const result = loadBox();
