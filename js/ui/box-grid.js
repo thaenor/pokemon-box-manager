@@ -234,8 +234,16 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, 
  */
 export function showExportDialog(box) {
   const closeDialog = () => {
+    document.removeEventListener("keydown", onExportKeyDown);
     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
   };
+
+  function onExportKeyDown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeDialog();
+    }
+  }
 
   const overlay = document.createElement("div");
   overlay.className = "overlay";
@@ -277,6 +285,7 @@ export function showExportDialog(box) {
 
   panel.appendChild(btnRow);
   overlay.appendChild(panel);
+  document.addEventListener("keydown", onExportKeyDown);
   document.body.appendChild(overlay);
 
   // Auto-select the textarea after render
