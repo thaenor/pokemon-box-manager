@@ -8,7 +8,7 @@ const firebaseConfig = {
 };
 
 const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(app);
+firebase.firestore(app);
 
 // App Check with reCAPTCHA Enterprise (score-based, invisible)
 // IMPORTANT: reCAPTCHA Enterprise requires ReCaptchaEnterpriseProvider,

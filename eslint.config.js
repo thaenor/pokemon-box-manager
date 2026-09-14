@@ -12,6 +12,7 @@ export default [
     },
     languageOptions: {
       globals: {
+        firebase: "writable",
         ...globals.browser,
         ...globals.node,
       },
@@ -33,7 +34,6 @@ export default [
       ".vitest/",
       "scripts/",
       "sw.js",
-      "js/**",
     ],
   },
 ];
