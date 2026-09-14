@@ -95,6 +95,14 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   toggleBtn.className = "box-nav-header__toggle";
   toggleBtn.textContent = "Select";
   toolbar.appendChild(toggleBtn);
+
+  // ── Export button ──
+  const exportBtn = document.createElement("button");
+  exportBtn.className = "box-nav-header__toggle";
+  exportBtn.textContent = "Export";
+  exportBtn.addEventListener("click", () => showExportDialog(box));
+  toolbar.appendChild(exportBtn);
+
   nav.appendChild(toolbar);
 
   leftPane.appendChild(nav);
@@ -209,4 +217,59 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   container.appendChild(rightPane);
 
   return container;
+}
+
+/**
+ * Show a modal dialog with the current box data as formatted JSON.
+ * @param {Array} box — reference to the live box array (captured at render time)
+ */
+export function showExportDialog(box) {
+  const closeDialog = () => {
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  };
+
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeDialog();
+  });
+
+  const panel = document.createElement("div");
+  panel.className = "overlay__panel";
+  panel.style.cssText =
+    "min-width: 360px; max-width: 600px; width: calc(100vw - var(--space-2xl));";
+
+  // ── Title ──
+  const title = document.createElement("p");
+  title.className = "headline-sm";
+  title.textContent = "Box Export (JSON)";
+  title.style.marginBottom = "var(--space-md)";
+  panel.appendChild(title);
+
+  // ── Textarea (read-only, selectable) ──
+  const textarea = document.createElement("textarea");
+  textarea.readOnly = true;
+  textarea.value = JSON.stringify(box, null, 2);
+  textarea.style.cssText =
+    "width: 100%; height: 320px; background: var(--color-surface); color: var(--color-text-primary); border: 1px solid var(--color-hairline); border-radius: var(--radius-default); padding: var(--space-md); font-family: monospace; font-size: var(--body-sm); line-height: 1.5; resize: vertical; outline: none;";
+  textarea.addEventListener("click", () => textarea.select());
+  panel.appendChild(textarea);
+
+  // ── Close button ──
+  const btnRow = document.createElement("div");
+  btnRow.style.cssText =
+    "display: flex; justify-content: flex-end; margin-top: var(--space-md); gap: var(--space-sm);";
+
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "btn btn-secondary";
+  closeBtn.textContent = "Close";
+  closeBtn.addEventListener("click", closeDialog);
+  btnRow.appendChild(closeBtn);
+
+  panel.appendChild(btnRow);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  // Auto-select the textarea after render
+  setTimeout(() => textarea.select(), 0);
 }
