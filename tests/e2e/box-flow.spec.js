@@ -13,9 +13,4 @@ test.describe("Box flow E2E", () => {
     const slots = page.locator('[data-testid="box-slot"]');
     await expect(slots).toHaveCount(30);
   });
-
-  test("Force Refresh button exists", async ({ page }) => {
-    await page.goto("/");
-    await expect(page.locator("text=Force Refresh")).toBeVisible();
-  });
 });

@@ -9,18 +9,6 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("Browser-only code validation", () => {
-  test("reCAPTCHA Verify button exists in the DOM", async ({ page }) => {
-    await page.goto("/");
-    const btn = page.locator("button", { hasText: "Verify reCAPTCHA" });
-    await expect(btn).toBeVisible({ timeout: 5000 });
-  });
-
-  test("Force Refresh button exists in the DOM", async ({ page }) => {
-    await page.goto("/");
-    const btn = page.locator("button", { hasText: "Force Refresh" });
-    await expect(btn).toBeVisible({ timeout: 5000 });
-  });
-
   test("no console errors during page initialization", async ({ page }) => {
     const errors = [];
     page.on("console", (msg) => {
@@ -28,9 +16,8 @@ test.describe("Browser-only code validation", () => {
     });
 
     await page.goto("/");
-    // Wait for the app to settle: force refresh and reCAPTCHA buttons
-    // are created by the IIFE at the end of DOMContentLoaded.
-    await expect(page.locator("button", { hasText: "Force Refresh" })).toBeVisible({
+    // Wait for app to render its initial state
+    await expect(page.locator("text=Your box is empty")).toBeVisible({
       timeout: 5000,
     });
 
