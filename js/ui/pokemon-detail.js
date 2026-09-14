@@ -73,7 +73,19 @@ export async function showPokemonDetail(species, existing = null) {
     panel.appendChild(closeBtn);
 
     return new Promise((resolve) => {
+      function onErrorKey(e) {
+        if (e.key === "Tab") {
+          trapTab(panel, e);
+          return;
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          handleDismiss();
+        }
+      }
+
       const handleDismiss = () => {
+        document.removeEventListener("keydown", onErrorKey);
         restoreFocus();
         document.body.removeChild(overlay);
         resolve(null);
@@ -82,17 +94,7 @@ export async function showPokemonDetail(species, existing = null) {
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) handleDismiss();
       });
-      document.addEventListener("keydown", function onErrorKey(e) {
-        if (e.key === "Tab") {
-          trapTab(panel, e);
-          return;
-        }
-        if (e.key === "Escape") {
-          e.preventDefault();
-          document.removeEventListener("keydown", onErrorKey);
-          handleDismiss();
-        }
-      });
+      document.addEventListener("keydown", onErrorKey);
     });
   }
 
@@ -425,6 +427,7 @@ export async function showPokemonDetail(species, existing = null) {
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "btn btn-secondary";
     cancelBtn.textContent = "Cancel";
+    cancelBtn.type = "button";
     actionsRow.appendChild(cancelBtn);
 
     const saveBtn = document.createElement("button");

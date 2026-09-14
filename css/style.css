@@ -1000,18 +1000,12 @@ img {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+  border-radius: var(--radius-default);
 }
 
 /* Remove default focus ring for mouse users */
 :focus:not(:focus-visible) {
   outline: none;
-}
-
-/* Enhanced focus for interactive elements in overlays */
-.overlay :focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: var(--radius-default);
 }
 
 /* ── Responsive: Mobile / Compact ── */

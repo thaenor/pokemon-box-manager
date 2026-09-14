@@ -109,6 +109,7 @@ export function showSpeciesSearch() {
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "btn btn-secondary";
     cancelBtn.textContent = "Cancel";
+    cancelBtn.type = "button";
     cancelBtn.addEventListener("click", () => finish(null));
     footer.appendChild(cancelBtn);
     panel.appendChild(footer);
@@ -134,6 +135,16 @@ export function showSpeciesSearch() {
         row.style.background = "transparent";
       });
       row.addEventListener("click", () => finish(species));
+      row.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          finish(species);
+        }
+      });
+      row.addEventListener("focus", () => {
+        highlightedIndex = Array.from(resultsEl.children).indexOf(row);
+        applyHighlight(highlightedIndex);
+      });
 
       /* Sprite container — fixed 48×48, no layout shift */
       const spriteWrap = document.createElement("div");
