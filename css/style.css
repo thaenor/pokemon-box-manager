@@ -797,6 +797,82 @@ img {
   border: 0;
 }
 
+/* ── Login View (Google OAuth) ── */
+.login-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--space-md) * 2);
+  min-height: calc(100dvh - var(--space-md) * 2);
+}
+
+.login-view__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-2xl);
+  background: var(--color-surface-l1);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  max-width: 400px;
+  width: 100%;
+}
+
+.login-view__error {
+  margin-top: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-destructive-hover-bg);
+  border: 1px solid var(--color-destructive);
+  border-radius: var(--radius-default);
+  color: var(--color-destructive);
+  font-family: var(--font-body);
+  font-size: var(--body-sm);
+  line-height: var(--body-sm-lh);
+  width: 100%;
+  text-align: center;
+}
+
+/* Google-branded sign-in button */
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--btn-height);
+  padding: 0 var(--space-lg);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-default);
+  background: var(--color-surface-l2);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--body-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 0;
+  width: 100%;
+}
+
+.btn-google:hover {
+  background: var(--color-surface-hover);
+}
+
+.btn-google:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Sign-out pill button in toolbar */
+.box-nav-header__toggle--logout {
+  color: var(--color-text-muted);
+  font-size: var(--label-micro);
+}
+
+.box-nav-header__toggle--logout:hover {
+  color: var(--color-destructive);
+  border-color: var(--color-destructive);
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

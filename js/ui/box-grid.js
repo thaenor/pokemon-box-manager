@@ -6,7 +6,7 @@
  * @param {number} boxSize — max slots (default 30)
  * @returns {HTMLElement} the rendered view
  */
-export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) {
+export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, onLogout) {
   const filled = box.filter(Boolean).length;
 
   // ── Two-pane wrapper ──
@@ -102,6 +102,15 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30) 
   exportBtn.textContent = "Export";
   exportBtn.addEventListener("click", () => showExportDialog(box));
   toolbar.appendChild(exportBtn);
+
+  // ── Sign-out button ──
+  if (typeof onLogout === "function") {
+    const logoutBtn = document.createElement("button");
+    logoutBtn.className = "box-nav-header__toggle box-nav-header__toggle--logout";
+    logoutBtn.textContent = "Sign out";
+    logoutBtn.addEventListener("click", onLogout);
+    toolbar.appendChild(logoutBtn);
+  }
 
   nav.appendChild(toolbar);
 
