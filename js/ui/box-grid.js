@@ -1,7 +1,7 @@
 /**
  * Creates the box grid view — main view after login.
  * @param {Array} box — array of Pokémon objects in the box (initially empty)
- * @param {Function} onAddPokemon — callback when user clicks "+ Add Pokémon"
+ * @param {Function} onAddPokemon — callback when user clicks an empty grid slot
  * @param {Function} onSelectPokemon — callback when user clicks a filled slot
  * @param {number} boxSize — max slots (default 30)
  * @returns {HTMLElement} the rendered view
@@ -40,18 +40,9 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, 
           subtitle.className = "body-md";
           subtitle.style.color = "var(--color-text-muted)";
           subtitle.style.marginBottom = "var(--space-xl)";
-          subtitle.textContent = "Tap + Add Pokémon to start building your box";
+          subtitle.textContent = "Tap an empty slot to add a Pokémon";
           el.appendChild(subtitle);
 
-          const addBtn = document.createElement("button");
-          addBtn.className = "btn btn-primary";
-          addBtn.textContent = "+ Add Pokémon";
-          addBtn.addEventListener("click", function () {
-            if (typeof onAddPokemon === "function") {
-              onAddPokemon();
-            }
-          });
-          el.appendChild(addBtn);
           return el;
         })()
       : null;
@@ -168,22 +159,6 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, 
   }
 
   leftPane.appendChild(grid);
-
-  // ── Add Pokémon button ──
-  const addWrapper = document.createElement("div");
-  addWrapper.style.cssText = "display: flex; justify-content: center; margin-top: var(--space-lg);";
-
-  const addBtn = document.createElement("button");
-  addBtn.className = "btn btn-primary";
-  addBtn.textContent = "+ Add Pok\u00E9mon";
-  addBtn.addEventListener("click", function () {
-    if (typeof onAddPokemon === "function") {
-      onAddPokemon();
-    }
-  });
-
-  addWrapper.appendChild(addBtn);
-  leftPane.appendChild(addWrapper);
 
   container.appendChild(leftPane);
 
