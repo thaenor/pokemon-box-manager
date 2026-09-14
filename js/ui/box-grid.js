@@ -3,7 +3,7 @@
  * @param {Array} box — array of Pokémon objects in the box (initially empty)
  * @param {Function} onAddPokemon — callback when user clicks an empty grid slot
  * @param {Function} onSelectPokemon — callback when user clicks a filled slot
- * @param {number} boxSize — max slots (default 30)
+ * @param {number} boxSize — max slots (default 40)
  * @param {Function} onLogout — callback for sign-out
  * @param {Function} onBoxSizeChange — callback when grid size changes (newSize)
  * @returns {HTMLElement} the rendered view
@@ -12,7 +12,7 @@ export function renderBoxGrid(
   box,
   onAddPokemon,
   onSelectPokemon,
-  boxSize = 30,
+  boxSize = 40,
   onLogout,
   onBoxSizeChange,
 ) {
