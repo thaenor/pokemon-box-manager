@@ -1,7 +1,7 @@
 /**
  * Creates the box grid view — main view after login.
  * @param {Array} box — array of Pokémon objects in the box (initially empty)
- * @param {Function} onAddPokemon — callback when user clicks "+ Add Pokémon"
+ * @param {Function} onAddPokemon — callback when user clicks an empty grid slot
  * @param {Function} onSelectPokemon — callback when user clicks a filled slot
  * @param {number} boxSize — max slots (default 30)
  * @returns {HTMLElement} the rendered view
