@@ -796,28 +796,28 @@ img {
   text-align: center;
 }
 
-/* Google-branded sign-in button */
+/* Google-branded sign-in button — per Google brand guidelines */
 .btn-google {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: var(--btn-height);
-  padding: 0 var(--space-lg);
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--radius-default);
-  background: var(--color-surface-l2);
-  color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: var(--body-md);
+  height: 40px;
+  padding: 0 24px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1f1f1f;
+  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s;
-  gap: 0;
+  gap: 8px;
   width: 100%;
 }
 
 .btn-google:hover {
-  background: var(--color-surface-hover);
+  background: #f8f9fa;
 }
 
 .btn-google:disabled {

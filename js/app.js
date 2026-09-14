@@ -135,19 +135,17 @@ function showLoginView() {
   btn.className = "btn btn-google";
   btn.type = "button";
 
-  // Google SVG logo (official brand)
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", "0 0 48 48");
-  svg.setAttribute("width", "20");
-  svg.setAttribute("height", "20");
-  svg.innerHTML =
-    '<path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-5.3 7.8v6.5h8.6c5-4.6 7.9-11.4 7.9-19.3 0-1.3-.1-2.6-.4-3.9Z"/><path fill="#FF3D00" d="m6.5 14.3 5 3.7A12 12 0 0 1 33.3 20H42a20 20 0 0 0-33.6-9.5l-1.8.1Z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-1.8 13.6-4.8l-8.6-6.5a12 12 0 0 1-18-6.3l-5 3.9A20 20 0 0 0 24 44Z"/><path fill="#1976D2" d="m6.5 14.3-1.9 9.4A20 20 0 0 0 24 44l-5-3.9-6.5-4.8-6-8.4Z"/>';
-  svg.setAttribute("aria-hidden", "true");
-  svg.style.marginRight = "var(--space-sm)";
+  // Google logo (official CDN-located SVG)
+  const logo = document.createElement("img");
+  logo.src = "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg";
+  logo.setAttribute("width", "20");
+  logo.setAttribute("height", "20");
+  logo.setAttribute("alt", "");
+  logo.setAttribute("aria-hidden", "true");
 
   const label = document.createTextNode("Sign in with Google");
 
-  btn.appendChild(svg);
+  btn.appendChild(logo);
   btn.appendChild(label);
 
   // ── Error container ──
