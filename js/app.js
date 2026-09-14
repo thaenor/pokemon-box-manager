@@ -213,6 +213,7 @@ function showBoxView() {
     state.boxSize,
     handleLogout,
     handleBoxSizeChange,
+    handleImport,
   );
   grid.classList.add("view-fade-in");
   state.appEl.appendChild(grid);
@@ -291,6 +292,26 @@ async function handleSelectPokemon(pokemon, index) {
 
   saveBox();
   showBoxView();
+}
+
+/**
+ * Handle importing Pokémon from JSON data.
+ * Sanitizes each entry, truncates to box size, overwrites the box, and re-renders.
+ * @param {Array<Object>} pokemonArray — array of Pokémon objects with resolved species
+ */
+export function handleImport(pokemonArray) {
+  const sanitized = pokemonArray
+    .map((p) => sanitizePokemon(p))
+    .filter(Boolean)
+    .slice(0, state.boxSize);
+
+  // Pad with nulls if fewer than boxSize
+  while (sanitized.length < state.boxSize) sanitized.push(null);
+
+  state.box = sanitized;
+  saveBox();
+  showToast(`Imported ${sanitized.filter(Boolean).length} Pokémon`, "success");
+  if (state.appEl) showBoxView();
 }
 
 /* ── Init ── */
