@@ -1,3 +1,5 @@
+import { speciesList } from "../data/species-list.js";
+
 /**
  * Creates the box grid view — main view after login.
  * @param {Array} box — array of Pokémon objects in the box (initially empty)
@@ -6,6 +8,7 @@
  * @param {number} boxSize — max slots (default 40)
  * @param {Function} onLogout — callback for sign-out
  * @param {Function} onBoxSizeChange — callback when grid size changes (newSize)
+ * @param {Function} onImport — callback when user imports JSON data (pokemonArray)
  * @returns {HTMLElement} the rendered view
  */
 export function renderBoxGrid(
@@ -15,6 +18,7 @@ export function renderBoxGrid(
   boxSize = 40,
   onLogout,
   onBoxSizeChange,
+  onImport,
 ) {
   const filled = box.filter(Boolean).length;
 
@@ -105,6 +109,13 @@ export function renderBoxGrid(
   exportBtn.textContent = "Export";
   exportBtn.addEventListener("click", () => showExportDialog(box));
   toolbar.appendChild(exportBtn);
+
+  // ── Import button ──
+  const importBtn = document.createElement("button");
+  importBtn.className = "box-nav-header__toggle";
+  importBtn.textContent = "Import";
+  importBtn.addEventListener("click", () => showImportDialog(box, onImport));
+  toolbar.appendChild(importBtn);
 
   // ── Sign-out button ──
   if (typeof onLogout === "function") {
@@ -278,4 +289,175 @@ export function showExportDialog(box) {
 
   // Auto-select the textarea after render
   setTimeout(() => textarea.select(), 0);
+}
+
+/**
+ * Build a lookup from the species list keyed by showdownId and name (lowercase).
+ */
+function buildSpeciesLookup() {
+  const map = new Map();
+  for (const s of speciesList) {
+    map.set(s.showdownId.toLowerCase(), s);
+    map.set(s.name.toLowerCase(), s);
+  }
+  return map;
+}
+
+/**
+ * Show a modal dialog for importing box data from pasted JSON.
+ * @param {Array} box — reference to the live box array (for capacity check)
+ * @param {Function} onImport — callback(data:Array<Object>) when import is confirmed
+ */
+export function showImportDialog(box, onImport) {
+  const speciesMap = buildSpeciesLookup();
+
+  const closeDialog = () => {
+    document.removeEventListener("keydown", onImportKeyDown);
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  };
+
+  function onImportKeyDown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeDialog();
+    }
+  }
+
+  // ── Overlay ──
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeDialog();
+  });
+
+  const panel = document.createElement("div");
+  panel.className = "overlay__panel";
+  panel.style.cssText =
+    "min-width: 360px; max-width: 600px; width: calc(100vw - var(--space-2xl));";
+
+  // ── Title ──
+  const title = document.createElement("p");
+  title.className = "headline-sm";
+  title.textContent = "Import Box (JSON)";
+  title.style.marginBottom = "var(--space-md)";
+  panel.appendChild(title);
+
+  // ── Textarea ──
+  const textarea = document.createElement("textarea");
+  textarea.placeholder =
+    '[{"species":{"name":"Charizard","showdownId":"charizard"},"nickname":"Zippo"}, ...]';
+  textarea.style.cssText =
+    "width: 100%; height: 320px; background: var(--color-surface); color: var(--color-text-primary); border: 1px solid var(--color-hairline); border-radius: var(--radius-default); padding: var(--space-md); font-family: monospace; font-size: var(--body-sm); line-height: 1.5; resize: vertical; outline: none;";
+  panel.appendChild(textarea);
+
+  // ── Error area ──
+  const errorEl = document.createElement("div");
+  errorEl.style.cssText =
+    "color: var(--color-danger, #e53935); font-size: var(--body-sm); margin-top: var(--space-sm); white-space: pre-wrap; max-height: 120px; overflow-y: auto; display: none;";
+  panel.appendChild(errorEl);
+
+  // ── Buttons ──
+  const btnRow = document.createElement("div");
+  btnRow.style.cssText =
+    "display: flex; justify-content: flex-end; margin-top: var(--space-md); gap: var(--space-sm);";
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.className = "btn btn-secondary";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", closeDialog);
+  btnRow.appendChild(cancelBtn);
+
+  const importBtn = document.createElement("button");
+  importBtn.className = "btn btn-primary";
+  importBtn.textContent = "Import";
+  importBtn.addEventListener("click", () => {
+    const raw = textarea.value.trim();
+    if (!raw) {
+      showError("Paste JSON data first.");
+      return;
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      // Try to extract line number from the native error message
+      const match = e.message.match(/position\s+(\d+)/i);
+      let hint = "";
+      if (match) {
+        const pos = parseInt(match[1], 10);
+        const before = raw.slice(0, pos);
+        const line = (before.match(/\n/g) || []).length + 1;
+        hint = ` at line ${line}`;
+      }
+      showError(`Invalid JSON${hint}: ${e.message}`);
+      return;
+    }
+
+    if (!Array.isArray(parsed)) {
+      showError("Expected a JSON array of Pokémon.");
+      return;
+    }
+
+    // Validate all entries first — no partial mutation
+    const errors = [];
+    const resolved = [];
+    for (let i = 0; i < parsed.length; i++) {
+      const entry = parsed[i];
+      if (!entry || typeof entry !== "object") {
+        errors.push(`Entry at index ${i} is not a valid object`);
+        continue;
+      }
+      if (!entry.species || typeof entry.species !== "object") {
+        errors.push(`Entry at index ${i} has no species field`);
+        continue;
+      }
+
+      const id = (entry.species.showdownId || "").toLowerCase();
+      const name = (entry.species.name || "").toLowerCase();
+      const match = speciesMap.get(id) || speciesMap.get(name);
+
+      if (!match) {
+        const label = entry.species.showdownId || entry.species.name || "(unknown)";
+        errors.push(`Unknown species '${label}' at index ${i} — check the name`);
+        continue;
+      }
+
+      // Resolve species to the roster entry (preserving types, spriteUrl, etc.)
+      resolved.push({
+        ...entry,
+        species: { ...match },
+      });
+    }
+
+    if (errors.length > 0) {
+      showError(errors.join("\n"));
+      return;
+    }
+
+    if (resolved.length === 0) {
+      showError("No valid Pokémon entries found.");
+      return;
+    }
+
+    // All validated — invoke callback
+    if (typeof onImport === "function") {
+      onImport(resolved);
+    }
+    closeDialog();
+  });
+  btnRow.appendChild(importBtn);
+
+  panel.appendChild(btnRow);
+  overlay.appendChild(panel);
+  document.addEventListener("keydown", onImportKeyDown);
+  document.body.appendChild(overlay);
+
+  // Focus the textarea
+  setTimeout(() => textarea.focus(), 0);
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.style.display = "";
+  }
 }
