@@ -84,11 +84,11 @@ describe("saveBox / loadBox", () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it("loadBox returns clean array of 30 nulls when localStorage empty", () => {
+  it("loadBox returns clean array of 40 nulls when localStorage empty", () => {
     localStorage.clear();
     const result = loadBox();
     expect(Array.isArray(result)).toBe(true);
-    expect(result).toHaveLength(30);
+    expect(result).toHaveLength(40);
     expect(result.every((s) => s === null)).toBe(true);
   });
 
@@ -115,7 +115,7 @@ describe("saveBox / loadBox", () => {
     ];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
     const result = loadBox();
-    expect(result).toHaveLength(30);
+    expect(result).toHaveLength(40);
     expect(result[0].species.name).toBe("Pikachu");
     expect(result[0].nickname).toBe("Chu");
     expect(result[2].species.name).toBe("Charizard");
@@ -126,14 +126,14 @@ describe("saveBox / loadBox", () => {
   it("loadBox handles corrupt JSON gracefully", () => {
     localStorage.setItem(STORAGE_KEY, "not valid json{{{");
     const result = loadBox();
-    expect(result).toHaveLength(30);
+    expect(result).toHaveLength(40);
     expect(result.every((s) => s === null)).toBe(true);
   });
 
   it("loadBox returns empty array when stored value is not an array", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ notAnArray: true }));
     const result = loadBox();
-    expect(result).toHaveLength(30);
+    expect(result).toHaveLength(40);
     expect(result.every((s) => s === null)).toBe(true);
   });
 });

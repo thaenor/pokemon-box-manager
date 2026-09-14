@@ -4,9 +4,18 @@
  * @param {Function} onAddPokemon — callback when user clicks an empty grid slot
  * @param {Function} onSelectPokemon — callback when user clicks a filled slot
  * @param {number} boxSize — max slots (default 30)
+ * @param {Function} onLogout — callback for sign-out
+ * @param {Function} onBoxSizeChange — callback when grid size changes (newSize)
  * @returns {HTMLElement} the rendered view
  */
-export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, onLogout) {
+export function renderBoxGrid(
+  box,
+  onAddPokemon,
+  onSelectPokemon,
+  boxSize = 30,
+  onLogout,
+  onBoxSizeChange,
+) {
   const filled = box.filter(Boolean).length;
 
   // ── Two-pane wrapper ──
@@ -51,10 +60,34 @@ export function renderBoxGrid(box, onAddPokemon, onSelectPokemon, boxSize = 30, 
   const nav = document.createElement("div");
   nav.className = "box-nav-header";
 
+  // ── Grid size selector ──
+  const sizeLabel = document.createElement("label");
+  sizeLabel.className = "sr-only";
+  sizeLabel.textContent = "Grid slots";
+
+  const sizeSelect = document.createElement("select");
+  sizeSelect.className = "box-nav-header__size-select";
+  sizeSelect.setAttribute("aria-label", "Grid size");
+  [30, 35, 40].forEach((size) => {
+    const opt = document.createElement("option");
+    opt.value = String(size);
+    opt.textContent = size + " slots";
+    opt.selected = size === boxSize;
+    sizeSelect.appendChild(opt);
+  });
+
+  if (typeof onBoxSizeChange === "function") {
+    sizeSelect.addEventListener("change", () => {
+      onBoxSizeChange(parseInt(sizeSelect.value, 10));
+    });
+  }
+
   const capacitySpan = document.createElement("span");
   capacitySpan.className = "box-nav-header__capacity";
   capacitySpan.textContent = filled + "/" + boxSize;
 
+  nav.appendChild(sizeLabel);
+  nav.appendChild(sizeSelect);
   nav.appendChild(capacitySpan);
 
   // ── Toolbar (right side of nav) ──
