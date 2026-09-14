@@ -996,6 +996,24 @@ img {
   transition: transform 0.1s ease-out;
 }
 
+/* ── Focus Ring ── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for interactive elements in overlays */
+.overlay :focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-default);
+}
+
 /* ── Responsive: Mobile / Compact ── */
 @media (max-width: 768px) {
   .headline-lg {

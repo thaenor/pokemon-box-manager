@@ -1,5 +1,6 @@
 import { natures } from "../data/natures.js";
 import { fetchPokemon } from "../api/pokeapi.js";
+import { saveFocus, trapTab } from "./focus-trap.js";
 
 /**
  * Show the Pokémon detail/edit form. Fetches data from PokéAPI, renders the form.
@@ -18,6 +19,10 @@ export async function showPokemonDetail(species, existing = null) {
   /* ── Overlay ── */
   const overlay = document.createElement("div");
   overlay.className = "overlay";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", "detail-title");
+  const restoreFocus = saveFocus();
 
   const panel = document.createElement("div");
   panel.className = "overlay__panel";
@@ -69,6 +74,7 @@ export async function showPokemonDetail(species, existing = null) {
 
     return new Promise((resolve) => {
       const handleDismiss = () => {
+        restoreFocus();
         document.body.removeChild(overlay);
         resolve(null);
       };
@@ -77,6 +83,10 @@ export async function showPokemonDetail(species, existing = null) {
         if (e.target === overlay) handleDismiss();
       });
       document.addEventListener("keydown", function onErrorKey(e) {
+        if (e.key === "Tab") {
+          trapTab(panel, e);
+          return;
+        }
         if (e.key === "Escape") {
           e.preventDefault();
           document.removeEventListener("keydown", onErrorKey);
@@ -113,6 +123,7 @@ export async function showPokemonDetail(species, existing = null) {
 
   const nameEl = document.createElement("h2");
   nameEl.textContent = species.name;
+  nameEl.id = "detail-title";
   nameEl.className = "headline-lg";
   nameEl.style.marginBottom = "var(--space-xs)";
   nameCol.appendChild(nameEl);
@@ -355,12 +366,17 @@ export async function showPokemonDetail(species, existing = null) {
     return new Promise((resolve) => {
       const cleanup = () => {
         document.removeEventListener("keydown", onEditKeyDown);
+        restoreFocus();
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
         }
       };
 
       function onEditKeyDown(e) {
+        if (e.key === "Tab") {
+          trapTab(panel, e);
+          return;
+        }
         if (e.key === "Escape") {
           e.preventDefault();
           cleanup();
@@ -419,12 +435,17 @@ export async function showPokemonDetail(species, existing = null) {
     return new Promise((resolve) => {
       const cleanup = () => {
         document.removeEventListener("keydown", onCreateKeyDown);
+        restoreFocus();
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
         }
       };
 
       function onCreateKeyDown(e) {
+        if (e.key === "Tab") {
+          trapTab(panel, e);
+          return;
+        }
         if (e.key === "Escape") {
           e.preventDefault();
           cleanup();
