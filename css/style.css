@@ -1020,6 +1020,27 @@ img {
     grid-template-columns: repeat(4, 1fr);
   }
 
+  .slot-cell__sprite {
+    width: 55%;
+    height: 55%;
+  }
+
+  /* Compact type badges inside slot cells — colored dots instead of text */
+  .slot-cell .type-badge {
+    height: 8px;
+    min-width: 8px;
+    padding: 0;
+    font-size: 0;
+    border-radius: 50%;
+  }
+
+  /* Name label — bring closer to sprite bottom to avoid overlap with badges */
+  .slot-cell .label-micro {
+    bottom: 14px !important;
+    font-size: 9px;
+    line-height: 11px;
+  }
+
   .box-nav-header {
     flex-wrap: wrap;
     height: auto;
