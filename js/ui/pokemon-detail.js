@@ -1,13 +1,20 @@
-import { natures, findNature, natureModifier } from "../data/natures.js";
+import { natures } from "../data/natures.js";
 import { fetchPokemon } from "../api/pokeapi.js";
 
 /**
- * Show the Pokémon detail/edit form. Fetches data from PokéAPI, renders the form, returns saved data.
+ * Show the Pokémon detail/edit form. Fetches data from PokéAPI, renders the form.
+ *
+ * CREATE mode (existing = null): Returns {action:'save', pokemon} on save, null on cancel.
+ * EDIT mode (existing provided): Returns {action:'save', pokemon} on save,
+ *   {action:'remove'} on remove, null on cancel.
+ *
  * @param {Object} species — selected species object from speciesList
  * @param {Object|null} existing — existing Pokémon data if editing (null for new)
- * @returns {Promise<Object|null>} saved Pokémon object or null if cancelled
+ * @returns {Promise<{action:string, pokemon?:Object}|null>}
  */
 export async function showPokemonDetail(species, existing = null) {
+  const isEdit = existing !== null;
+
   /* ── Overlay ── */
   const overlay = document.createElement("div");
   overlay.className = "overlay";
@@ -45,8 +52,6 @@ export async function showPokemonDetail(species, existing = null) {
     loadingEl.textContent = `Couldn't fetch data for ${species.name} (Champions-exclusive form).`;
     loadingEl.style.color = "var(--color-text-muted)";
 
-    /* Champions-only forms (e.g. Mega Golisopod, Absol Z) aren't in PokéAPI.
-       This is intentional — they're managed via Champions API in a later ticket. */
     const noteEl = document.createElement("p");
     noteEl.className = "body-sm";
     noteEl.style.textAlign = "center";
@@ -104,6 +109,17 @@ export async function showPokemonDetail(species, existing = null) {
   nameEl.className = "headline-lg";
   nameEl.style.marginBottom = "var(--space-xs)";
   nameCol.appendChild(nameEl);
+
+  /* ── Edit-mode badge ── */
+  if (isEdit) {
+    const badge = document.createElement("span");
+    badge.className = "label-caps";
+    badge.style.display = "inline-block";
+    badge.style.color = "var(--color-text-muted)";
+    badge.style.marginBottom = "var(--space-sm)";
+    badge.textContent = "Editing — species locked";
+    nameCol.appendChild(badge);
+  }
 
   const shinyRow = document.createElement("div");
   shinyRow.style.display = "flex";
@@ -183,7 +199,6 @@ export async function showPokemonDetail(species, existing = null) {
     const pct = Math.min((stat.value / 255) * 100, 100);
     fill.style.width = `${pct}%`;
 
-    /* Color based on value */
     if (stat.value >= 100) {
       fill.classList.add("stat-gauge__fill--positive");
     } else if (stat.value >= 60) {
@@ -238,10 +253,10 @@ export async function showPokemonDetail(species, existing = null) {
       const optionEl = document.createElement("option");
       optionEl.value = opt.value;
       optionEl.textContent = opt.label;
+      select.appendChild(optionEl);
       if (opt.value === defaultValue) {
         optionEl.selected = true;
       }
-      select.appendChild(optionEl);
     });
 
     fieldRow.appendChild(select);
@@ -318,55 +333,106 @@ export async function showPokemonDetail(species, existing = null) {
   actionsRow.style.borderTop = "1px solid var(--color-hairline)";
   panel.appendChild(actionsRow);
 
-  const cancelBtn = document.createElement("button");
-  cancelBtn.className = "btn btn-secondary";
-  cancelBtn.textContent = "Cancel";
-  actionsRow.appendChild(cancelBtn);
+  if (isEdit) {
+    /* Edit mode: Remove + Save */
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "btn btn-destructive";
+    removeBtn.textContent = "Remove";
+    actionsRow.appendChild(removeBtn);
 
-  const saveBtn = document.createElement("button");
-  saveBtn.className = "btn btn-primary";
-  saveBtn.textContent = "Save";
-  actionsRow.appendChild(saveBtn);
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "btn btn-primary";
+    saveBtn.textContent = "Save";
+    actionsRow.appendChild(saveBtn);
 
-  /* ── Promise resolution ── */
-  return new Promise((resolve) => {
-    const cleanup = () => {
-      if (overlay.parentNode) {
-        overlay.parentNode.removeChild(overlay);
-      }
-    };
-
-    cancelBtn.addEventListener("click", () => {
-      cleanup();
-      resolve(null);
-    });
-
-    saveBtn.addEventListener("click", () => {
-      const isShiny = document.getElementById("detail-shiny").checked;
-
-      /* Key: pokemon-box:slots (localStorage key for box persistence — see #20) */
-      const saved = {
-        species,
-        showdownId: species.showdownId,
-        nickname: document.getElementById("detail-nickname").value,
-        sprite: isShiny ? pokeData.spriteShiny : pokeData.sprite,
-        spriteShiny: pokeData.spriteShiny,
-        isShiny,
-        stats: pokeData.stats,
-        ability: document.getElementById("detail-ability").value,
-        nature: document.getElementById("detail-nature").value,
-        recruitedDate: new Date().toISOString().split("T")[0],
+    return new Promise((resolve) => {
+      const cleanup = () => {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
       };
-      cleanup();
-      resolve(saved);
-    });
 
-    /* Click outside panel to cancel */
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) {
+      removeBtn.addEventListener("click", () => {
+        cleanup();
+        resolve({ action: "remove" });
+      });
+
+      saveBtn.addEventListener("click", () => {
+        const isShiny = document.getElementById("detail-shiny").checked;
+
+        const updated = {
+          species,
+          showdownId: species.showdownId,
+          nickname: document.getElementById("detail-nickname").value,
+          sprite: isShiny ? pokeData.spriteShiny : pokeData.sprite,
+          spriteShiny: pokeData.spriteShiny,
+          isShiny,
+          stats: pokeData.stats,
+          ability: document.getElementById("detail-ability").value,
+          nature: document.getElementById("detail-nature").value,
+          /* Preserve original recruitedDate in edit mode */
+          recruitedDate: existing.recruitedDate || new Date().toISOString().split("T")[0],
+        };
+        cleanup();
+        resolve({ action: "save", pokemon: updated });
+      });
+
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+          cleanup();
+          resolve(null);
+        }
+      });
+    });
+  } else {
+    /* Create mode: Cancel + Save (existing behavior, wrapped return) */
+    const cancelBtn = document.createElement("button");
+    cancelBtn.className = "btn btn-secondary";
+    cancelBtn.textContent = "Cancel";
+    actionsRow.appendChild(cancelBtn);
+
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "btn btn-primary";
+    saveBtn.textContent = "Save";
+    actionsRow.appendChild(saveBtn);
+
+    return new Promise((resolve) => {
+      const cleanup = () => {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      };
+
+      cancelBtn.addEventListener("click", () => {
         cleanup();
         resolve(null);
-      }
+      });
+
+      saveBtn.addEventListener("click", () => {
+        const isShiny = document.getElementById("detail-shiny").checked;
+
+        const saved = {
+          species,
+          showdownId: species.showdownId,
+          nickname: document.getElementById("detail-nickname").value,
+          sprite: isShiny ? pokeData.spriteShiny : pokeData.sprite,
+          spriteShiny: pokeData.spriteShiny,
+          isShiny,
+          stats: pokeData.stats,
+          ability: document.getElementById("detail-ability").value,
+          nature: document.getElementById("detail-nature").value,
+          recruitedDate: new Date().toISOString().split("T")[0],
+        };
+        cleanup();
+        resolve({ action: "save", pokemon: saved });
+      });
+
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+          cleanup();
+          resolve(null);
+        }
+      });
     });
-  });
+  }
 }
