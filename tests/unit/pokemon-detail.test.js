@@ -20,11 +20,16 @@ vi.mock("../../js/api/pokeapi.js", () => ({
   fetchPokemon: vi.fn().mockResolvedValue(mockPokeData),
 }));
 
+let fetchPokemonMock;
 let showPokemonDetail;
 
 beforeEach(async () => {
-  // Reset mock state
-  vi.clearAllMocks();
+  // Reset mock state and re-apply default resolved value
+  if (!fetchPokemonMock) {
+    fetchPokemonMock = (await import("../../js/api/pokeapi.js")).fetchPokemon;
+  }
+  fetchPokemonMock.mockReset();
+  fetchPokemonMock.mockResolvedValue(mockPokeData);
   const mod = await import("../../js/ui/pokemon-detail.js");
   showPokemonDetail = mod.showPokemonDetail;
 });
@@ -134,7 +139,7 @@ describe("showPokemonDetail", () => {
     await promise;
   });
 
-  it("save button collects form data and resolves with {action,save}", async () => {
+  it("save button collects form data and resolves with {action: 'save', pokemon}", async () => {
     const promise = showPokemonDetail(species);
     await vi.waitFor(() => {
       expect(document.querySelector(".btn-primary")).not.toBeNull();
@@ -193,5 +198,120 @@ describe("showPokemonDetail", () => {
     closeBtn.click();
     const result = await promise;
     expect(result).toBeNull();
+  });
+
+  /* ── EDIT MODE TESTS ── */
+
+  const existingPokemon = {
+    species: { name: "Pikachu", showdownId: "pikachu", types: ["Electric"] },
+    showdownId: "pikachu",
+    nickname: "Sparky",
+    sprite: "https://example.com/pikachu.png",
+    spriteShiny: "https://example.com/pikachu-shiny.png",
+    isShiny: true,
+    stats: [
+      { name: "hp", value: 35 },
+      { name: "attack", value: 55 },
+      { name: "defense", value: 40 },
+      { name: "special-attack", value: 50 },
+      { name: "special-defense", value: 50 },
+      { name: "speed", value: 90 },
+    ],
+    ability: "lightning-rod",
+    nature: "Timid",
+    recruitedDate: "2025-06-15",
+  };
+
+  it("edit mode renders locked-species badge", async () => {
+    const promise = showPokemonDetail(species, existingPokemon);
+    await vi.waitFor(() => {
+      expect(document.body.textContent).toContain("species locked");
+    });
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
+  });
+
+  it("edit mode pre-fills all fields from existing data", async () => {
+    const promise = showPokemonDetail(species, existingPokemon);
+    await vi.waitFor(() => {
+      expect(document.querySelector("#detail-nickname")).not.toBeNull();
+    });
+
+    expect(document.querySelector("#detail-nickname").value).toBe("Sparky");
+    expect(document.querySelector("#detail-ability").value).toBe("lightning-rod");
+    expect(document.querySelector("#detail-nature").value).toBe("Timid");
+    // Shiny checkbox should be checked (existing.isShiny = true)
+    expect(document.querySelector("#detail-shiny").checked).toBe(true);
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
+  });
+
+  it("edit mode shows Remove button instead of Cancel", async () => {
+    const promise = showPokemonDetail(species, existingPokemon);
+    await vi.waitFor(() => {
+      expect(document.body.textContent).toContain("Remove");
+    });
+
+    // Cancel should not be present in edit mode
+    const btns = document.querySelectorAll("button");
+    const cancelBtn = Array.from(btns).find((b) => b.textContent === "Cancel");
+    expect(cancelBtn).toBeUndefined();
+
+    const removeBtn = Array.from(btns).find((b) => b.textContent === "Remove");
+    expect(removeBtn).not.toBeNull();
+    expect(removeBtn.className).toContain("btn-destructive");
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
+  });
+
+  it("edit mode Remove button resolves {action: 'remove'}", async () => {
+    const promise = showPokemonDetail(species, existingPokemon);
+    await vi.waitFor(() => {
+      expect(document.body.textContent).toContain("Remove");
+    });
+
+    const btns = document.querySelectorAll("button");
+    const removeBtn = Array.from(btns).find((b) => b.textContent === "Remove");
+    removeBtn.click();
+    const result = await promise;
+    expect(result).toEqual({ action: "remove" });
+  });
+
+  it("edit mode save preserves original recruitedDate", async () => {
+    const promise = showPokemonDetail(species, existingPokemon);
+    await vi.waitFor(() => {
+      expect(document.querySelector(".btn-primary")).not.toBeNull();
+    });
+
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    const result = await promise;
+    expect(result.action).toBe("save");
+    expect(result.pokemon.recruitedDate).toBe("2025-06-15");
+  });
+
+  it("edit mode save preserves unchanged field values", async () => {
+    const promise = showPokemonDetail(species, existingPokemon);
+    await vi.waitFor(() => {
+      expect(document.querySelector(".btn-primary")).not.toBeNull();
+    });
+
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    const result = await promise;
+    expect(result.action).toBe("save");
+    expect(result.pokemon.nickname).toBe("Sparky");
+    expect(result.pokemon.ability).toBe("lightning-rod");
+    expect(result.pokemon.nature).toBe("Timid");
+    expect(result.pokemon.isShiny).toBe(true);
   });
 });

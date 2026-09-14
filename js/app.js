@@ -127,6 +127,8 @@ async function handleSelectPokemon(pokemon, index) {
     state.box[index] = sanitizePokemon(result.pokemon);
   } else if (result.action === "remove") {
     state.box[index] = null;
+  } else {
+    console.warn("handleSelectPokemon: unknown action", result);
   }
 
   saveBox();

@@ -253,10 +253,10 @@ export async function showPokemonDetail(species, existing = null) {
       const optionEl = document.createElement("option");
       optionEl.value = opt.value;
       optionEl.textContent = opt.label;
+      select.appendChild(optionEl);
       if (opt.value === defaultValue) {
         optionEl.selected = true;
       }
-      select.appendChild(optionEl);
     });
 
     fieldRow.appendChild(select);
