@@ -23,15 +23,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <!--
-      App Check debug mode (local dev):
-      On localhost, this prints a debug token to the browser console.
-      Register it in Firebase Console → Security → App Check → Manage debug tokens.
-      For the actual token value, set self.FIREBASE_APPCHECK_DEBUG_TOKEN = "TOKEN"
-      instead of true (so the same token is reused across page loads).
-      NEVER commit a real debug token to this file.
+      App Check debug mode (local dev only):
+      Uses a registered debug token on localhost so reCAPTCHA is bypassed during dev.
+      The token D35EEDE6-12A6-4893-BB0D-C69B6622D72A is registered in Firebase Console
+      under Security → App Check → Manage debug tokens.
+      Production uses real reCAPTCHA Enterprise enforcement.
     -->
     <script>
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        self.FIREBASE_APPCHECK_DEBUG_TOKEN = "D35EEDE6-12A6-4893-BB0D-C69B6622D72A";
+      }
     </script>
 
     <script src="/js/firebase-config.js"></script>
