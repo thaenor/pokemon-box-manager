@@ -27,7 +27,9 @@ test.describe("Box flow E2E", () => {
     const select = page.locator("select");
 
     // Mock confirm to accept the truncation dialog (decreasing from 40→35)
-    await page.evaluate(() => { window.confirm = () => true; });
+    await page.evaluate(() => {
+      window.confirm = () => true;
+    });
 
     // Change to 35
     await select.selectOption("35");
@@ -46,7 +48,9 @@ test.describe("Box flow E2E", () => {
     await expect(page.locator("text=0/40")).toBeVisible();
 
     // Mock confirm to accept the truncation dialog (decreasing from 40→30)
-    await page.evaluate(() => { window.confirm = () => true; });
+    await page.evaluate(() => {
+      window.confirm = () => true;
+    });
 
     // Change to 30
     await page.locator("select").selectOption("30");
