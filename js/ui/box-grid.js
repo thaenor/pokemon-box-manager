@@ -245,7 +245,8 @@ export function showExportDialog(box) {
   // ── Textarea (read-only, selectable) ──
   const textarea = document.createElement("textarea");
   textarea.readOnly = true;
-  textarea.value = JSON.stringify(box, null, 2);
+  const filled = box.filter(Boolean);
+  textarea.value = JSON.stringify(filled, null, 2);
   textarea.style.cssText =
     "width: 100%; height: 320px; background: var(--color-surface); color: var(--color-text-primary); border: 1px solid var(--color-hairline); border-radius: var(--radius-default); padding: var(--space-md); font-family: monospace; font-size: var(--body-sm); line-height: 1.5; resize: vertical; outline: none;";
   textarea.addEventListener("click", () => textarea.select());
