@@ -83,4 +83,27 @@ describe("renderBoxGrid", () => {
     const slots = el.querySelectorAll('[data-testid="box-slot"]');
     expect(slots.length).toBe(30);
   });
+
+  it("renders grid size dropdown with 30/35/40 options", () => {
+    const el = renderBoxGrid([], vi.fn(), vi.fn(), 35, undefined, vi.fn());
+    const select = el.querySelector("select");
+    expect(select).not.toBeNull();
+    expect(select.getAttribute("aria-label")).toBe("Grid size");
+    const options = select.querySelectorAll("option");
+    expect(options.length).toBe(3);
+    expect(options[0].textContent).toContain("30");
+    expect(options[1].textContent).toContain("35");
+    expect(options[2].textContent).toContain("40");
+    // Verify the second option is selected (boxSize=35)
+    expect(options[1].selected).toBe(true);
+  });
+
+  it("changing dropdown value calls onBoxSizeChange", () => {
+    const onBoxSizeChange = vi.fn();
+    const el = renderBoxGrid([], vi.fn(), vi.fn(), 30, undefined, onBoxSizeChange);
+    const select = el.querySelector("select");
+    select.value = "40";
+    select.dispatchEvent(new Event("change"));
+    expect(onBoxSizeChange).toHaveBeenCalledWith(40);
+  });
 });

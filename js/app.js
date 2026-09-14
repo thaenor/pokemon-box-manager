@@ -62,6 +62,9 @@ export function sanitizePokemon(obj) {
  */
 export const STORAGE_KEY = "pokemon-box:slots";
 
+/** localStorage key for the user's preferred grid size. */
+const SIZE_KEY = "pokemonBoxSize";
+
 /**
  * Save the current box array to localStorage.
  * Called after every mutation (add, delete, reorder).
@@ -76,27 +79,27 @@ export function saveBox() {
 
 /**
  * Load the box array from localStorage.
- * Returns a clean 30-slot empty array on first visit or corrupt data.
+ * Returns a clean empty array sized by state.boxSize on first visit or corrupt data.
  */
 export function loadBox() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return new Array(30).fill(null);
+    if (!raw) return new Array(state.boxSize).fill(null);
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return new Array(30).fill(null);
+    if (!Array.isArray(parsed)) return new Array(state.boxSize).fill(null);
     // Pad or trim to exactly boxSize and sanitize entries
-    const clean = parsed.slice(0, 30).map((p) => (p ? sanitizePokemon(p) : null));
-    while (clean.length < 30) clean.push(null);
+    const clean = parsed.slice(0, state.boxSize).map((p) => (p ? sanitizePokemon(p) : null));
+    while (clean.length < state.boxSize) clean.push(null);
     return clean;
   } catch (e) {
     console.warn("Failed to load box from localStorage, starting fresh:", e);
-    return new Array(30).fill(null);
+    return new Array(state.boxSize).fill(null);
   }
 }
 
 const state = {
   box: [],
-  boxSize: 30,
+  boxSize: 40,
   appEl: null,
 };
 
@@ -209,12 +212,45 @@ function showBoxView() {
     (pokemon, index) => handleSelectPokemon(pokemon, index),
     state.boxSize,
     handleLogout,
+    handleBoxSizeChange,
   );
   grid.classList.add("view-fade-in");
   state.appEl.appendChild(grid);
 }
 
 /* ── Handlers ── */
+
+/**
+ * Handle grid size changes from the dropdown.
+ * Increases → pad with nulls. Decreases → prompt, truncate or revert.
+ */
+function handleBoxSizeChange(newSize) {
+  const currentSize = state.boxSize;
+  if (newSize === currentSize) return;
+
+  if (newSize < currentSize) {
+    const fillCount = currentSize - newSize;
+    const msg = `Reduce grid to ${newSize} slots? The last ${fillCount} Pokémon will be removed. Continue?`;
+    if (!confirm(msg)) {
+      // Revert the dropdown — the next re-render will pick up the unchanged boxSize
+      showBoxView();
+      return;
+    }
+  }
+
+  state.boxSize = newSize;
+  localStorage.setItem(SIZE_KEY, String(newSize));
+
+  // Pad or truncate
+  if (newSize > currentSize) {
+    while (state.box.length < newSize) state.box.push(null);
+  } else if (newSize < currentSize) {
+    state.box = state.box.slice(0, newSize);
+  }
+
+  saveBox();
+  showBoxView();
+}
 
 async function handleAddPokemon(slotIndex) {
   try {
@@ -261,6 +297,12 @@ async function handleSelectPokemon(pokemon, index) {
 
 document.addEventListener("DOMContentLoaded", () => {
   state.appEl = document.getElementById("app");
+
+  // Read persisted grid size preference, fall back to 40
+  const savedSize = parseInt(localStorage.getItem(SIZE_KEY), 10);
+  if (savedSize === 30 || savedSize === 35 || savedSize === 40) {
+    state.boxSize = savedSize;
+  }
 
   // Load persisted box BEFORE first render (no auth dependency)
   const restored = loadBox();
