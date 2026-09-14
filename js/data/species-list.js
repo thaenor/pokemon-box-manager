@@ -82,6 +82,15 @@ export const speciesList = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/26.png",
   },
   {
+    id: 26,
+    name: "Raichu Alola",
+    showdownId: "raichu-alola",
+    types: ["Electric", "Psychic"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/raichu-alola.png",
+  },
+  {
     id: 36,
     name: "Clefable",
     showdownId: "clefable",
@@ -100,6 +109,15 @@ export const speciesList = [
     isUltra: false,
     spriteUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/38.png",
+  },
+  {
+    id: 38,
+    name: "Ninetales Alola",
+    showdownId: "ninetales-alola",
+    types: ["Ice", "Fairy"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/ninetales-alola.png",
   },
   {
     id: 40,
@@ -200,6 +218,15 @@ export const speciesList = [
     isUltra: false,
     spriteUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/80.png",
+  },
+  {
+    id: 80,
+    name: "Slowbro Galar",
+    showdownId: "slowbro-galar",
+    types: ["Poison", "Psychic"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/slowbro-galar.png",
   },
   {
     id: 83,
@@ -391,6 +418,15 @@ export const speciesList = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/157.png",
   },
   {
+    id: 157,
+    name: "Typhlosion Hisui",
+    showdownId: "typhlosion-hisui",
+    types: ["Fire", "Ghost"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/typhlosion-hisui.png",
+  },
+  {
     id: 160,
     name: "Feraligatr",
     showdownId: "feraligatr",
@@ -469,6 +505,15 @@ export const speciesList = [
     isUltra: false,
     spriteUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/199.png",
+  },
+  {
+    id: 199,
+    name: "Slowking Galar",
+    showdownId: "slowking-galar",
+    types: ["Poison", "Psychic"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/slowking-galar.png",
   },
   {
     id: 205,
@@ -1078,6 +1123,15 @@ export const speciesList = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/503.png",
   },
   {
+    id: 503,
+    name: "Samurott Hisui",
+    showdownId: "samurott-hisui",
+    types: ["Water", "Dark"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/samurott-hisui.png",
+  },
+  {
     id: 504,
     name: "Patrat",
     showdownId: "patrat",
@@ -1607,6 +1661,15 @@ export const speciesList = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/706.png",
   },
   {
+    id: 706,
+    name: "Goodra Hisui",
+    showdownId: "goodra-hisui",
+    types: ["Steel", "Dragon"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/goodra-hisui.png",
+  },
+  {
     id: 707,
     name: "Klefki",
     showdownId: "klefki",
@@ -1647,6 +1710,15 @@ export const speciesList = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/713.png",
   },
   {
+    id: 713,
+    name: "Avalugg Hisui",
+    showdownId: "avalugg-hisui",
+    types: ["Ice", "Rock"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/avalugg-hisui.png",
+  },
+  {
     id: 715,
     name: "Noivern",
     showdownId: "noivern",
@@ -1665,6 +1737,15 @@ export const speciesList = [
     isUltra: false,
     spriteUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/724.png",
+  },
+  {
+    id: 724,
+    name: "Decidueye Hisui",
+    showdownId: "decidueye-hisui",
+    types: ["Grass", "Fighting"],
+    isMega: false,
+    isUltra: false,
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/decidueye-hisui.png",
   },
   {
     id: 727,
