@@ -118,6 +118,7 @@ export function showSpeciesSearch() {
       row.style.transition = "background 0.1s";
       row.addEventListener("mouseenter", () => {
         row.style.background = "var(--color-surface-hover)";
+        highlightedIndex = Array.from(resultsEl.children).indexOf(row);
       });
       row.addEventListener("mouseleave", () => {
         row.style.background = "transparent";
@@ -203,6 +204,16 @@ export function showSpeciesSearch() {
       return row;
     }
 
+    /* ── Highlight tracking for keyboard nav ── */
+    let highlightedIndex = -1;
+
+    function applyHighlight(index) {
+      const rows = resultsEl.querySelectorAll('[data-testid="search-result"]');
+      rows.forEach((r, i) => {
+        r.style.background = i === index ? "var(--color-surface-hover)" : "transparent";
+      });
+    }
+
     /* ── Render results based on filter ── */
     let debounceTimer = null;
 
@@ -210,6 +221,7 @@ export function showSpeciesSearch() {
       const q = filter.trim().toLowerCase();
 
       resultsEl.innerHTML = "";
+      highlightedIndex = -1;
 
       if (q.length === 0) {
         const hint = document.createElement("div");
@@ -235,8 +247,13 @@ export function showSpeciesSearch() {
         return;
       }
 
-      results.forEach((species) => {
-        resultsEl.appendChild(createSpeciesRow(species));
+      results.forEach((species, i) => {
+        const row = createSpeciesRow(species);
+        if (i === 0 && highlightedIndex === -1) {
+          highlightedIndex = 0;
+          row.style.background = "var(--color-surface-hover)";
+        }
+        resultsEl.appendChild(row);
       });
     }
 
@@ -249,6 +266,33 @@ export function showSpeciesSearch() {
     }
 
     input.addEventListener("input", handleInput);
+
+    /* ── Keyboard navigation: arrows + Enter on input ── */
+    input.addEventListener("keydown", (e) => {
+      const rows = resultsEl.querySelectorAll('[data-testid="search-result"]');
+      if (rows.length === 0) return;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const next = Math.min(highlightedIndex + 1, rows.length - 1);
+        highlightedIndex = next;
+        applyHighlight(next);
+        rows[next].scrollIntoView({ block: "nearest" });
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prev = Math.max(highlightedIndex - 1, 0);
+        highlightedIndex = prev;
+        applyHighlight(prev);
+        rows[prev].scrollIntoView({ block: "nearest" });
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        const idx = highlightedIndex >= 0 ? highlightedIndex : 0;
+        if (idx < rows.length) {
+          // Trigger click on the selected row to resolve
+          rows[idx].click();
+        }
+      }
+    });
 
     /* ── Keyboard: Escape dismisses ── */
     function onKeyDown(e) {

@@ -76,6 +76,13 @@ export async function showPokemonDetail(species, existing = null) {
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) handleDismiss();
       });
+      document.addEventListener("keydown", function onErrorKey(e) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          document.removeEventListener("keydown", onErrorKey);
+          handleDismiss();
+        }
+      });
     });
   }
 
@@ -347,10 +354,23 @@ export async function showPokemonDetail(species, existing = null) {
 
     return new Promise((resolve) => {
       const cleanup = () => {
+        document.removeEventListener("keydown", onEditKeyDown);
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
         }
       };
+
+      function onEditKeyDown(e) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          cleanup();
+          resolve(null);
+        } else if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+          e.preventDefault();
+          saveBtn.click();
+        }
+      }
+      document.addEventListener("keydown", onEditKeyDown);
 
       removeBtn.addEventListener("click", () => {
         cleanup();
@@ -398,10 +418,23 @@ export async function showPokemonDetail(species, existing = null) {
 
     return new Promise((resolve) => {
       const cleanup = () => {
+        document.removeEventListener("keydown", onCreateKeyDown);
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
         }
       };
+
+      function onCreateKeyDown(e) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          cleanup();
+          resolve(null);
+        } else if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+          e.preventDefault();
+          saveBtn.click();
+        }
+      }
+      document.addEventListener("keydown", onCreateKeyDown);
 
       cancelBtn.addEventListener("click", () => {
         cleanup();
