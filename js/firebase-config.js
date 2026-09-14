@@ -15,7 +15,7 @@ firebase.firestore(app);
 // NOT a bare site key string (the string form was the old reCAPTCHA v3 pattern)
 // Disabled in CI/Playwright environments (navigator.webdriver is set by automated browsers)
 const RECAPTCHA_SITE_KEY = "6LdosrktAAAAANmSkeEtmHEBP_J4u4Eb6nVnBaM0";
-if (!navigator.webdriver) {
+if (!navigator.webdriver && !window.__skipAppCheck) {
   firebase
     .appCheck()
     .activate(new firebase.appCheck.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), true);
