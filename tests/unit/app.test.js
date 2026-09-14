@@ -24,7 +24,7 @@ beforeEach(() => {
 
 // Import the module AFTER mocks are set up
 const mod = await import("../../js/app.js");
-const { sanitizePokemon, saveBox, loadBox, STORAGE_KEY } = mod;
+const { sanitizePokemon, saveBox, loadBox, STORAGE_KEY, handleImport } = mod;
 
 describe("sanitizePokemon", () => {
   it("strips unknown fields, preserves known ones", () => {
@@ -187,5 +187,68 @@ describe("saveBox / loadBox", () => {
     const result = loadBox();
     expect(result).toHaveLength(40);
     expect(result.every((s) => s === null)).toBe(true);
+  });
+});
+
+describe("handleImport", () => {
+  it("sanitizes each entry and truncates to boxSize", () => {
+    const pokemon = { species: { name: "Pikachu", showdownId: "pikachu" } };
+    // Create more entries than boxSize (default 40)
+    const many = Array.from({ length: 50 }, () => ({ ...pokemon }));
+    handleImport(many);
+
+    // After import, box should be 40 slots
+    const box = loadBox();
+    expect(box).toHaveLength(40);
+    expect(box[0]).not.toBeNull();
+    expect(box[0].species.name).toBe("Pikachu");
+  });
+
+  it("pads with nulls when fewer entries than boxSize", () => {
+    const pokemon = { species: { name: "Charizard", showdownId: "charizard" } };
+    handleImport([pokemon]);
+
+    const box = loadBox();
+    expect(box).toHaveLength(40);
+    expect(box[0]).not.toBeNull();
+    expect(box[0].species.name).toBe("Charizard");
+    expect(box[1]).toBeNull();
+  });
+
+  it("strips entries with invalid species (sanitize returns null)", () => {
+    handleImport([{ species: null }, { species: { name: "Pikachu", showdownId: "pikachu" } }]);
+
+    const box = loadBox();
+    // Only the valid entry should survive
+    const filled = box.filter(Boolean);
+    expect(filled).toHaveLength(1);
+    expect(filled[0].species.name).toBe("Pikachu");
+  });
+
+  it("imports into an empty box, replacing existing data", () => {
+    // First load some data
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([{ species: { name: "Old", showdownId: "old" } }]),
+    );
+    const oldBox = loadBox();
+    expect(oldBox[0].species.name).toBe("Old");
+
+    // Now import replaces everything
+    const pokemon = { species: { name: "New", showdownId: "new" } };
+    handleImport([pokemon]);
+
+    const box = loadBox();
+    expect(box[0].species.name).toBe("New");
+    const filled = box.filter(Boolean);
+    expect(filled).toHaveLength(1);
+  });
+
+  it("handles empty array gracefully (all nulls)", () => {
+    handleImport([]);
+
+    const box = loadBox();
+    expect(box).toHaveLength(40);
+    expect(box.every((s) => s === null)).toBe(true);
   });
 });

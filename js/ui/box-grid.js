@@ -114,7 +114,7 @@ export function renderBoxGrid(
   const importBtn = document.createElement("button");
   importBtn.className = "box-nav-header__toggle";
   importBtn.textContent = "Import";
-  importBtn.addEventListener("click", () => showImportDialog(box, onImport));
+  importBtn.addEventListener("click", () => showImportDialog(onImport));
   toolbar.appendChild(importBtn);
 
   // ── Sign-out button ──
@@ -305,10 +305,9 @@ function buildSpeciesLookup() {
 
 /**
  * Show a modal dialog for importing box data from pasted JSON.
- * @param {Array} box — reference to the live box array (for capacity check)
  * @param {Function} onImport — callback(data:Array<Object>) when import is confirmed
  */
-export function showImportDialog(box, onImport) {
+export function showImportDialog(onImport) {
   const speciesMap = buildSpeciesLookup();
 
   const closeDialog = () => {
@@ -352,6 +351,7 @@ export function showImportDialog(box, onImport) {
 
   // ── Error area ──
   const errorEl = document.createElement("div");
+  errorEl.className = "import-error";
   errorEl.style.cssText =
     "color: var(--color-danger, #e53935); font-size: var(--body-sm); margin-top: var(--space-sm); white-space: pre-wrap; max-height: 120px; overflow-y: auto; display: none;";
   panel.appendChild(errorEl);
@@ -443,8 +443,10 @@ export function showImportDialog(box, onImport) {
     // All validated — invoke callback
     if (typeof onImport === "function") {
       onImport(resolved);
+      closeDialog();
+    } else {
+      showError("Import handler not available. Please refresh and try again.");
     }
-    closeDialog();
   });
   btnRow.appendChild(importBtn);
 

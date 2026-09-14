@@ -299,7 +299,7 @@ async function handleSelectPokemon(pokemon, index) {
  * Sanitizes each entry, truncates to box size, overwrites the box, and re-renders.
  * @param {Array<Object>} pokemonArray — array of Pokémon objects with resolved species
  */
-function handleImport(pokemonArray) {
+export function handleImport(pokemonArray) {
   const sanitized = pokemonArray
     .map((p) => sanitizePokemon(p))
     .filter(Boolean)
@@ -311,7 +311,7 @@ function handleImport(pokemonArray) {
   state.box = sanitized;
   saveBox();
   showToast(`Imported ${sanitized.filter(Boolean).length} Pokémon`, "success");
-  showBoxView();
+  if (state.appEl) showBoxView();
 }
 
 /* ── Init ── */
