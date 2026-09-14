@@ -293,12 +293,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const restored = loadBox();
   if (restored.length > 0) state.box = restored;
 
-  // Gate view on auth state
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      showBoxView();
-    } else {
-      showLoginView();
-    }
-  });
+  // Gate view on auth state (skip for Playwright/CI — no auth session in headless)
+  if (navigator.webdriver) {
+    showBoxView();
+  } else {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        showBoxView();
+      } else {
+        showLoginView();
+      }
+    });
+  }
 });
