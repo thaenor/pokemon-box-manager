@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures.js";
+import { test, expect } from "./fixtures.js";
 
 /**
  * E2E tests for the auth gate — login view vs box grid.
