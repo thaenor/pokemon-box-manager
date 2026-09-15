@@ -231,7 +231,7 @@ export function renderBoxGrid(
  * @param {object} p — a Pokémon object
  * @returns {string} single Pokémon entry in Showdown format
  */
-function pokemonToShowdown(p) {
+export function pokemonToShowdown(p) {
   if (!p || !p.species) return "";
 
   const lines = [];
@@ -251,11 +251,6 @@ function pokemonToShowdown(p) {
   // Tera Type
   if (p.teraType) {
     lines.push(`Tera Type: ${p.teraType}`);
-  }
-
-  // Nature
-  if (p.nature) {
-    lines.push(`${p.nature} Nature`);
   }
 
   // EVs
@@ -278,6 +273,11 @@ function pokemonToShowdown(p) {
     if (evParts.length > 0) {
       lines.push(`EVs: ${evParts.join(" / ")}`);
     }
+  }
+
+  // Nature
+  if (p.nature) {
+    lines.push(`${p.nature} Nature`);
   }
 
   return lines.join("\n");
@@ -305,6 +305,7 @@ export function showdownExport(box) {
  * @param {Array} box — reference to the live box array (captured at render time)
  */
 export function showExportDialog(box) {
+  const COPY_FEEDBACK_MS = 1500;
   const closeDialog = () => {
     document.removeEventListener("keydown", onExportKeyDown);
     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -372,15 +373,20 @@ export function showExportDialog(box) {
   copyBtn.className = "btn btn-primary";
   copyBtn.textContent = "Copy";
   copyBtn.addEventListener("click", () => {
-    navigator.clipboard.writeText(textarea.value).then(() => {
-      const originalText = copyBtn.textContent;
-      copyBtn.textContent = "Copied!";
-      copyBtn.disabled = true;
-      setTimeout(() => {
-        copyBtn.textContent = originalText;
-        copyBtn.disabled = false;
-      }, 1500);
-    });
+    navigator.clipboard
+      .writeText(textarea.value)
+      .then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = "Copied!";
+        copyBtn.disabled = true;
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.disabled = false;
+        }, COPY_FEEDBACK_MS);
+      })
+      .catch((err) => {
+        console.warn("Clipboard write failed:", err);
+      });
   });
   btnRow.appendChild(copyBtn);
 

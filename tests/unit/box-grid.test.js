@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { renderBoxGrid, showImportDialog } from "../../js/ui/box-grid.js";
+import {
+  renderBoxGrid,
+  showImportDialog,
+  showdownExport,
+  pokemonToShowdown,
+} from "../../js/ui/box-grid.js";
 
 function makeBoxPokemon(name, showdownId, types = ["Normal"]) {
   return {
@@ -268,5 +273,56 @@ describe("showImportDialog", () => {
     const overlay = findDialog();
     overlay.click(); // click on overlay itself (not a child)
     expect(findDialog()).toBeNull();
+  });
+});
+
+describe("showdownExport / pokemonToShowdown", () => {
+  it("pokemonToShowdown with fully populated Pokemon shows all fields", () => {
+    const p = {
+      species: { name: "Charizard" },
+      nickname: "Zippo",
+      heldItem: "Life Orb",
+      ability: "Solar Power",
+      teraType: "Fire",
+      nature: "Timid",
+      stats: [
+        { name: "hp", value: 4 },
+        { name: "special-attack", value: 252 },
+        { name: "speed", value: 252 },
+      ],
+    };
+    const result = pokemonToShowdown(p);
+    expect(result).toContain("Zippo (Charizard)");
+    expect(result).toContain("@ Life Orb");
+    expect(result).toContain("Ability: Solar Power");
+    expect(result).toContain("Tera Type: Fire");
+    expect(result).toContain("EVs: 4 HP / 252 SpA / 252 Spe");
+    expect(result).toContain("Timid Nature");
+    // Verify EVs come before Nature in output
+    const evIdx = result.indexOf("EVs:");
+    const natureIdx = result.indexOf("Timid Nature");
+    expect(evIdx).toBeGreaterThan(-1);
+    expect(natureIdx).toBeGreaterThan(evIdx);
+  });
+
+  it("pokemonToShowdown with minimal Pokemon returns only species line", () => {
+    const p = { species: { name: "Pikachu" } };
+    const result = pokemonToShowdown(p);
+    expect(result).toBe("Pikachu");
+  });
+
+  it("showdownExport with mixed box returns entries for non-null Pokemon", () => {
+    const box = [{ species: { name: "Pikachu" } }, null, { species: { name: "Charizard" } }];
+    const result = showdownExport(box);
+    expect(result).toContain("Pikachu");
+    expect(result).toContain("Charizard");
+    expect(result).not.toContain("null");
+    // Verify entries are separated by blank lines
+    expect(result).toMatch(/Pikachu\n\nCharizard/);
+  });
+
+  it("showdownExport with empty box returns empty string", () => {
+    const result = showdownExport([]);
+    expect(result).toBe("");
   });
 });
