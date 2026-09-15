@@ -389,6 +389,137 @@ export async function showPokemonDetail(species, existing = null) {
     createSelectField("Nature", "detail-nature", natureOptions, defaultNature),
   );
 
+  /* Held Item */
+  const HELD_ITEMS = [
+    "Life Orb",
+    "Choice Specs",
+    "Choice Scarf",
+    "Choice Band",
+    "Assault Vest",
+    "Heavy-Duty Boots",
+    "Leftovers",
+    "Rocky Helmet",
+    "Focus Sash",
+    "Light Clay",
+    "Booster Energy",
+    "Air Balloon",
+    "Sitrus Berry",
+    "Aguav Berry",
+    "Figy Berry",
+    "Iapapa Berry",
+    "Mago Berry",
+    "Wiki Berry",
+    "Lum Berry",
+    "Leppa Berry",
+    "Safety Goggles",
+    "Eviolite",
+    "Weakness Policy",
+    "Eject Button",
+    "Eject Pack",
+    "Red Card",
+    "Shed Shell",
+    "Blunder Policy",
+    "Zoom Lens",
+    "Wide Lens",
+    "Bright Powder",
+    "King's Rock",
+    "Scope Lens",
+    "Mental Herb",
+    "White Herb",
+    "Power Herb",
+    "Room Service",
+    "Throat Spray",
+    "Utility Umbrella",
+    "Covert Cloak",
+    "Punching Glove",
+    "Loaded Dice",
+    "Clear Amulet",
+    "Mirror Herb",
+    "Black Sludge",
+    "Flame Orb",
+    "Toxic Orb",
+    "Adrenaline Orb",
+    "Terrain Extender",
+    "Damp Rock",
+    "Heat Rock",
+    "Icy Rock",
+    "Big Root",
+    "Shell Bell",
+    "Quick Claw",
+    "Destiny Knot",
+  ];
+  const heldItemRow = document.createElement("div");
+  heldItemRow.style.display = "flex";
+  heldItemRow.style.alignItems = "center";
+  heldItemRow.style.gap = "var(--space-sm)";
+  heldItemRow.style.marginBottom = "0";
+
+  const heldItemLabel = document.createElement("label");
+  heldItemLabel.htmlFor = "detail-held-item";
+  heldItemLabel.className = "label-caps";
+  heldItemLabel.textContent = "Held Item";
+  heldItemLabel.style.width = "120px";
+  heldItemLabel.style.flexShrink = "0";
+  heldItemRow.appendChild(heldItemLabel);
+
+  const heldItemInput = document.createElement("input");
+  heldItemInput.type = "text";
+  heldItemInput.id = "detail-held-item";
+  heldItemInput.placeholder = "e.g. Life Orb";
+  heldItemInput.value = existing ? existing.heldItem || "" : "";
+  heldItemInput.style.flex = "1";
+  heldItemInput.style.padding = "4px 8px";
+  heldItemInput.style.background = "var(--color-surface-l2)";
+  heldItemInput.style.color = "var(--color-text-primary)";
+  heldItemInput.style.border = "1px solid var(--color-hairline)";
+  heldItemInput.style.borderRadius = "var(--radius-default)";
+  heldItemInput.style.fontFamily = "var(--font-body)";
+  heldItemInput.style.fontSize = "var(--body-md)";
+  heldItemInput.style.height = "44px";
+  heldItemRow.appendChild(heldItemInput);
+
+  const datalist = document.createElement("datalist");
+  datalist.id = "detail-held-item-list";
+  HELD_ITEMS.forEach((item) => {
+    const opt = document.createElement("option");
+    opt.value = item;
+    datalist.appendChild(opt);
+  });
+  heldItemInput.setAttribute("list", "detail-held-item-list");
+  heldItemRow.appendChild(datalist);
+  editSection.appendChild(heldItemRow);
+
+  /* Tera Type */
+  const teraTypes = [
+    "",
+    "Normal",
+    "Fire",
+    "Water",
+    "Grass",
+    "Electric",
+    "Ice",
+    "Fighting",
+    "Poison",
+    "Ground",
+    "Flying",
+    "Psychic",
+    "Bug",
+    "Rock",
+    "Ghost",
+    "Dragon",
+    "Dark",
+    "Steel",
+    "Fairy",
+  ];
+  const teraOptions = teraTypes.map((t) => ({
+    value: t,
+    label: t || "None",
+  }));
+  const defaultTeraType = existing ? existing.teraType || "" : "";
+  editSection.appendChild(
+    createSelectField("Tera Type", "detail-tera-type", teraOptions, defaultTeraType),
+  );
+
   /* ── Action buttons ── */
   const actionsRow = document.createElement("div");
   actionsRow.style.display = "flex";
@@ -532,6 +663,8 @@ export async function showPokemonDetail(species, existing = null) {
           stats: pokeData.stats,
           ability: document.getElementById("detail-ability").value,
           nature: document.getElementById("detail-nature").value,
+          heldItem: document.getElementById("detail-held-item").value,
+          teraType: document.getElementById("detail-tera-type").value,
           /* Preserve original recruitedDate in edit mode */
           recruitedDate: existing.recruitedDate || new Date().toISOString().split("T")[0],
         };
@@ -605,6 +738,8 @@ export async function showPokemonDetail(species, existing = null) {
           stats: pokeData.stats,
           ability: document.getElementById("detail-ability").value,
           nature: document.getElementById("detail-nature").value,
+          heldItem: document.getElementById("detail-held-item").value,
+          teraType: document.getElementById("detail-tera-type").value,
           recruitedDate: new Date().toISOString().split("T")[0],
         };
         cleanup();

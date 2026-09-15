@@ -153,6 +153,64 @@ describe("showPokemonDetail", () => {
     await promise;
   });
 
+  it("renders held item input with datalist", async () => {
+    const promise = showPokemonDetail(species);
+    await vi.waitFor(() => {
+      expect(document.querySelector("#detail-held-item")).not.toBeNull();
+    });
+
+    const input = document.querySelector("#detail-held-item");
+    expect(input.placeholder).toBe("e.g. Life Orb");
+    // Should have a datalist with options
+    const datalist = document.querySelector("#detail-held-item-list");
+    expect(datalist).not.toBeNull();
+    expect(datalist.options.length).toBeGreaterThan(50);
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
+  });
+
+  it("renders tera type dropdown with 19 options (None + 18 types)", async () => {
+    const promise = showPokemonDetail(species);
+    await vi.waitFor(() => {
+      expect(document.querySelector("#detail-tera-type")).not.toBeNull();
+    });
+
+    const select = document.querySelector("#detail-tera-type");
+    // 18 types + 1 empty default
+    expect(select.options.length).toBe(19);
+    expect(select.options[0].value).toBe("");
+    expect(select.options[0].textContent).toBe("None");
+    expect(select.options[1].value).toBe("Normal");
+    expect(select.options[18].value).toBe("Fairy");
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
+  });
+
+  it("save button collects heldItem and teraType values", async () => {
+    const promise = showPokemonDetail(species);
+    await vi.waitFor(() => {
+      expect(document.querySelector(".btn-primary")).not.toBeNull();
+    });
+
+    // Set all form values including the new fields
+    document.querySelector("#detail-held-item").value = "Leftovers";
+    document.querySelector("#detail-tera-type").value = "Water";
+
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    const result = await promise;
+    expect(result).not.toBeNull();
+    expect(result.action).toBe("save");
+    expect(result.pokemon.heldItem).toBe("Leftovers");
+    expect(result.pokemon.teraType).toBe("Water");
+  });
+
   it("save button collects form data and resolves with {action: 'save', pokemon}", async () => {
     const promise = showPokemonDetail(species);
     await vi.waitFor(() => {
@@ -246,6 +304,8 @@ describe("showPokemonDetail", () => {
     ],
     ability: "lightning-rod",
     nature: "Timid",
+    heldItem: "Leftovers",
+    teraType: "Dragon",
     recruitedDate: "2025-06-15",
   };
 
@@ -270,6 +330,8 @@ describe("showPokemonDetail", () => {
     expect(document.querySelector("#detail-nickname").value).toBe("Sparky");
     expect(document.querySelector("#detail-ability").value).toBe("lightning-rod");
     expect(document.querySelector("#detail-nature").value).toBe("Timid");
+    expect(document.querySelector("#detail-held-item").value).toBe("Leftovers");
+    expect(document.querySelector("#detail-tera-type").value).toBe("Dragon");
     // Shiny checkbox should be checked (existing.isShiny = true)
     expect(document.querySelector("#detail-shiny").checked).toBe(true);
 
@@ -359,6 +421,8 @@ describe("showPokemonDetail", () => {
     expect(result.pokemon.nickname).toBe("Sparky");
     expect(result.pokemon.ability).toBe("lightning-rod");
     expect(result.pokemon.nature).toBe("Timid");
+    expect(result.pokemon.heldItem).toBe("Leftovers");
+    expect(result.pokemon.teraType).toBe("Dragon");
     expect(result.pokemon.isShiny).toBe(true);
   });
 });

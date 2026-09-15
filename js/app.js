@@ -37,6 +37,8 @@ export const KNOWN_FIELDS = new Set([
   "ability",
   "nature",
   "recruitedDate",
+  "heldItem",
+  "teraType",
 ]);
 
 export function sanitizePokemon(obj) {
@@ -53,6 +55,8 @@ export function sanitizePokemon(obj) {
   clean.nature = clean.nature || "Serious";
   clean.stats = clean.stats || [];
   clean.recruitedDate = clean.recruitedDate || new Date().toISOString().split("T")[0];
+  clean.heldItem = clean.heldItem || "";
+  clean.teraType = clean.teraType || "";
   return clean;
 }
 
