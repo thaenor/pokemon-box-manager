@@ -3,6 +3,9 @@ import { DB_NAME, DB_VERSION, STORES } from "./schema.js";
 /** Singleton instance held across `open()` calls. */
 let instance = null;
 
+/** Promise-based lock to serialize concurrent open() calls. */
+let openPromise = null;
+
 /**
  * IndexedDB-backed cache for Pokémon data.
  *
@@ -24,11 +27,17 @@ export class PokemonCache {
    */
   static async open() {
     if (instance) return instance;
+    if (openPromise) return openPromise;
 
-    const cache = new PokemonCache();
-    await cache.#connect();
-    instance = cache;
-    return instance;
+    openPromise = (async () => {
+      const cache = new PokemonCache();
+      await cache.#connect();
+      instance = cache;
+      openPromise = null;
+      return instance;
+    })();
+
+    return openPromise;
   }
 
   /**
