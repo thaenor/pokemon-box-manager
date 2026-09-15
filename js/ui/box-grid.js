@@ -217,7 +217,7 @@ export function renderBoxGrid(
   emptyMsg.className = "body-sm";
   emptyMsg.style.cssText =
     "color: var(--color-text-muted); text-align: center; padding: var(--space-xl) 0;";
-  emptyMsg.textContent = "Select a Pok\u00E9mon to inspect";
+  emptyMsg.textContent = "Select a Pokémon to inspect";
 
   inspector.appendChild(emptyMsg);
   rightPane.appendChild(inspector);
@@ -227,10 +227,85 @@ export function renderBoxGrid(
 }
 
 /**
- * Show a modal dialog with the current box data as formatted JSON.
+ * Convert a non-empty Pokémon to Showdown / Pokepaste format text.
+ * @param {object} p — a Pokémon object
+ * @returns {string} single Pokémon entry in Showdown format
+ */
+export function pokemonToShowdown(p) {
+  if (!p || !p.species) return "";
+
+  const lines = [];
+
+  // Species name (with optional nickname)
+  const speciesName = p.species.name;
+  const nickname = p.nickname || "";
+  const nameLine = nickname ? `${nickname} (${speciesName})` : speciesName;
+  const itemStr = p.heldItem ? ` @ ${p.heldItem}` : "";
+  lines.push(`${nameLine}${itemStr}`);
+
+  // Ability
+  if (p.ability) {
+    lines.push(`Ability: ${p.ability}`);
+  }
+
+  // Tera Type
+  if (p.teraType) {
+    lines.push(`Tera Type: ${p.teraType}`);
+  }
+
+  // EVs
+  if (p.stats && Array.isArray(p.stats) && p.stats.length > 0) {
+    const statAbbrev = {
+      hp: "HP",
+      attack: "Atk",
+      defense: "Def",
+      "special-attack": "SpA",
+      "special-defense": "SpD",
+      speed: "Spe",
+    };
+    const evParts = [];
+    for (const stat of p.stats) {
+      if (stat.value && stat.value > 0) {
+        const label = statAbbrev[stat.name] || stat.name;
+        evParts.push(`${stat.value} ${label}`);
+      }
+    }
+    if (evParts.length > 0) {
+      lines.push(`EVs: ${evParts.join(" / ")}`);
+    }
+  }
+
+  // Nature
+  if (p.nature) {
+    lines.push(`${p.nature} Nature`);
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Convert a box array to Showdown / Pokepaste format text.
+ * Each Pokémon is separated by a blank line.
+ * @param {Array} box — array of Pokémon objects (may contain nulls)
+ * @returns {string} full Pokepaste text
+ */
+export function showdownExport(box) {
+  const filled = box.filter(Boolean);
+  const entries = [];
+  for (const p of filled) {
+    const entry = pokemonToShowdown(p);
+    if (entry) entries.push(entry);
+  }
+  return entries.join("\n\n");
+}
+
+/**
+ * Show a modal dialog with the current box data.
+ * Supports JSON format and Pokepaste (Showdown) format, with a toggle and copy button.
  * @param {Array} box — reference to the live box array (captured at render time)
  */
 export function showExportDialog(box) {
+  const COPY_FEEDBACK_MS = 1500;
   const closeDialog = () => {
     document.removeEventListener("keydown", onExportKeyDown);
     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -261,6 +336,24 @@ export function showExportDialog(box) {
   title.style.marginBottom = "var(--space-md)";
   panel.appendChild(title);
 
+  // ── Format toggle ──
+  const toggleRow = document.createElement("div");
+  toggleRow.style.cssText = "display: flex; gap: var(--space-sm); margin-bottom: var(--space-md);";
+
+  const jsonTab = document.createElement("button");
+  jsonTab.className = "btn btn-primary";
+  jsonTab.textContent = "JSON";
+  jsonTab.style.flex = "1";
+
+  const pasteTab = document.createElement("button");
+  pasteTab.className = "btn btn-secondary";
+  pasteTab.textContent = "Pokepaste";
+  pasteTab.style.flex = "1";
+
+  toggleRow.appendChild(jsonTab);
+  toggleRow.appendChild(pasteTab);
+  panel.appendChild(toggleRow);
+
   // ── Textarea (read-only, selectable) ──
   const textarea = document.createElement("textarea");
   textarea.readOnly = true;
@@ -271,10 +364,31 @@ export function showExportDialog(box) {
   textarea.addEventListener("click", () => textarea.select());
   panel.appendChild(textarea);
 
-  // ── Close button ──
+  // ── Buttons row ──
   const btnRow = document.createElement("div");
   btnRow.style.cssText =
     "display: flex; justify-content: flex-end; margin-top: var(--space-md); gap: var(--space-sm);";
+
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "btn btn-primary";
+  copyBtn.textContent = "Copy";
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard
+      .writeText(textarea.value)
+      .then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = "Copied!";
+        copyBtn.disabled = true;
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.disabled = false;
+        }, COPY_FEEDBACK_MS);
+      })
+      .catch((err) => {
+        console.warn("Clipboard write failed:", err);
+      });
+  });
+  btnRow.appendChild(copyBtn);
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "btn btn-secondary";
@@ -286,6 +400,24 @@ export function showExportDialog(box) {
   overlay.appendChild(panel);
   document.addEventListener("keydown", onExportKeyDown);
   document.body.appendChild(overlay);
+
+  // ── Format toggle logic ──
+  function updateContent(format) {
+    if (format === "json") {
+      textarea.value = JSON.stringify(filled, null, 2);
+      title.textContent = "Box Export (JSON)";
+      jsonTab.className = "btn btn-primary";
+      pasteTab.className = "btn btn-secondary";
+    } else {
+      textarea.value = showdownExport(box);
+      title.textContent = "Box Export (Pokepaste)";
+      jsonTab.className = "btn btn-secondary";
+      pasteTab.className = "btn btn-primary";
+    }
+  }
+
+  jsonTab.addEventListener("click", () => updateContent("json"));
+  pasteTab.addEventListener("click", () => updateContent("pokepaste"));
 
   // Auto-select the textarea after render
   setTimeout(() => textarea.select(), 0);
