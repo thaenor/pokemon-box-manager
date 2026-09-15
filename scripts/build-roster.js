@@ -311,6 +311,7 @@ const POKEAPI_NAME_MAP = {
   kommoo: "kommo-o",
   mrrime: "mr-rime",
   farfetchdgalar: "farfetchd-galar",
+  basculegion: "basculegion-male",
 };
 
 // ─── Showdown sprite name overrides (CDN naming differs from internal ID) ─
