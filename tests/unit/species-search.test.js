@@ -19,6 +19,24 @@ const mockSpecies = [
     types: ["Psychic"],
     spriteUrl: "https://example.com/mewtwo.png",
   },
+  {
+    name: "Arcanine",
+    showdownId: "arcanine",
+    types: ["Fire"],
+    spriteUrl: "https://example.com/arcanine.png",
+  },
+  {
+    name: "Vaporeon",
+    showdownId: "vaporeon",
+    types: ["Water"],
+    spriteUrl: "https://example.com/vaporeon.png",
+  },
+  {
+    name: "Zapdos",
+    showdownId: "zapdos",
+    types: ["Electric", "Flying"],
+    spriteUrl: "https://example.com/zapdos.png",
+  },
 ];
 
 vi.mock("../../js/data/species-list.js", () => ({
@@ -275,6 +293,178 @@ describe("focus-trap utilities", () => {
     const cancelBtn = document.querySelector(".btn-secondary");
     expect(cancelBtn.type).toBe("button");
 
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("renders 18 type filter chips", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    const chips = document.querySelectorAll('[data-testid^="type-chip-"]');
+    expect(chips.length).toBe(18);
+
+    // Verify expected types are present
+    const chipTexts = Array.from(chips).map((c) => c.textContent);
+    expect(chipTexts).toContain("Fire");
+    expect(chipTexts).toContain("Water");
+    expect(chipTexts).toContain("Electric");
+    expect(chipTexts).toContain("Psychic");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("clicking a type chip filters results to matching types", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    // Click the Fire type chip
+    const fireChip = document.querySelector('[data-testid="type-chip-fire"]');
+    fireChip.click();
+    // For type filter, render is immediate — no debounce
+    await vi.advanceTimersByTimeAsync(50);
+
+    const results = document.querySelectorAll('[data-testid="search-result"]');
+    expect(results.length).toBe(2); // Charizard + Arcanine
+    expect(results[0].textContent).toContain("Charizard");
+    expect(results[1].textContent).toContain("Arcanine");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("multiple type chips use OR logic", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    const fireChip = document.querySelector('[data-testid="type-chip-fire"]');
+    const waterChip = document.querySelector('[data-testid="type-chip-water"]');
+    fireChip.click();
+    waterChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    const results = document.querySelectorAll('[data-testid="search-result"]');
+    expect(results.length).toBe(3); // Charizard + Arcanine (Fire) + Vaporeon (Water)
+    const texts = Array.from(results).map((r) => r.textContent);
+    // textContent concatenates without spaces: e.g. "CharizardFireFlying"
+    expect(texts.some((t) => t.includes("Charizard"))).toBe(true);
+    expect(texts.some((t) => t.includes("Arcanine"))).toBe(true);
+    expect(texts.some((t) => t.includes("Vaporeon"))).toBe(true);
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("name search AND type filter work together", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    const fireChip = document.querySelector('[data-testid="type-chip-fire"]');
+    fireChip.click();
+
+    const input = document.querySelector('[data-testid="search-input"]');
+    input.value = "Char";
+    input.dispatchEvent(new Event("input"));
+    await vi.advanceTimersByTimeAsync(350);
+
+    const results = document.querySelectorAll('[data-testid="search-result"]');
+    expect(results.length).toBe(1);
+    expect(results[0].textContent).toContain("Charizard");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it('shows "No Pokémon found" when type filter has no matches', async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    // Dragon type — none of our mock species are Dragon
+    const dragonChip = document.querySelector('[data-testid="type-chip-dragon"]');
+    dragonChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    expect(document.body.textContent).toContain("No Pokémon found");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("Clear button resets all type filters", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    const fireChip = document.querySelector('[data-testid="type-chip-fire"]');
+    const waterChip = document.querySelector('[data-testid="type-chip-water"]');
+    fireChip.click();
+    waterChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    // Clear
+    const clearBtn = document.querySelector('[data-testid="type-clear-btn"]');
+    expect(clearBtn.style.display).not.toBe("none"); // visible when filters active
+    clearBtn.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    // With no type filter and no search, should show hint
+    expect(document.body.textContent).toContain("Type to search Pokémon");
+
+    // Clear button should be hidden again
+    expect(clearBtn.style.display).toBe("none");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("clicking a type chip toggles it off", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    const fireChip = document.querySelector('[data-testid="type-chip-fire"]');
+    fireChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    // Should show Fire types
+    let results = document.querySelectorAll('[data-testid="search-result"]');
+    expect(results.length).toBe(2);
+
+    // Click again to toggle off
+    fireChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    // Should show hint (no filters at all)
+    expect(document.body.textContent).toContain("Type to search Pokémon");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
+    cancelBtn.click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  it("type chip has active visual state when selected", async () => {
+    const promise = showSpeciesSearch();
+    await vi.runAllTimersAsync();
+
+    const fireChip = document.querySelector('[data-testid="type-chip-fire"]');
+    expect(fireChip.dataset.active).toBe("false");
+
+    fireChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    expect(fireChip.dataset.active).toBe("true");
+
+    fireChip.click();
+    await vi.advanceTimersByTimeAsync(50);
+
+    expect(fireChip.dataset.active).toBe("false");
+
+    const cancelBtn = document.querySelector(".btn-secondary");
     cancelBtn.click();
     await expect(promise).resolves.toBeNull();
   });

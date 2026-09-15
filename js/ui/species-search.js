@@ -1,13 +1,35 @@
 /**
  * Species Search Overlay — Full-page species selection
  *
- * Shows a dark overlay with a search input and filtered results grid.
+ * Shows a dark overlay with a search input, type filter chips, and filtered results grid.
  * Returns a promise that resolves with the chosen species object or null.
  */
 
 import { speciesList } from "../data/species-list.js";
 import { saveFocus, trapTab } from "./focus-trap.js";
 import PokemonCache from "../cache/pokemon-cache.js";
+
+/** All 18 Pokémon types, ordered per convention. */
+const ALL_TYPES = [
+  "Normal",
+  "Fire",
+  "Water",
+  "Grass",
+  "Electric",
+  "Ice",
+  "Fighting",
+  "Poison",
+  "Ground",
+  "Flying",
+  "Psychic",
+  "Bug",
+  "Rock",
+  "Ghost",
+  "Dragon",
+  "Dark",
+  "Steel",
+  "Fairy",
+];
 
 /**
  * Show the species search overlay. Returns a promise that resolves with the selected species object or null (dismissed).
@@ -17,6 +39,9 @@ export function showSpeciesSearch() {
   return new Promise((resolve) => {
     let resolved = false;
     const restoreFocus = saveFocus();
+
+    /** @type {Set<string>} Currently selected type filters (OR logic). */
+    const selectedTypes = new Set();
 
     function finish(result) {
       if (resolved) return;
@@ -80,7 +105,7 @@ export function showSpeciesSearch() {
     input.style.fontSize = "16px";
     input.style.outline = "none";
     input.style.boxSizing = "border-box";
-    input.style.marginBottom = "var(--space-md)";
+    input.style.marginBottom = "var(--space-sm)";
     input.addEventListener("focus", () => {
       input.style.borderColor = "var(--color-border-active)";
     });
@@ -89,6 +114,91 @@ export function showSpeciesSearch() {
     });
     input.dataset.testid = "search-input";
     panel.appendChild(input);
+
+    /* ── Type filter chips ── */
+    const chipBar = document.createElement("div");
+    chipBar.style.display = "flex";
+    chipBar.style.flexWrap = "wrap";
+    chipBar.style.gap = "6px";
+    chipBar.style.marginBottom = "var(--space-sm)";
+    chipBar.setAttribute("role", "group");
+    chipBar.setAttribute("aria-label", "Filter by type");
+
+    const chipButtons = [];
+
+    function toggleType(type) {
+      if (selectedTypes.has(type)) {
+        selectedTypes.delete(type);
+      } else {
+        selectedTypes.add(type);
+      }
+      updateChipStates();
+      renderResults(input.value);
+    }
+
+    function clearTypes() {
+      selectedTypes.clear();
+      updateChipStates();
+      renderResults(input.value);
+    }
+
+    function updateChipStates() {
+      chipButtons.forEach((chip, i) => {
+        const type = ALL_TYPES[i];
+        const active = selectedTypes.has(type);
+        chip.dataset.active = active ? "true" : "false";
+        chip.style.opacity = active ? "1" : "0.55";
+        chip.style.outline = active
+          ? "2px solid var(--color-border-active)"
+          : "2px solid transparent";
+        chip.style.outlineOffset = "1px";
+      });
+      clearBtn.style.display = selectedTypes.size > 0 ? "inline-flex" : "none";
+    }
+
+    ALL_TYPES.forEach((type) => {
+      const chip = document.createElement("button");
+      chip.className = `type-badge type-badge--${type.toLowerCase()}`;
+      chip.textContent = type;
+      chip.type = "button";
+      chip.dataset.testid = `type-chip-${type.toLowerCase()}`;
+      chip.style.cursor = "pointer";
+      chip.style.fontSize = "11px";
+      chip.style.padding = "2px 8px";
+      chip.style.borderRadius = "var(--radius-default)";
+      chip.style.border = "none";
+      chip.style.fontFamily = "var(--font-body)";
+      chip.style.fontWeight = "600";
+      chip.style.transition = "opacity 0.1s, outline 0.1s";
+      chip.dataset.active = "false";
+      chip.style.opacity = "0.55";
+      chip.style.outline = "2px solid transparent";
+      chip.style.outlineOffset = "1px";
+      chip.addEventListener("click", () => toggleType(type));
+      chipButtons.push(chip);
+      chipBar.appendChild(chip);
+    });
+
+    /* Clear button */
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "btn btn-sm";
+    clearBtn.textContent = "Clear";
+    clearBtn.style.display = "none";
+    clearBtn.style.fontSize = "11px";
+    clearBtn.style.padding = "2px 10px";
+    clearBtn.style.borderRadius = "var(--radius-default)";
+    clearBtn.style.border = "1px solid var(--color-hairline)";
+    clearBtn.style.background = "var(--color-surface-l2)";
+    clearBtn.style.color = "var(--color-text-secondary)";
+    clearBtn.style.cursor = "pointer";
+    clearBtn.style.fontFamily = "var(--font-body)";
+    clearBtn.style.fontWeight = "500";
+    clearBtn.dataset.testid = "type-clear-btn";
+    clearBtn.addEventListener("click", clearTypes);
+    chipBar.appendChild(clearBtn);
+
+    panel.appendChild(chipBar);
 
     /* ── Results container (scrollable) ── */
     const resultsEl = document.createElement("div");
@@ -268,8 +378,14 @@ export function showSpeciesSearch() {
       });
     }
 
-    /* ── Render results based on filter ── */
+    /* ── Render results based on filter AND selected types ── */
     let debounceTimer = null;
+
+    function matchesTypeFilter(species) {
+      if (selectedTypes.size === 0) return true;
+      // OR logic: species matches if any of its types is selected
+      return species.types.some((t) => selectedTypes.has(t));
+    }
 
     function renderResults(filter) {
       const q = filter.trim().toLowerCase();
@@ -277,7 +393,21 @@ export function showSpeciesSearch() {
       resultsEl.innerHTML = "";
       highlightedIndex = -1;
 
-      if (q.length === 0) {
+      // Start filtering with full species list
+      let results = speciesList;
+
+      // Apply type filter
+      if (selectedTypes.size > 0) {
+        results = results.filter(matchesTypeFilter);
+      }
+
+      // Apply name filter (AND with type filter)
+      if (q.length > 0) {
+        results = results.filter((s) => s.name.toLowerCase().includes(q));
+      }
+
+      // Empty state (no filters at all)
+      if (selectedTypes.size === 0 && q.length === 0) {
         const hint = document.createElement("div");
         hint.className = "body-md";
         hint.style.color = "var(--color-text-muted)";
@@ -288,8 +418,7 @@ export function showSpeciesSearch() {
         return;
       }
 
-      const results = speciesList.filter((s) => s.name.toLowerCase().includes(q));
-
+      // No results
       if (results.length === 0) {
         const empty = document.createElement("div");
         empty.className = "body-md";
@@ -361,7 +490,7 @@ export function showSpeciesSearch() {
     }
     document.addEventListener("keydown", onKeyDown);
 
-    /* ── Initial render (show all) ── */
+    /* ── Initial render (show all with type chips available) ── */
     renderResults("");
 
     /* ── Append to body and focus input ── */
