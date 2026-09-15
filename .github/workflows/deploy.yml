@@ -12,7 +12,7 @@ on:
 
 jobs:
   deploy-staging:
-    if: false  # disabled — kept for easy re-enable
+    if: false # disabled — kept for easy re-enable
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
