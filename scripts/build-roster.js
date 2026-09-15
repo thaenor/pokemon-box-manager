@@ -8,10 +8,13 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const cp = require("child_process");
+import fs from "fs";
+import path from "path";
+import cp from "child_process";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, "..");
 const POKEDEX_PATH = path.join(ROOT, "data", "pokedex.json");
 const OUTPUT_PATH = path.join(ROOT, "js", "data", "species-list.js");
@@ -254,6 +257,18 @@ const NAME_MAP = {
   Wyrdeer: "wyrdeer",
   Zoroark: "zoroark",
 
+  // Regional forms
+  "Arcanine Hisui": "arcanine-hisui",
+  "Raichu Alola": "raichu-alola",
+  "Ninetales Alola": "ninetales-alola",
+  "Slowbro Galar": "slowbro-galar",
+  "Slowking Galar": "slowking-galar",
+  "Typhlosion Hisui": "typhlosion-hisui",
+  "Samurott Hisui": "samurott-hisui",
+  "Avalugg Hisui": "avalugg-hisui",
+  "Decidueye Hisui": "decidueye-hisui",
+  "Goodra Hisui": "goodra-hisui",
+
   // Farfetch'd with HTML-aware name
   "Farfetch'd": "farfetchd",
   "Farfetch'd Galar": "farfetchdgalar",
@@ -273,6 +288,21 @@ const FORM_BASE_MAP = {
   farfetchdgalar: "farfetchd",
   "persian-alola": "persian",
   "toxtricity-lowkey": "toxtricity",
+  "raichu-alola": "raichu",
+  "ninetales-alola": "ninetales",
+  "arcanine-hisui": "arcanine",
+  "slowbro-galar": "slowbro",
+  "slowking-galar": "slowking",
+  "typhlosion-hisui": "typhlosion",
+  "samurott-hisui": "samurott",
+  "avalugg-hisui": "avalugg",
+  "decidueye-hisui": "decidueye",
+  "goodra-hisui": "goodra",
+};
+
+// ─── Showdown sprite name overrides (CDN naming differs from internal ID) ─
+const SPRITE_NAME_MAP = {
+  "mr-mime-galar": "mrmime-galar",
 };
 
 // ─── Type overrides for species where the base form fallback gives wrong types ─
@@ -287,6 +317,20 @@ const CHAMPIONS_EXCLUSIVE = {
   raichumegax: { num: 26, types: ["Electric", "Psychic"] },
   raichumegay: { num: 26, types: ["Electric", "Fighting"] },
   scolipede: { num: 545, types: ["Bug", "Poison"] },
+};
+
+// ─── Extra species NOT on the MetaVGC grid (regional forms, etc.) ──
+const EXTRA_SPECIES = {
+  "Arcanine Hisui": { showdownId: "arcanine-hisui", num: 59, types: ["Fire", "Rock"] },
+  "Raichu Alola": { showdownId: "raichu-alola", num: 26, types: ["Electric", "Psychic"] },
+  "Ninetales Alola": { showdownId: "ninetales-alola", num: 38, types: ["Ice", "Fairy"] },
+  "Slowbro Galar": { showdownId: "slowbro-galar", num: 80, types: ["Poison", "Psychic"] },
+  "Slowking Galar": { showdownId: "slowking-galar", num: 199, types: ["Poison", "Psychic"] },
+  "Typhlosion Hisui": { showdownId: "typhlosion-hisui", num: 157, types: ["Fire", "Ghost"] },
+  "Samurott Hisui": { showdownId: "samurott-hisui", num: 503, types: ["Water", "Dark"] },
+  "Avalugg Hisui": { showdownId: "avalugg-hisui", num: 713, types: ["Ice", "Rock"] },
+  "Decidueye Hisui": { showdownId: "decidueye-hisui", num: 724, types: ["Grass", "Fighting"] },
+  "Goodra Hisui": { showdownId: "goodra-hisui", num: 706, types: ["Steel", "Dragon"] },
 };
 
 // ─── Fetch page & extract species ──────────────────────────────────
@@ -441,6 +485,18 @@ async function main() {
     if (failures.length > 20) console.log(`    ... and ${failures.length - 20} more`);
   }
 
+  // Add extra species not on the MetaVGC grid
+  for (const [displayName, info] of Object.entries(EXTRA_SPECIES)) {
+    if (!results.some((r) => r.showdownId === info.showdownId)) {
+      results.push({
+        name: displayName,
+        showdownId: info.showdownId,
+        num: info.num,
+        types: info.types,
+      });
+    }
+  }
+
   // Deduplicate by name
   const nameSeen = new Set();
   const dedupedByName = results.filter((r) => {
@@ -476,9 +532,10 @@ async function main() {
     if (spriteCache.has(cacheKey)) {
       spriteUrl = spriteCache.get(cacheKey);
     } else {
-      // For ultra forms and Champions-exclusive forms, skip PokeAPI and use Showdown CDN
-      if (isUltra || CHAMPIONS_EXCLUSIVE[e.showdownId]) {
-        spriteUrl = `${SHOWDOWN_SPRITE_BASE}/${e.showdownId}.png`;
+      // For ultra forms, Champions-exclusive, and regional-form species, skip PokeAPI and use Showdown CDN
+      if (isUltra || CHAMPIONS_EXCLUSIVE[e.showdownId] || FORM_BASE_MAP[e.showdownId]) {
+        const spriteShowdownId = SPRITE_NAME_MAP[e.showdownId] || e.showdownId;
+        spriteUrl = `${SHOWDOWN_SPRITE_BASE}/${spriteShowdownId}.png`;
         spriteCache.set(cacheKey, spriteUrl);
       } else {
         spriteUrl = await fetchSpriteUrl(e.num, e.showdownId);
@@ -525,6 +582,16 @@ async function main() {
     "Toxtricity Low Key",
     "Kommo O",
     "Sirfetch'd",
+    "Arcanine Hisui",
+    "Raichu Alola",
+    "Ninetales Alola",
+    "Slowbro Galar",
+    "Slowking Galar",
+    "Typhlosion Hisui",
+    "Samurott Hisui",
+    "Avalugg Hisui",
+    "Decidueye Hisui",
+    "Goodra Hisui",
   ];
   console.log("\n[Verification]");
   let allOk = true;
