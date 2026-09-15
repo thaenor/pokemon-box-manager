@@ -75,6 +75,22 @@ describe("sanitizePokemon", () => {
     const result = sanitizePokemon({ species: { name: "Charizard" } });
     expect(result.recruitedDate).toBe(today);
   });
+
+  it("defaults heldItem and teraType to empty strings", () => {
+    const result = sanitizePokemon({ species: { name: "Charizard" } });
+    expect(result.heldItem).toBe("");
+    expect(result.teraType).toBe("");
+  });
+
+  it("preserves heldItem and teraType when set", () => {
+    const result = sanitizePokemon({
+      species: { name: "Charizard" },
+      heldItem: "Leftovers",
+      teraType: "Dragon",
+    });
+    expect(result.heldItem).toBe("Leftovers");
+    expect(result.teraType).toBe("Dragon");
+  });
 });
 
 describe("saveBox / loadBox", () => {
