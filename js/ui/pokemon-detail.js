@@ -1,6 +1,7 @@
 import { natures } from "../data/natures.js";
 import { fetchPokemon } from "../api/pokeapi.js";
 import { saveFocus, trapTab } from "./focus-trap.js";
+import PokemonCache from "../cache/pokemon-cache.js";
 
 /**
  * Show the Pokémon detail/edit form. Fetches data from PokéAPI, renders the form.
@@ -111,13 +112,41 @@ export async function showPokemonDetail(species, existing = null) {
   panel.appendChild(headerRow);
 
   const spriteImg = document.createElement("img");
-  spriteImg.src = pokeData.sprite;
   spriteImg.alt = species.name;
   spriteImg.style.width = "96px";
   spriteImg.style.height = "96px";
   spriteImg.style.objectFit = "contain";
   spriteImg.style.imageRendering = "pixelated";
   headerRow.appendChild(spriteImg);
+
+  /** Tracks the current blob: URL so it can be revoked on change. */
+  let currentSpriteBlobUrl = null;
+
+  /** Load a sprite URL via cache-first (IndexedDB blob cache). */
+  async function loadSprite(url) {
+    if (currentSpriteBlobUrl) {
+      URL.revokeObjectURL(currentSpriteBlobUrl);
+      currentSpriteBlobUrl = null;
+    }
+    try {
+      const cache = await PokemonCache.open();
+      const cached = await cache.getSprite(url);
+      if (cached) {
+        currentSpriteBlobUrl = cached;
+        spriteImg.src = cached;
+        return;
+      }
+      const blobUrl = await cache.saveSprite(url);
+      currentSpriteBlobUrl = blobUrl;
+      spriteImg.src = blobUrl;
+    } catch {
+      // Fallback: direct URL on cache failure (private browsing, CORS, etc.)
+      spriteImg.src = url;
+    }
+  }
+
+  // Initial sprite load
+  loadSprite(pokeData.sprite);
 
   const nameCol = document.createElement("div");
   nameCol.style.flex = "1";
@@ -163,7 +192,7 @@ export async function showPokemonDetail(species, existing = null) {
 
   /* ── Shiny sprite swap ── */
   shinyCheckbox.addEventListener("change", () => {
-    spriteImg.src = shinyCheckbox.checked ? pokeData.spriteShiny : pokeData.sprite;
+    loadSprite(shinyCheckbox.checked ? pokeData.spriteShiny : pokeData.sprite);
   });
 
   /* ── Type badges ── */
@@ -372,6 +401,9 @@ export async function showPokemonDetail(species, existing = null) {
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
         }
+        if (currentSpriteBlobUrl) {
+          URL.revokeObjectURL(currentSpriteBlobUrl);
+        }
       };
 
       function onEditKeyDown(e) {
@@ -516,6 +548,9 @@ export async function showPokemonDetail(species, existing = null) {
         restoreFocus();
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
+        }
+        if (currentSpriteBlobUrl) {
+          URL.revokeObjectURL(currentSpriteBlobUrl);
         }
       };
 

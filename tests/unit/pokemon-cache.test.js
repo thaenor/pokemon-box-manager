@@ -137,3 +137,69 @@ describe("PokemonCache — error handling", () => {
     await expect(unopened.clear()).rejects.toThrow("PokemonCache is not open");
   });
 });
+
+describe("PokemonCache — sprite cache", () => {
+  /** @type {PokemonCache} */
+  let cache;
+
+  beforeEach(async () => {
+    await new Promise((resolve, reject) => {
+      const req = indexedDB.deleteDatabase("pkmn-cache-v1");
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+      req.onblocked = () => resolve();
+    });
+    cache = await PokemonCache.open();
+  });
+
+  afterEach(() => {
+    cache.close();
+  });
+
+  it("getSprite returns null for uncached URL", async () => {
+    const result = await cache.getSprite("https://example.com/missing.png");
+    expect(result).toBeNull();
+  });
+
+  it("stores sprite metadata retrievable via database read", async () => {
+    const blob = new Blob(["test image data"], { type: "image/png" });
+    const db = cache.database;
+    const tx = db.transaction("sprites", "readwrite");
+    tx.objectStore("sprites").put({
+      spriteUrl: "https://example.com/test.png",
+      blob,
+      cachedAt: Date.now(),
+      mimeType: "image/png",
+    });
+    await new Promise((resolve) => {
+      tx.oncomplete = resolve;
+    });
+
+    // Read back from store to verify data persisted
+    const readTx = db.transaction("sprites", "readonly");
+    const entry = await new Promise((resolve) => {
+      const req = readTx.objectStore("sprites").get("https://example.com/test.png");
+      req.onsuccess = () => resolve(req.result);
+    });
+    expect(entry).toBeTruthy();
+    expect(entry.spriteUrl).toBe("https://example.com/test.png");
+    expect(entry.mimeType).toBe("image/png");
+    expect(entry.cachedAt).toBeGreaterThan(0);
+  });
+
+  it("throws on getSprite before open", async () => {
+    cache.close();
+    const unopened = new PokemonCache();
+    await expect(unopened.getSprite("https://example.com/x.png")).rejects.toThrow(
+      "PokemonCache is not open",
+    );
+  });
+
+  it("throws on saveSprite before open", async () => {
+    cache.close();
+    const unopened = new PokemonCache();
+    await expect(unopened.saveSprite("https://example.com/x.png")).rejects.toThrow(
+      "PokemonCache is not open",
+    );
+  });
+});

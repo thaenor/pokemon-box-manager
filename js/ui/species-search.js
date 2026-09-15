@@ -7,6 +7,7 @@
 
 import { speciesList } from "../data/species-list.js";
 import { saveFocus, trapTab } from "./focus-trap.js";
+import PokemonCache from "../cache/pokemon-cache.js";
 
 /**
  * Show the species search overlay. Returns a promise that resolves with the selected species object or null (dismissed).
@@ -20,6 +21,7 @@ export function showSpeciesSearch() {
     function finish(result) {
       if (resolved) return;
       resolved = true;
+      revokeSpriteBlobUrls();
       document.removeEventListener("keydown", onKeyDown);
       restoreFocus();
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -114,6 +116,36 @@ export function showSpeciesSearch() {
     footer.appendChild(cancelBtn);
     panel.appendChild(footer);
 
+    /* ── Cache-first sprite loader ── */
+    /** @type {Set<string>} Blob URLs that need revocation on dismiss */
+    const spriteBlobUrls = new Set();
+
+    /** Revoke all tracked blob URLs. */
+    function revokeSpriteBlobUrls() {
+      for (const url of spriteBlobUrls) {
+        URL.revokeObjectURL(url);
+      }
+      spriteBlobUrls.clear();
+    }
+
+    async function loadSpriteWithCache(url, imgEl) {
+      try {
+        const cache = await PokemonCache.open();
+        const cached = await cache.getSprite(url);
+        if (cached) {
+          spriteBlobUrls.add(cached);
+          imgEl.src = cached;
+          return;
+        }
+        const blobUrl = await cache.saveSprite(url);
+        spriteBlobUrls.add(blobUrl);
+        imgEl.src = blobUrl;
+      } catch {
+        // Fallback: direct URL on cache failure (private browsing, CORS, etc.)
+        imgEl.src = url;
+      }
+    }
+
     /* ── Render a single species row ── */
     function createSpeciesRow(species) {
       const row = document.createElement("div");
@@ -189,7 +221,8 @@ export function showSpeciesSearch() {
         // Keep letter placeholder on load failure
         spriteImg.style.display = "none";
       });
-      spriteImg.src = species.spriteUrl;
+      // Load sprite via cache-first
+      loadSpriteWithCache(species.spriteUrl, spriteImg);
       spriteWrap.appendChild(spriteImg);
 
       row.appendChild(spriteWrap);
