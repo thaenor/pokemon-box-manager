@@ -47,6 +47,9 @@ beforeEach(async () => {
 
 afterEach(() => {
   document.querySelectorAll(".overlay").forEach((el) => el.remove());
+  // Reset cache mock to default state (cache miss)
+  mockSpeciesCache.getSpecies.mockReset();
+  mockSpeciesCache.getSpecies.mockResolvedValue(null);
 });
 
 describe("showPokemonDetail", () => {
@@ -204,6 +207,24 @@ describe("showPokemonDetail", () => {
     closeBtn.click();
     const result = await promise;
     expect(result).toBeNull();
+  });
+
+  it("uses cached species data without calling fetchPokemon (cache hit)", async () => {
+    mockSpeciesCache.getSpecies.mockResolvedValue(mockPokeData);
+
+    const promise = showPokemonDetail(species);
+    await vi.waitFor(() => {
+      expect(document.body.textContent).toContain("Pikachu");
+      expect(document.querySelector(".btn-primary")).not.toBeNull();
+    });
+
+    expect(fetchPokemonMock).not.toHaveBeenCalled();
+    expect(mockSpeciesCache.getSpecies).toHaveBeenCalledWith("pikachu");
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
   });
 
   /* ── EDIT MODE TESTS ── */

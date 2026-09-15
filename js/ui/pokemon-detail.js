@@ -55,20 +55,20 @@ export async function showPokemonDetail(species, existing = null) {
   const pokeApiName = species.pokeApiName || species.showdownId;
 
   let pokeData = null;
+  let cache;
 
   try {
-    const cache = await PokemonCache.open();
+    cache = await PokemonCache.open();
     pokeData = await cache.getSpecies(pokeApiName);
-
-    if (!pokeData) {
-      pokeData = await fetchPokemon(pokeApiName);
-      if (pokeData) {
-        cache.saveSpecies(pokeApiName, pokeData); // fire-and-forget
-      }
-    }
   } catch {
-    // IndexedDB unavailable (private browsing, test env) — fall through to network
+    // Cache unavailable (private browsing, test env) — fall through to network fetch
+  }
+
+  if (!pokeData) {
     pokeData = await fetchPokemon(pokeApiName);
+    if (pokeData && cache) {
+      cache.saveSpecies(pokeApiName, pokeData); // fire-and-forget
+    }
   }
 
   if (!pokeData) {
