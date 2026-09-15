@@ -113,6 +113,83 @@ export class PokemonCache {
     }
     instance = null;
   }
+
+  /**
+   * Get cache statistics — entry counts and estimated storage size.
+   *
+   * @returns {Promise<{ species: number, sprites: number, sizeBytes: number }>}
+   */
+  async getStats() {
+    this.#requireDb();
+
+    const [speciesItems, spriteItems] = await Promise.all([
+      this.#getAll("species"),
+      this.#getAll("sprites"),
+    ]);
+
+    const species = speciesItems.length;
+    const sprites = spriteItems.length;
+    const sizeBytes =
+      speciesItems.reduce((sum, item) => sum + new Blob([JSON.stringify(item)]).size, 0) +
+      spriteItems.reduce((sum, item) => sum + (item.blob?.size || 0), 0);
+
+    return { species, sprites, sizeBytes };
+  }
+
+  /**
+   * Clear all cached data from both stores.
+   *
+   * @returns {Promise<void>}
+   */
+  async clear() {
+    this.#requireDb();
+
+    await Promise.all([this.#clearStore("species"), this.#clearStore("sprites")]);
+  }
+
+  /**
+   * Ensure the database connection is open.
+   *
+   * @returns {IDBDatabase}
+   */
+  #requireDb() {
+    if (!this.#db) {
+      throw new Error("PokemonCache is not open. Call await PokemonCache.open() first.");
+    }
+    return this.#db;
+  }
+
+  /**
+   * Retrieve all entries from an object store.
+   *
+   * @param {string} storeName
+   * @returns {Promise<Array<object>>}
+   */
+  #getAll(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = this.#db.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Delete all entries from an object store.
+   *
+   * @param {string} storeName
+   * @returns {Promise<void>}
+   */
+  #clearStore(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = this.#db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+      const request = store.clear();
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
 }
 
 export default PokemonCache;
