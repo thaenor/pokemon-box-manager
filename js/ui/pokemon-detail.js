@@ -390,9 +390,80 @@ export async function showPokemonDetail(species, existing = null) {
       }
       document.addEventListener("keydown", onEditKeyDown);
 
+      /* ── Remove confirmation dialog ── */
+      function showRemoveConfirm(pokemonName, editCleanup, editResolve) {
+        const confirmOverlay = document.createElement("div");
+        confirmOverlay.className = "overlay";
+        confirmOverlay.setAttribute("role", "dialog");
+        confirmOverlay.setAttribute("aria-modal", "true");
+
+        const confirmPanel = document.createElement("div");
+        confirmPanel.className = "overlay__panel";
+        confirmPanel.style.maxWidth = "400px";
+        confirmPanel.style.textAlign = "center";
+        confirmOverlay.appendChild(confirmPanel);
+
+        const message = document.createElement("p");
+        message.textContent = `Remove ${pokemonName} from your box? This cannot be undone.`;
+        message.style.marginBottom = "var(--space-lg)";
+        message.className = "body-lg";
+        confirmPanel.appendChild(message);
+
+        const actionsRow = document.createElement("div");
+        actionsRow.style.display = "flex";
+        actionsRow.style.gap = "var(--space-sm)";
+        actionsRow.style.justifyContent = "center";
+        confirmPanel.appendChild(actionsRow);
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.className = "btn btn-secondary";
+        cancelBtn.textContent = "Cancel";
+        actionsRow.appendChild(cancelBtn);
+
+        const confirmRemoveBtn = document.createElement("button");
+        confirmRemoveBtn.className = "btn btn-destructive";
+        confirmRemoveBtn.textContent = "Remove";
+        actionsRow.appendChild(confirmRemoveBtn);
+
+        document.body.appendChild(confirmOverlay);
+
+        function onConfirmKeyDown(e) {
+          if (e.key === "Tab") {
+            trapTab(confirmPanel, e);
+            return;
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            dismissConfirm();
+          }
+        }
+
+        function dismissConfirm() {
+          document.removeEventListener("keydown", onConfirmKeyDown);
+          if (confirmOverlay.parentNode) {
+            confirmOverlay.parentNode.removeChild(confirmOverlay);
+          }
+        }
+
+        cancelBtn.addEventListener("click", dismissConfirm);
+        confirmOverlay.addEventListener("click", (e) => {
+          if (e.target === confirmOverlay) dismissConfirm();
+        });
+
+        confirmRemoveBtn.addEventListener("click", () => {
+          document.removeEventListener("keydown", onConfirmKeyDown);
+          if (confirmOverlay.parentNode) {
+            confirmOverlay.parentNode.removeChild(confirmOverlay);
+          }
+          editCleanup();
+          editResolve({ action: "remove" });
+        });
+
+        document.addEventListener("keydown", onConfirmKeyDown);
+      }
+
       removeBtn.addEventListener("click", () => {
-        cleanup();
-        resolve({ action: "remove" });
+        showRemoveConfirm(species.name, cleanup, resolve);
       });
 
       saveBtn.addEventListener("click", () => {
