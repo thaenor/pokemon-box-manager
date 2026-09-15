@@ -113,6 +113,86 @@ export class PokemonCache {
     }
     instance = null;
   }
+
+  /**
+   * Get cache statistics — entry counts and estimated storage size.
+   *
+   * @returns {Promise<{ species: number, sprites: number, sizeBytes: number }>}
+   */
+  async getStats() {
+    this.#requireDb();
+
+    // Fetch all entries from every store in parallel
+    const entries = await Promise.all(Object.keys(STORES).map((name) => this.#getAll(name)));
+
+    const storeNames = Object.keys(STORES);
+    const species = entries[storeNames.indexOf("species")].length;
+    const sprites = entries[storeNames.indexOf("sprites")].length;
+    const sizeBytes =
+      entries[storeNames.indexOf("species")].reduce(
+        (sum, item) => sum + new Blob([JSON.stringify(item)]).size,
+        0,
+      ) +
+      entries[storeNames.indexOf("sprites")].reduce((sum, item) => sum + (item.blob?.size || 0), 0);
+
+    return { species, sprites, sizeBytes };
+  }
+
+  /**
+   * Clear all cached data from both stores.
+   *
+   * @returns {Promise<void>}
+   */
+  async clear() {
+    this.#requireDb();
+
+    // Use a single multi-store transaction so both clears succeed or fail atomically
+    const tx = this.#db.transaction(Object.keys(STORES), "readwrite");
+    await Promise.all(
+      Object.keys(STORES).map((name) => {
+        const store = tx.objectStore(name);
+        store.clear();
+        // Return a promise that resolves when this store's clear completes
+        return new Promise((resolve) => {
+          // clear() fires success synchronously within the transaction
+          resolve();
+        });
+      }),
+    );
+    // Wait for the transaction to complete
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  /**
+   * Ensure the database connection is open.
+   *
+   * @returns {IDBDatabase}
+   */
+  #requireDb() {
+    if (!this.#db) {
+      throw new Error("PokemonCache is not open. Call await PokemonCache.open() first.");
+    }
+    return this.#db;
+  }
+
+  /**
+   * Retrieve all entries from an object store.
+   *
+   * @param {string} storeName
+   * @returns {Promise<Array<object>>}
+   */
+  #getAll(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = this.#db.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
 }
 
 export default PokemonCache;
