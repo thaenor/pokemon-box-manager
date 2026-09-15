@@ -14,6 +14,10 @@
  * Test controllers set:
  *   window.__authState = <user object|null>     — default: null (unauthenticated)
  *   window.__authError = <error object|null>    — default: null (no error)
+ *   window.__authDelay = <boolean>              — default: falsy (settle immediately);
+ *                                                 when truthy, signInWithPopup defers and
+ *                                                 stores resolve/reject on
+ *                                                 window.__authResolve / window.__authReject
  */
 
 (function () {
