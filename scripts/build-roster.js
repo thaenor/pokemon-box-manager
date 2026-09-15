@@ -298,6 +298,11 @@ const FORM_BASE_MAP = {
   "avalugg-hisui": "avalugg",
   "decidueye-hisui": "decidueye",
   "goodra-hisui": "goodra",
+  "rotom-wash": "rotom",
+  "rotom-heat": "rotom",
+  "rotom-frost": "rotom",
+  "rotom-fan": "rotom",
+  "rotom-mow": "rotom",
 };
 
 // ─── Showdown sprite name overrides (CDN naming differs from internal ID) ─
@@ -331,6 +336,13 @@ const EXTRA_SPECIES = {
   "Avalugg Hisui": { showdownId: "avalugg-hisui", num: 713, types: ["Ice", "Rock"] },
   "Decidueye Hisui": { showdownId: "decidueye-hisui", num: 724, types: ["Grass", "Fighting"] },
   "Goodra Hisui": { showdownId: "goodra-hisui", num: 706, types: ["Steel", "Dragon"] },
+
+  // Rotom appliance forms
+  "Rotom Wash": { showdownId: "rotom-wash", num: 479, types: ["Electric", "Water"] },
+  "Rotom Heat": { showdownId: "rotom-heat", num: 479, types: ["Electric", "Fire"] },
+  "Rotom Frost": { showdownId: "rotom-frost", num: 479, types: ["Electric", "Ice"] },
+  "Rotom Fan": { showdownId: "rotom-fan", num: 479, types: ["Electric", "Flying"] },
+  "Rotom Mow": { showdownId: "rotom-mow", num: 479, types: ["Electric", "Grass"] },
 };
 
 // ─── Fetch page & extract species ──────────────────────────────────
@@ -592,6 +604,11 @@ async function main() {
     "Avalugg Hisui",
     "Decidueye Hisui",
     "Goodra Hisui",
+    "Rotom Wash",
+    "Rotom Heat",
+    "Rotom Frost",
+    "Rotom Fan",
+    "Rotom Mow",
   ];
   console.log("\n[Verification]");
   let allOk = true;
