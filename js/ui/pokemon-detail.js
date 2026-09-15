@@ -440,6 +440,7 @@ export async function showPokemonDetail(species, existing = null) {
 
         function dismissConfirm() {
           document.removeEventListener("keydown", onConfirmKeyDown);
+          document.addEventListener("keydown", onEditKeyDown);
           if (confirmOverlay.parentNode) {
             confirmOverlay.parentNode.removeChild(confirmOverlay);
           }
@@ -452,6 +453,7 @@ export async function showPokemonDetail(species, existing = null) {
 
         confirmRemoveBtn.addEventListener("click", () => {
           document.removeEventListener("keydown", onConfirmKeyDown);
+          document.removeEventListener("keydown", onEditKeyDown);
           if (confirmOverlay.parentNode) {
             confirmOverlay.parentNode.removeChild(confirmOverlay);
           }
@@ -459,6 +461,8 @@ export async function showPokemonDetail(species, existing = null) {
           editResolve({ action: "remove" });
         });
 
+        // Suppress edit Escape handler while confirm dialog is open
+        document.removeEventListener("keydown", onEditKeyDown);
         document.addEventListener("keydown", onConfirmKeyDown);
       }
 
