@@ -273,15 +273,35 @@ describe("showPokemonDetail", () => {
     await promise;
   });
 
-  it("edit mode Remove button resolves {action: 'remove'}", async () => {
+  it("edit mode Remove button shows confirmation dialog, confirms deletes", async () => {
     const promise = showPokemonDetail(species, existingPokemon);
     await vi.waitFor(() => {
       expect(document.body.textContent).toContain("Remove");
     });
 
+    // Click Remove — should show confirmation, not delete immediately
     const btns = document.querySelectorAll("button");
-    const removeBtn = Array.from(btns).find((b) => b.textContent === "Remove");
+    const removeBtn = Array.from(btns).find(
+      (b) => b.textContent === "Remove" && b.classList.contains("btn-destructive"),
+    );
     removeBtn.click();
+
+    // Confirmation dialog should appear with the Pokémon name
+    await vi.waitFor(() => {
+      expect(document.body.textContent).toContain("cannot be undone");
+      expect(document.body.textContent).toContain("Pikachu");
+    });
+
+    // Now there should be TWO Remove buttons (one in edit form, one in confirm)
+    // Find the one inside the confirm overlay — it's the most recently added
+    const allBtns = document.querySelectorAll("button");
+    const confirmBtns = Array.from(allBtns).filter(
+      (b) => b.textContent === "Remove" && b.classList.contains("btn-destructive"),
+    );
+    // The second btn-destructive is in the confirm dialog
+    const confirmRemoveBtn = confirmBtns[confirmBtns.length - 1];
+    confirmRemoveBtn.click();
+
     const result = await promise;
     expect(result).toEqual({ action: "remove" });
   });
