@@ -139,6 +139,63 @@ export class PokemonCache {
   }
 
   /**
+   * Retrieve a cached sprite blob, returning a blob: URL.
+   *
+   * @param {string} url — sprite URL (key in the sprites store)
+   * @returns {Promise<string|null>} blob: URL or null if not cached
+   */
+  async getSprite(url) {
+    this.#requireDb();
+
+    const entry = await this.#get("sprites", url);
+    if (!entry || !entry.blob) return null;
+
+    return URL.createObjectURL(entry.blob);
+  }
+
+  /**
+   * Fetch a sprite URL, cache the blob in IndexedDB, and return a blob: URL.
+   *
+   * If the URL is already cached, returns the cached blob: URL directly
+   * without a network fetch.
+   *
+   * @param {string} url — sprite URL to fetch and cache
+   * @returns {Promise<string>} blob: URL from the cached blob
+   */
+  async saveSprite(url) {
+    this.#requireDb();
+
+    // Check cache first
+    const entry = await this.#get("sprites", url);
+    if (entry && entry.blob) {
+      return URL.createObjectURL(entry.blob);
+    }
+
+    // Fetch blob from network
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch sprite: HTTP ${response.status} for ${url}`);
+    }
+    const blob = await response.blob();
+
+    // Store in IndexedDB
+    const tx = this.#db.transaction("sprites", "readwrite");
+    const store = tx.objectStore("sprites");
+    store.put({
+      spriteUrl: url,
+      blob,
+      cachedAt: Date.now(),
+      mimeType: blob.type || "image/png",
+    });
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+
+    return URL.createObjectURL(blob);
+  }
+
+  /**
    * Clear all cached data from both stores.
    *
    * @returns {Promise<void>}
@@ -176,6 +233,23 @@ export class PokemonCache {
       throw new Error("PokemonCache is not open. Call await PokemonCache.open() first.");
     }
     return this.#db;
+  }
+
+  /**
+   * Retrieve a single entry from an object store by key.
+   *
+   * @param {string} storeName
+   * @param {string} key
+   * @returns {Promise<object|undefined>}
+   */
+  #get(storeName, key) {
+    return new Promise((resolve, reject) => {
+      const tx = this.#db.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const request = store.get(key);
+      request.onsuccess = () => resolve(request.result ?? undefined);
+      request.onerror = () => reject(request.error);
+    });
   }
 
   /**
