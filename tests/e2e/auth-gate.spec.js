@@ -1,70 +1,23 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures.js";
 
 /**
  * E2E tests for the auth gate — login view vs box grid.
  *
- * Strategy: use page.addInitScript() to stub firebase.auth() before the page loads,
- * and override navigator.webdriver so the auth gate activates instead of being bypassed.
+ * Uses the shared Firebase mock fixture (intercepts CDN scripts, injects
+ * controllable auth stub, strips navigator.webdriver so the gate activates).
+ *
+ * Auth state is controlled via window.__authState:
+ *   - Set via page.addInitScript BEFORE page.goto() for initial state
+ *   - Changed via page.evaluate() for swap transitions
+ *     (the mock's defineProperty setter notifies onAuthStateChanged listeners)
  */
-
-/** Create a minimal Firebase auth stub that fires onAuthStateChanged with a given user. */
-function stubFirebase(user) {
-  return () => {
-    // Override Playwright's navigator.webdriver so the auth gate activates
-    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
-
-    const authInstance = {
-      onAuthStateChanged: (cb) => {
-        setTimeout(() => cb(user), 0);
-      },
-      signInWithPopup: async () => {},
-      signOut: async () => {},
-    };
-
-    const authFn = () => authInstance;
-    authFn.GoogleAuthProvider = function GoogleAuthProvider() {};
-
-    window.firebase = { auth: authFn };
-  };
-}
-
-/** Create a controllable Firebase auth stub for swap tests. */
-function controllableStub(initialUser) {
-  return () => {
-    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
-
-    let authCallback = null;
-
-    window.__authState = initialUser;
-    window.__setAuthState = (user) => {
-      window.__authState = user;
-      if (authCallback) {
-        setTimeout(() => authCallback(user), 0);
-      }
-    };
-
-    const authInstance = {
-      onAuthStateChanged: (cb) => {
-        authCallback = cb;
-        setTimeout(() => cb(initialUser), 0);
-      },
-      signInWithPopup: async () => {},
-      signOut: async () => {
-        // Sign-out calls signOut() then relies on onAuthStateChanged(null) to transition
-        window.__setAuthState(null);
-      },
-    };
-
-    const authFn = () => authInstance;
-    authFn.GoogleAuthProvider = function GoogleAuthProvider() {};
-
-    window.firebase = { auth: authFn };
-  };
-}
 
 test.describe("Auth gate", () => {
   test("shows login view when unauthenticated", async ({ page }) => {
-    await page.addInitScript(stubFirebase(null));
+    // Override fixture default — start unauthenticated
+    await page.addInitScript(() => {
+      window.__authState = null;
+    });
     await page.goto("/");
 
     // Title
@@ -83,8 +36,7 @@ test.describe("Auth gate", () => {
   });
 
   test("shows box grid when authenticated", async ({ page }) => {
-    const mockUser = { uid: "test-user", email: "test@example.com" };
-    await page.addInitScript(stubFirebase(mockUser));
+    // Fixture defaults to authenticated — no override needed
     await page.goto("/");
 
     // Box grid renders — empty state message
@@ -92,15 +44,18 @@ test.describe("Auth gate", () => {
       timeout: 5000,
     });
 
-    // Box nav header renders
-    await expect(page.getByText(/^[0-9]+\/40$/)).toBeVisible();
+    // Box nav header renders (capacity text like "0/40")
+    await expect(page.getByText(/^0\/[0-9]+$/)).toBeVisible();
 
     // No login view elements
     await expect(page.getByText("Sign in with Google")).not.toBeVisible();
   });
 
   test("swaps from login to box grid on sign-in", async ({ page }) => {
-    await page.addInitScript(controllableStub(null));
+    // Start unauthenticated
+    await page.addInitScript(() => {
+      window.__authState = null;
+    });
     await page.goto("/");
 
     // Initially login view
@@ -108,9 +63,9 @@ test.describe("Auth gate", () => {
       timeout: 5000,
     });
 
-    // Simulate sign-in
+    // Simulate sign-in — mock's __authState setter notifies all listeners
     await page.evaluate(() => {
-      window.__setAuthState({ uid: "test-user" });
+      window.__authState = { uid: "test-uid", email: "test@example.com" };
     });
 
     // After sign-in, box grid should appear
@@ -123,8 +78,7 @@ test.describe("Auth gate", () => {
   });
 
   test("swaps from box grid to login on sign-out", async ({ page }) => {
-    const mockUser = { uid: "test-user", email: "test@example.com" };
-    await page.addInitScript(controllableStub(mockUser));
+    // Fixture defaults to authenticated — no override needed
     await page.goto("/");
 
     // Initially box grid
@@ -132,9 +86,9 @@ test.describe("Auth gate", () => {
       timeout: 5000,
     });
 
-    // Simulate sign-out
+    // Simulate sign-out — mock's __authState setter notifies all listeners
     await page.evaluate(() => {
-      window.__setAuthState(null);
+      window.__authState = null;
     });
 
     // After sign-out, login view should appear
