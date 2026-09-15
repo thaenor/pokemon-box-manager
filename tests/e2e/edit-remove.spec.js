@@ -106,7 +106,7 @@ test.describe("Edit and remove Pokémon flow", () => {
     await expect(page.locator('[data-testid="box-slot"]').first()).toBeVisible();
   });
 
-  test("remove button deletes the Pokémon", async ({ page }) => {
+  test("remove button shows confirmation, then deletes on confirm", async ({ page }) => {
     await page.evaluate(
       (data) => localStorage.setItem("pokemon-box:slots", JSON.stringify(data)),
       buildBox(true),
@@ -122,8 +122,16 @@ test.describe("Edit and remove Pokémon flow", () => {
       timeout: 10000,
     });
 
-    // Click Remove
+    // Click Remove — should show confirmation dialog
     await page.getByRole("button", { name: "Remove" }).click();
+
+    // Confirmation dialog should appear
+    await expect(page.getByText(/cannot be undone/)).toBeVisible({
+      timeout: 3000,
+    });
+
+    // Click the confirm Remove button in the dialog
+    await page.locator(".overlay:last-of-type .btn-destructive").click();
 
     // Verify info toast
     const infoToast = page.locator(".toast--info");
