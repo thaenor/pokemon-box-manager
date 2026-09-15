@@ -88,8 +88,7 @@ export const speciesList = [
     types: ["Electric", "Psychic"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/26.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/raichu-alola.png",
   },
   {
     id: 36,
@@ -118,8 +117,7 @@ export const speciesList = [
     types: ["Ice", "Fairy"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/38.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/ninetales-alola.png",
   },
   {
     id: 40,
@@ -158,8 +156,7 @@ export const speciesList = [
     types: ["Dark"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/53.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/persian-alola.png",
   },
   {
     id: 59,
@@ -178,8 +175,7 @@ export const speciesList = [
     types: ["Fire", "Rock"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/59.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/arcanine-hisui.png",
   },
   {
     id: 65,
@@ -228,8 +224,7 @@ export const speciesList = [
     types: ["Poison", "Psychic"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/80.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/slowbro-galar.png",
   },
   {
     id: 83,
@@ -248,8 +243,7 @@ export const speciesList = [
     types: ["Fighting"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/83.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/farfetchdgalar.png",
   },
   {
     id: 94,
@@ -297,7 +291,7 @@ export const speciesList = [
     types: ["Ice", "Psychic"],
     isMega: false,
     isUltra: false,
-    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/mr-mime-galar.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/mrmime-galar.png",
   },
   {
     id: 127,
@@ -426,8 +420,7 @@ export const speciesList = [
     types: ["Fire", "Ghost"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/157.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/typhlosion-hisui.png",
   },
   {
     id: 160,
@@ -516,8 +509,7 @@ export const speciesList = [
     types: ["Poison", "Psychic"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/199.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/slowking-galar.png",
   },
   {
     id: 205,
@@ -1133,8 +1125,7 @@ export const speciesList = [
     types: ["Water", "Dark"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/503.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/samurott-hisui.png",
   },
   {
     id: 504,
@@ -1672,8 +1663,7 @@ export const speciesList = [
     types: ["Steel", "Dragon"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/706.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/goodra-hisui.png",
   },
   {
     id: 707,
@@ -1722,8 +1712,7 @@ export const speciesList = [
     types: ["Ice", "Rock"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/713.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/avalugg-hisui.png",
   },
   {
     id: 715,
@@ -1752,8 +1741,7 @@ export const speciesList = [
     types: ["Grass", "Fighting"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/724.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/decidueye-hisui.png",
   },
   {
     id: 727,
@@ -2012,8 +2000,7 @@ export const speciesList = [
     types: ["Electric", "Poison"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/849.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/toxtricity-lowkey.png",
   },
   {
     id: 853,
@@ -2142,8 +2129,7 @@ export const speciesList = [
     types: ["Psychic", "Normal"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/876.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/indeedee-female.png",
   },
   {
     id: 876,
@@ -2152,8 +2138,7 @@ export const speciesList = [
     types: ["Psychic", "Normal"],
     isMega: false,
     isUltra: false,
-    spriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/876.png",
+    spriteUrl: "https://play.pokemonshowdown.com/sprites/gen5/indeedee-male.png",
   },
   {
     id: 877,

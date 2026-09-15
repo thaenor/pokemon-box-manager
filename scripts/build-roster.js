@@ -300,6 +300,11 @@ const FORM_BASE_MAP = {
   "goodra-hisui": "goodra",
 };
 
+// ─── Showdown sprite name overrides (CDN naming differs from internal ID) ─
+const SPRITE_NAME_MAP = {
+  "mr-mime-galar": "mrmime-galar",
+};
+
 // ─── Type overrides for species where the base form fallback gives wrong types ─
 const TYPE_OVERRIDES = {
   "persian-alola": ["Dark"],
@@ -527,9 +532,10 @@ async function main() {
     if (spriteCache.has(cacheKey)) {
       spriteUrl = spriteCache.get(cacheKey);
     } else {
-      // For ultra forms and Champions-exclusive forms, skip PokeAPI and use Showdown CDN
-      if (isUltra || CHAMPIONS_EXCLUSIVE[e.showdownId]) {
-        spriteUrl = `${SHOWDOWN_SPRITE_BASE}/${e.showdownId}.png`;
+      // For ultra forms, Champions-exclusive, and regional-form species, skip PokeAPI and use Showdown CDN
+      if (isUltra || CHAMPIONS_EXCLUSIVE[e.showdownId] || FORM_BASE_MAP[e.showdownId]) {
+        const spriteShowdownId = SPRITE_NAME_MAP[e.showdownId] || e.showdownId;
+        spriteUrl = `${SHOWDOWN_SPRITE_BASE}/${spriteShowdownId}.png`;
         spriteCache.set(cacheKey, spriteUrl);
       } else {
         spriteUrl = await fetchSpriteUrl(e.num, e.showdownId);
