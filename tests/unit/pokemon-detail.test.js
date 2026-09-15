@@ -20,6 +20,17 @@ vi.mock("../../js/api/pokeapi.js", () => ({
   fetchPokemon: vi.fn().mockResolvedValue(mockPokeData),
 }));
 
+const mockSpeciesCache = {
+  getSpecies: vi.fn().mockResolvedValue(null),
+  saveSpecies: vi.fn(),
+};
+
+vi.mock("../../js/cache/pokemon-cache.js", () => ({
+  default: {
+    open: vi.fn().mockResolvedValue(mockSpeciesCache),
+  },
+}));
+
 let fetchPokemonMock;
 let showPokemonDetail;
 
@@ -164,14 +175,9 @@ describe("showPokemonDetail", () => {
 
   it("cancel button resolves null", async () => {
     const promise = showPokemonDetail(species);
-    await vi.waitFor(() => {
-      const btns = document.querySelectorAll("button");
-      const cancelBtn = Array.from(btns).find((b) => b.textContent === "Cancel");
-      expect(cancelBtn).not.toBeNull();
-    });
+    await vi.waitUntil(() => document.querySelector(".btn-secondary") !== null);
 
-    const btns = document.querySelectorAll("button");
-    const cancelBtn = Array.from(btns).find((b) => b.textContent === "Cancel");
+    const cancelBtn = document.querySelector(".btn-secondary");
     cancelBtn.click();
     const result = await promise;
     expect(result).toBeNull();

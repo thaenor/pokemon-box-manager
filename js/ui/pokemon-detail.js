@@ -51,8 +51,25 @@ export async function showPokemonDetail(species, existing = null) {
 
   document.body.appendChild(overlay);
 
-  /* ── Fetch ── */
-  const pokeData = await fetchPokemon(species.pokeApiName || species.showdownId);
+  /* ── Fetch (IndexedDB cache-first) ── */
+  const pokeApiName = species.pokeApiName || species.showdownId;
+
+  let pokeData = null;
+
+  try {
+    const cache = await PokemonCache.open();
+    pokeData = await cache.getSpecies(pokeApiName);
+
+    if (!pokeData) {
+      pokeData = await fetchPokemon(pokeApiName);
+      if (pokeData) {
+        cache.saveSpecies(pokeApiName, pokeData); // fire-and-forget
+      }
+    }
+  } catch {
+    // IndexedDB unavailable (private browsing, test env) — fall through to network
+    pokeData = await fetchPokemon(pokeApiName);
+  }
 
   if (!pokeData) {
     loadingEl.textContent = `Couldn't fetch data for ${species.name} (Champions-exclusive form).`;
