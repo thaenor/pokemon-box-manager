@@ -154,6 +154,44 @@ export class PokemonCache {
   }
 
   /**
+   * Retrieve cached species data by PokéAPI name.
+   * Returns null if not cached.
+   *
+   * @param {string} pokeApiName — species slug (e.g. "garchomp", "toxtricity-low-key")
+   * @returns {Promise<object|null>} Cached Pokémon data or null
+   */
+  async getSpecies(pokeApiName) {
+    this.#requireDb();
+    const entry = await this.#get("species", pokeApiName);
+    return entry?.data ?? null;
+  }
+
+  /**
+   * Save species data to the IndexedDB cache.
+   *
+   * Fire-and-forget — does not block the UI waiting for the write.
+   *
+   * @param {string} pokeApiName — species slug
+   * @param {object} data — normalized Pokémon data (sprite, stats, types, abilities…)
+   */
+  saveSpecies(pokeApiName, data) {
+    this.#requireDb();
+    try {
+      const tx = this.#db.transaction("species", "readwrite");
+      const store = tx.objectStore("species");
+      store.put({
+        pokeApiName,
+        data,
+        cachedAt: Date.now(),
+        ttl: null,
+      });
+    } catch (err) {
+      // Graceful fallback — cache miss is never a UI blocker
+      console.warn("PokemonCache.saveSpecies failed:", err.message);
+    }
+  }
+
+  /**
    * Fetch a sprite URL, cache the blob in IndexedDB, and return a blob: URL.
    *
    * If the URL is already cached, returns the cached blob: URL directly

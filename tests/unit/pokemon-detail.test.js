@@ -20,6 +20,17 @@ vi.mock("../../js/api/pokeapi.js", () => ({
   fetchPokemon: vi.fn().mockResolvedValue(mockPokeData),
 }));
 
+const mockSpeciesCache = {
+  getSpecies: vi.fn().mockResolvedValue(null),
+  saveSpecies: vi.fn(),
+};
+
+vi.mock("../../js/cache/pokemon-cache.js", () => ({
+  default: {
+    open: vi.fn().mockResolvedValue(mockSpeciesCache),
+  },
+}));
+
 let fetchPokemonMock;
 let showPokemonDetail;
 
@@ -36,6 +47,9 @@ beforeEach(async () => {
 
 afterEach(() => {
   document.querySelectorAll(".overlay").forEach((el) => el.remove());
+  // Reset cache mock to default state (cache miss)
+  mockSpeciesCache.getSpecies.mockReset();
+  mockSpeciesCache.getSpecies.mockResolvedValue(null);
 });
 
 describe("showPokemonDetail", () => {
@@ -164,14 +178,9 @@ describe("showPokemonDetail", () => {
 
   it("cancel button resolves null", async () => {
     const promise = showPokemonDetail(species);
-    await vi.waitFor(() => {
-      const btns = document.querySelectorAll("button");
-      const cancelBtn = Array.from(btns).find((b) => b.textContent === "Cancel");
-      expect(cancelBtn).not.toBeNull();
-    });
+    await vi.waitUntil(() => document.querySelector(".btn-secondary") !== null);
 
-    const btns = document.querySelectorAll("button");
-    const cancelBtn = Array.from(btns).find((b) => b.textContent === "Cancel");
+    const cancelBtn = document.querySelector(".btn-secondary");
     cancelBtn.click();
     const result = await promise;
     expect(result).toBeNull();
@@ -198,6 +207,24 @@ describe("showPokemonDetail", () => {
     closeBtn.click();
     const result = await promise;
     expect(result).toBeNull();
+  });
+
+  it("uses cached species data without calling fetchPokemon (cache hit)", async () => {
+    mockSpeciesCache.getSpecies.mockResolvedValue(mockPokeData);
+
+    const promise = showPokemonDetail(species);
+    await vi.waitFor(() => {
+      expect(document.body.textContent).toContain("Pikachu");
+      expect(document.querySelector(".btn-primary")).not.toBeNull();
+    });
+
+    expect(fetchPokemonMock).not.toHaveBeenCalled();
+    expect(mockSpeciesCache.getSpecies).toHaveBeenCalledWith("pikachu");
+
+    // Save to clean up
+    const saveBtn = document.querySelector(".btn-primary");
+    saveBtn.click();
+    await promise;
   });
 
   /* ── EDIT MODE TESTS ── */
