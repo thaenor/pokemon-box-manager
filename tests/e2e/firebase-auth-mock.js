@@ -38,6 +38,13 @@
 
       signInWithPopup() {
         return new Promise((resolve, reject) => {
+          // When __authDelay is truthy, defer resolution so the test can
+          // observe the "Signing in…" loading state before the promise settles
+          if (window.__authDelay) {
+            window.__authResolve = resolve;
+            window.__authReject = reject;
+            return;
+          }
           const err = window.__authError;
           if (err) {
             reject(err);
