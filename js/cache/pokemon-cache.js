@@ -122,16 +122,18 @@ export class PokemonCache {
   async getStats() {
     this.#requireDb();
 
-    const [speciesItems, spriteItems] = await Promise.all([
-      this.#getAll("species"),
-      this.#getAll("sprites"),
-    ]);
+    // Fetch all entries from every store in parallel
+    const entries = await Promise.all(Object.keys(STORES).map((name) => this.#getAll(name)));
 
-    const species = speciesItems.length;
-    const sprites = spriteItems.length;
+    const storeNames = Object.keys(STORES);
+    const species = entries[storeNames.indexOf("species")].length;
+    const sprites = entries[storeNames.indexOf("sprites")].length;
     const sizeBytes =
-      speciesItems.reduce((sum, item) => sum + new Blob([JSON.stringify(item)]).size, 0) +
-      spriteItems.reduce((sum, item) => sum + (item.blob?.size || 0), 0);
+      entries[storeNames.indexOf("species")].reduce(
+        (sum, item) => sum + new Blob([JSON.stringify(item)]).size,
+        0,
+      ) +
+      entries[storeNames.indexOf("sprites")].reduce((sum, item) => sum + (item.blob?.size || 0), 0);
 
     return { species, sprites, sizeBytes };
   }
@@ -144,7 +146,24 @@ export class PokemonCache {
   async clear() {
     this.#requireDb();
 
-    await Promise.all([this.#clearStore("species"), this.#clearStore("sprites")]);
+    // Use a single multi-store transaction so both clears succeed or fail atomically
+    const tx = this.#db.transaction(Object.keys(STORES), "readwrite");
+    await Promise.all(
+      Object.keys(STORES).map((name) => {
+        const store = tx.objectStore(name);
+        store.clear();
+        // Return a promise that resolves when this store's clear completes
+        return new Promise((resolve) => {
+          // clear() fires success synchronously within the transaction
+          resolve();
+        });
+      }),
+    );
+    // Wait for the transaction to complete
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
   }
 
   /**
@@ -171,22 +190,6 @@ export class PokemonCache {
       const store = tx.objectStore(storeName);
       const request = store.getAll();
       request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  /**
-   * Delete all entries from an object store.
-   *
-   * @param {string} storeName
-   * @returns {Promise<void>}
-   */
-  #clearStore(storeName) {
-    return new Promise((resolve, reject) => {
-      const tx = this.#db.transaction(storeName, "readwrite");
-      const store = tx.objectStore(storeName);
-      const request = store.clear();
-      request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
   }
