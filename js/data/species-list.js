@@ -2233,6 +2233,7 @@ export const speciesList = [
     id: 902,
     name: "Basculegion",
     showdownId: "basculegion",
+    pokeApiName: "basculegion-male",
     types: ["Water", "Ghost"],
     isMega: false,
     isUltra: false,
