@@ -21,6 +21,7 @@ export function showSpeciesSearch() {
     function finish(result) {
       if (resolved) return;
       resolved = true;
+      revokeSpriteBlobUrls();
       document.removeEventListener("keydown", onKeyDown);
       restoreFocus();
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -116,15 +117,28 @@ export function showSpeciesSearch() {
     panel.appendChild(footer);
 
     /* ── Cache-first sprite loader ── */
+    /** @type {Set<string>} Blob URLs that need revocation on dismiss */
+    const spriteBlobUrls = new Set();
+
+    /** Revoke all tracked blob URLs. */
+    function revokeSpriteBlobUrls() {
+      for (const url of spriteBlobUrls) {
+        URL.revokeObjectURL(url);
+      }
+      spriteBlobUrls.clear();
+    }
+
     async function loadSpriteWithCache(url, imgEl) {
       try {
         const cache = await PokemonCache.open();
         const cached = await cache.getSprite(url);
         if (cached) {
+          spriteBlobUrls.add(cached);
           imgEl.src = cached;
           return;
         }
         const blobUrl = await cache.saveSprite(url);
+        spriteBlobUrls.add(blobUrl);
         imgEl.src = blobUrl;
       } catch {
         // Fallback: direct URL on cache failure (private browsing, CORS, etc.)

@@ -69,6 +69,6 @@ test.describe("Pokémon Box Manager", () => {
     // Also check the sprite has a valid source URL
     const src = await spriteImg.getAttribute("src");
     expect(src).toBeTruthy();
-    expect(src).toMatch(/^https?:\/\//);
+    expect(src).toMatch(/^(https?:|blob:)/);
   });
 });
