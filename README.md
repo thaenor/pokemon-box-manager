@@ -53,7 +53,7 @@ All dependencies are **devDependencies** (no runtime dependencies in `package.js
 
 ### Prerequisites
 
-- **Node.js 18+** (enforced by `.nvmrc`)
+- **Node.js 22 LTS** (enforced by `.nvmrc`)
 - **npm** (comes with Node)
 - A **Firebase project** (`pokemon-box-manager`) — config is in `js/firebase-config.js`
 
@@ -97,7 +97,7 @@ pokemon-box-manager/
 ├── manifest.json         # PWA manifest (standalone, portrait, #1A1A2E theme)
 ├── firebase.json         # Firebase Hosting config (default + staging targets)
 ├── .firebaserc           # Firebase project ID
-├── .nvmrc                # Node 18 requirement
+├── .nvmrc                # Node 22 LTS
 │
 ├── js/                   # Application source (ES modules)
 │   ├── app.js            # Main SPA orchestrator (auth → box grid → search → detail → save)
