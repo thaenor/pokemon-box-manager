@@ -22,7 +22,7 @@ function loadCache() {
     const raw = localStorage.getItem(POKEMON_CACHE_KEY);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
-    return typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
   } catch {
     return {};
   }
@@ -53,6 +53,7 @@ function setCached(slug, data) {
 /* ── In-memory cache (session hot mirror) ── */
 
 const pokemonCache = new Map();
+const pendingRequests = new Map();
 
 /* ── Public API ── */
 
@@ -76,6 +77,8 @@ export async function fetchPokemon(name) {
   const memCached = pokemonCache.get(slug);
   if (memCached) return memCached;
 
+  if (pendingRequests.has(slug)) return pendingRequests.get(slug);
+
   // 2. Check localStorage cache (cross-session — promotes to in-memory)
   const lsCached = getCached(slug);
   if (lsCached) {
@@ -83,12 +86,17 @@ export async function fetchPokemon(name) {
     return lsCached;
   }
 
-  // 3. Fetch from network
+  const request = fetchAndCachePokemon(slug).finally(() => pendingRequests.delete(slug));
+  pendingRequests.set(slug, request);
+  return request;
+}
+
+async function fetchAndCachePokemon(slug) {
   try {
     const res = await fetch(`${API_BASE}/pokemon/${encodeURIComponent(slug)}`);
     if (!res.ok) {
       if (res.status === 404) {
-        console.warn(`fetchPokemon: Pokémon "${name}" not found (404)`);
+        console.warn(`fetchPokemon: Pokémon "${slug}" not found (404)`);
         return null;
       }
       throw new Error(`HTTP ${res.status}`);
@@ -114,60 +122,13 @@ export async function fetchPokemon(name) {
 
     return result;
   } catch (err) {
-    console.warn(`fetchPokemon: Error fetching "${name}" — ${err.message}`);
+    console.warn(`fetchPokemon: Error fetching "${slug}" — ${err.message}`);
     return null;
   }
 }
 
-/**
- * Fetch sprite URL only (lighter call).
- * Also cached to localStorage and in-memory per the same schema.
- *
- * @param {string} name
- * @returns {Promise<string|null>} front_default sprite URL
- */
+/** Return the default sprite from the same cached species response as the detail form. */
 export async function fetchSprite(name) {
-  const slug = name.toLowerCase();
-
-  // Reuse the full cache — if the species was fetched before, serve the sprite without a network call
-  const memCached = pokemonCache.get(slug);
-  if (memCached) return memCached.sprite;
-
-  const lsCached = getCached(slug);
-  if (lsCached) {
-    pokemonCache.set(slug, lsCached);
-    return lsCached.sprite;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/pokemon/${encodeURIComponent(slug)}`);
-    if (!res.ok) {
-      if (res.status === 404) {
-        console.warn(`fetchSprite: Pokémon "${name}" not found (404)`);
-        return null;
-      }
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const data = await res.json();
-
-    const result = {
-      sprite: data.sprites.front_default,
-      spriteShiny: data.sprites.front_shiny,
-      stats: data.stats.map((s) => ({
-        name: s.stat.name,
-        value: s.base_stat,
-      })),
-      types: data.types.map((t) => t.type.name),
-      abilities: data.abilities.map((a) => a.ability.name),
-      speciesName: data.species.name,
-    };
-
-    pokemonCache.set(slug, result);
-    setCached(slug, result);
-
-    return result.sprite;
-  } catch (err) {
-    console.warn(`fetchSprite: Error fetching sprite for "${name}" — ${err.message}`);
-    return null;
-  }
+  const pokemon = await fetchPokemon(name);
+  return pokemon?.sprite ?? null;
 }

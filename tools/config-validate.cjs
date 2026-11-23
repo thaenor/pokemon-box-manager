@@ -103,7 +103,8 @@ if (!fs.existsSync(ciPath)) {
     process.exit(1);
   }
 
-  const expectedJobs = ["lint", "unit", "e2e"];
+  const checkJobs = ["lint", "unit", "e2e"];
+  const expectedJobs = [...checkJobs, "deploy"];
   const actualJobs = Object.keys(ci.jobs || {});
 
   expectedJobs.forEach((name) => {
@@ -115,7 +116,7 @@ if (!fs.existsSync(ciPath)) {
   extras.forEach((name) => console.log(`  ⚠️   unexpected job "${name}" — verify intent`));
 
   const nodeVersionExpected = 22;
-  actualJobs.forEach((name) => {
+  checkJobs.forEach((name) => {
     const steps = ci.jobs[name]?.steps || [];
     const setupStep = steps.find((s) => s.uses && s.uses.startsWith("actions/setup-node"));
     if (!setupStep) {
@@ -142,14 +143,30 @@ if (!fs.existsSync(ciPath)) {
     }
   }
 
-  const actionVersions = ["actions/checkout", "actions/setup-node", "actions/upload-artifact"];
-  actionVersions.forEach((action) => {
+  const deployJob = ci.jobs?.deploy;
+  if (deployJob) {
+    if ([deployJob.needs].flat().includes("e2e")) {
+      ok("deploy waits for e2e");
+    } else {
+      fail("deploy must wait for e2e");
+    }
+  }
+
+  const actionVersions = {
+    "actions/checkout": "4",
+    "actions/setup-node": "4",
+    "actions/upload-artifact": "4",
+    "actions/configure-pages": "5",
+    "actions/upload-pages-artifact": "4",
+    "actions/deploy-pages": "4",
+  };
+  Object.entries(actionVersions).forEach(([action, expectedVersion]) => {
     const re = new RegExp(`uses:\\s*${action}@v(\\d+)`, "g");
     let match;
     while ((match = re.exec(raw)) !== null) {
       const ver = match[1];
-      if (ver !== "4") {
-        fail(`${action}@v${ver} — expected v4`);
+      if (ver !== expectedVersion) {
+        fail(`${action}@v${ver} — expected v${expectedVersion}`);
       } else {
         ok(`${action}@v${ver}`);
       }

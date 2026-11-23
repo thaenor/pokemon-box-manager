@@ -178,7 +178,7 @@ byId("counter-count").addEventListener("change", (event) => {
 function portrait(species, forHero = false) {
   if (forHero && species.id === "charcadet") {
     const image = element("img", "hero-art");
-    image.src = "/violet/art/charcadet.png";
+    image.src = new URL("./art/charcadet.png", import.meta.url).href;
     image.alt = "";
     return image;
   }
@@ -549,5 +549,5 @@ window.addEventListener("storage", (event) => {
 renderSpecies();
 renderParty();
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  navigator.serviceWorker.register(new URL("../sw.js", import.meta.url)).catch(() => {});
 }

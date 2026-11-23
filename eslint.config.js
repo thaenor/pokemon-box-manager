@@ -12,7 +12,6 @@ export default [
     },
     languageOptions: {
       globals: {
-        firebase: "writable",
         ...globals.browser,
         ...globals.node,
       },
