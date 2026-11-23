@@ -1,5 +1,10 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { catalogue } from "../../violet/catalogue.js";
+
+// PokéAPI's https://pokeapi.co/api/v2/pokedex/paldea/ ordered by entry_number.
+const pokedex = readFileSync("tests/fixtures/paldea-pokedex.txt", "utf8").trim().split("\n");
+const regionalForms = { wooper: "wooperpaldea", tauros: "taurospaldeacombat" };
 
 function methodsFor(id) {
   const entry = catalogue.find((entry) => entry.id === id);
@@ -8,10 +13,13 @@ function methodsFor(id) {
 }
 
 describe("Violet evolution catalogue", () => {
-  it("covers every regional Pokédex number and uniquely identifies each searchable form", () => {
-    const numbers = [...new Set(catalogue.map((entry) => entry.number))].sort((a, b) => a - b);
-    expect(numbers).toEqual(Array.from({ length: 400 }, (_, index) => index + 1));
-    expect(new Set(catalogue.map((entry) => entry.id)).size).toBe(catalogue.length);
+  it("assigns each Paldea Pokédex number to the correct species and regional form", () => {
+    expect(pokedex).toHaveLength(400);
+    const expected = pokedex.map((name, index) => ({
+      number: index + 1,
+      id: regionalForms[name] ?? name.replaceAll("-", ""),
+    }));
+    expect(catalogue.map(({ number, id }) => ({ number, id }))).toEqual(expected);
   });
 
   it("gives both Charcadet methods with the Violet solo path first", () => {

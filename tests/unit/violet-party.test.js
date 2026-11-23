@@ -105,3 +105,22 @@ it("pins a specific route directly and lets a trainer switch it without adding a
   expect(doc.querySelector("#party-count").textContent).toBe("1 / 6");
   expect(doc.querySelectorAll('.track-method[aria-pressed="true"]')).toHaveLength(1);
 });
+
+it("keeps multiple pins available for the session when storage rejects writes", async () => {
+  const doc = await openGuide();
+  const write = vi.spyOn(localStorage, "setItem").mockImplementation(() => {
+    throw new DOMException("Storage is full", "QuotaExceededError");
+  });
+  try {
+    doc.querySelector("#pin").click();
+    lookUp(doc, "Eevee");
+    doc.querySelector("#pin").click();
+    expect([...doc.querySelectorAll(".party-name")].map((el) => el.textContent)).toEqual([
+      "Charcadet",
+      "Eevee",
+    ]);
+    expect(doc.querySelector("#status").textContent).toContain("this session only");
+  } finally {
+    write.mockRestore();
+  }
+});

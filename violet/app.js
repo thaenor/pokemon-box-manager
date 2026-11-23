@@ -1,5 +1,5 @@
 import { catalogue } from "./catalogue.js";
-import { changeCount, progressPrefix, readCount } from "./progress.js";
+import { changeCount, progressPrefix, readCount, withStorageLock } from "./progress.js";
 
 const PARTY_KEY = "violet-companion:party";
 const LAST_VIEWED_KEY = "violet-companion:last-viewed";
@@ -70,16 +70,39 @@ let selected =
   lastViewed() ?? speciesById.get(party.keys().next().value) ?? speciesById.get("charcadet");
 let addingToParty = false;
 
-function saveParty(message) {
-  try {
-    const saved = Array.from(party, ([id, method]) => ({ id, method }));
-    localStorage.setItem(PARTY_KEY, JSON.stringify(saved));
-    announce(message);
-  } catch {
-    announce(message + " Your party will last for this session only.");
-  }
-  renderParty();
-  updatePinControls();
+let sessionOnlyParty = false;
+
+function updateParty(edit) {
+  return withStorageLock(PARTY_KEY, () => {
+    if (!sessionOnlyParty) party = readParty();
+    const message = edit(party);
+    if (!sessionOnlyParty) {
+      try {
+        const saved = Array.from(party, ([id, method]) => ({ id, method }));
+        localStorage.setItem(PARTY_KEY, JSON.stringify(saved));
+      } catch {
+        sessionOnlyParty = true;
+      }
+    }
+    announce(message + (sessionOnlyParty ? " Your party will last for this session only." : ""));
+    renderParty();
+    updatePinControls();
+  });
+}
+
+function pinSpecies(species, method) {
+  return updateParty((pins) => {
+    if (!pins.has(species.id) && pins.size >= PARTY_LIMIT) return "Your party is full.";
+    if (method === undefined) {
+      // A second pin from another tab must keep its tracked method.
+      if (!pins.has(species.id)) pins.set(species.id, null);
+      return species.name + " pinned to your party.";
+    }
+    pins.set(species.id, method);
+    return method === null
+      ? "Method cleared. " + species.name + " is still pinned."
+      : species.name + " · " + method;
+  });
 }
 
 function announce(message) {
@@ -240,12 +263,7 @@ function renderMethods() {
       track.dataset.method = method.title;
       track.addEventListener("click", () => {
         const tracking = party.get(selected.id) === method.title;
-        party.set(selected.id, tracking ? null : method.title);
-        saveParty(
-          tracking
-            ? "Method cleared. " + selected.name + " is still pinned."
-            : selected.name + " · " + method.title,
-        );
+        pinSpecies(selected, tracking ? null : method.title);
       });
       row.append(track);
     }
@@ -274,8 +292,10 @@ function renderSpecies() {
 }
 
 function removePin(id) {
-  party.delete(id);
-  saveParty(speciesById.get(id).name + " removed from your party.");
+  return updateParty((pins) => {
+    pins.delete(id);
+    return speciesById.get(id).name + " removed from your party.";
+  });
 }
 
 function renderParty() {
@@ -317,9 +337,10 @@ function renderParty() {
       remove.type = "button";
       remove.setAttribute("aria-label", "Remove " + species.name + " from party");
       remove.append(icon("close"));
-      remove.addEventListener("click", () => {
-        removePin(species.id);
-        list.children[i].querySelector("button").focus({ preventScroll: true });
+      remove.addEventListener("click", async () => {
+        await removePin(species.id);
+        const next = list.children[i] ?? list.lastElementChild;
+        next.querySelector("button").focus({ preventScroll: true });
       });
       slot.append(button);
       if (counter) {
@@ -353,9 +374,8 @@ function renderParty() {
 pin.addEventListener("click", () => {
   if (party.has(selected.id)) {
     removePin(selected.id);
-  } else if (party.size < PARTY_LIMIT) {
-    party.set(selected.id, null);
-    saveParty(selected.name + " pinned to your party.");
+  } else {
+    pinSpecies(selected);
   }
 });
 
@@ -377,15 +397,18 @@ function matches(value) {
   if (!value.trim()) return suggestions;
   if (!term) return [];
   if (/^\d+$/.test(term)) {
-    return catalogue.filter((entry) => entry.number === Number(term));
+    const species = catalogue[Number(term) - 1];
+    return species ? [species] : [];
   }
-  const found = names.filter(({ term: name }) => name.includes(term));
-  found.sort(
-    (a, b) =>
-      Number(b.term === term) - Number(a.term === term) ||
-      Number(b.term.startsWith(term)) - Number(a.term.startsWith(term)),
-  );
-  return found.map((item) => item.species);
+  const exact = [];
+  const prefixes = [];
+  const partial = [];
+  for (const { species, term: name } of names) {
+    if (name === term) exact.push(species);
+    else if (name.startsWith(term)) prefixes.push(species);
+    else if (name.includes(term)) partial.push(species);
+  }
+  return exact.concat(prefixes, partial);
 }
 
 function closeSearch() {
@@ -395,10 +418,7 @@ function closeSearch() {
 }
 
 function selectSpecies(species) {
-  if (addingToParty && !party.has(species.id) && party.size < PARTY_LIMIT) {
-    party.set(species.id, null);
-    saveParty(species.name + " pinned to your party.");
-  }
+  if (addingToParty) pinSpecies(species);
   closeSearch();
   search.value = "";
   updateSearchTools();
@@ -521,7 +541,7 @@ window.addEventListener("storage", (event) => {
   }
   if (event.key !== PARTY_KEY && event.key !== null) return;
   if (event.key === null) renderCounter();
-  party = readParty();
+  if (!sessionOnlyParty) party = readParty();
   updatePinControls();
   renderParty();
 });

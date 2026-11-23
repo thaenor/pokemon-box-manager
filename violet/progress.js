@@ -26,13 +26,17 @@ export async function changeCount(id, goal, update) {
     }
   }
 
-  // Serialize taps from different tabs so both increments are counted.
+  return withStorageLock(key, save);
+}
+
+export async function withStorageLock(key, update) {
   if (navigator.locks?.request) {
     try {
-      return await navigator.locks.request(key, save);
-    } catch {
-      // File previews and some private browsing modes restrict Web Locks.
+      return await navigator.locks.request(key, update);
+    } catch (error) {
+      if (error.name !== "SecurityError") throw error;
+      // Some private browsing modes restrict Web Locks.
     }
   }
-  return save();
+  return update();
 }
