@@ -269,6 +269,12 @@ summary {
   background: transparent;
   color: var(--muted);
 }
+.search-results-label {
+  padding: 8px 11px 5px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
 .search-results {
   position: absolute;
   top: calc(100% + 8px);

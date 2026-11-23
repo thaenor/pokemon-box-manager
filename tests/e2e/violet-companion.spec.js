@@ -9,6 +9,30 @@ async function lookUp(page, name) {
   await expect(page.getByRole("heading", { name, level: 2, exact: true })).toBeVisible();
 }
 
+test("reopens recent searches in order without adding party visits to history", async ({
+  page,
+}) => {
+  await page.goto(companion);
+  await expect(page.getByRole("heading", { name: "Charcadet", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Pin to party", exact: true }).click();
+  await lookUp(page, "Dunsparce");
+  await page.locator(".method-summary").click();
+  await expect(page.getByText(/Learns Hyper Drill at Lv\. 32/)).toBeVisible();
+  await lookUp(page, "Eevee");
+  await page.getByRole("button", { name: "View Charcadet" }).click();
+  await page.reload();
+  const search = page.getByRole("searchbox", { name: "Search Pokémon" });
+  await search.focus();
+  const recent = page.getByRole("list", { name: "Recently searched" });
+  await expect(recent.getByRole("button")).toHaveCount(2);
+  await expect(recent.getByRole("button").first()).toHaveAccessibleName("Eevee");
+  await recent.getByRole("button", { name: "Dunsparce", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Dunsparce", exact: true })).toBeVisible();
+  await search.focus();
+  await expect(recent.getByRole("button")).toHaveCount(2);
+  await expect(recent.getByRole("button").first()).toHaveAccessibleName("Dunsparce");
+});
+
 test("shows both Charcadet methods without revealing either outcome", async ({ page }) => {
   await page.goto(companion);
   await expect(page.getByRole("heading", { name: "Charcadet", level: 2 })).toBeVisible();

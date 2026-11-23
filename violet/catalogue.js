@@ -49,10 +49,10 @@ function item(name, condition = "") {
   return solo(`Use ${article} ${name}${condition ? " " + condition : ""}`, itemLocations[name]);
 }
 
-function know(move) {
+function know(move, learnLevel) {
   return solo(
     `Level up knowing ${move}`,
-    "Make sure the move is in one of the four active move slots. You can check Remember Moves on the summary screen.",
+    `Learns ${move} at Lv. ${learnLevel}. If you skipped or replaced it, use Remember Moves on the summary screen. Keep it in an active move slot when leveling up.`,
   );
 }
 
@@ -190,12 +190,12 @@ export const catalogue = [
   species("vigoroth", "Vigoroth", "Normal", level(36)),
   species("slaking", "Slaking", "Normal"),
   species("bounsweet", "Bounsweet", "Grass", level(18)),
-  species("steenee", "Steenee", "Grass", know("Stomp")),
+  species("steenee", "Steenee", "Grass", know("Stomp", 28)),
   species("tsareena", "Tsareena", "Grass"),
   species("smoliv", "Smoliv", "Grass/Normal", level(25)),
   species("dolliv", "Dolliv", "Grass/Normal", level(35)),
   species("arboliva", "Arboliva", "Grass/Normal"),
-  species("bonsly", "Bonsly", "Rock", know("Mimic")),
+  species("bonsly", "Bonsly", "Rock", know("Mimic", 16)),
   species("sudowoodo", "Sudowoodo", "Rock"),
   species(
     "rockruff",
@@ -355,7 +355,7 @@ export const catalogue = [
     solo("Level up with high friendship at night", noFairyMove),
     solo(
       "Level up with high friendship and a Fairy-type move",
-      "Keep a Fairy-type move such as Baby-Doll Eyes in an active move slot. This method works at any time of day.",
+      "Eevee learns Baby-Doll Eyes at Lv. 15. Keep it or another Fairy-type move in an active move slot. This method works at any time of day.",
     ),
   ),
   species("vaporeon", "Vaporeon", "Water"),
@@ -366,11 +366,11 @@ export const catalogue = [
   species("leafeon", "Leafeon", "Grass"),
   species("glaceon", "Glaceon", "Ice"),
   species("sylveon", "Sylveon", "Fairy"),
-  species("dunsparce", "Dunsparce", "Normal", know("Hyper Drill")),
+  species("dunsparce", "Dunsparce", "Normal", know("Hyper Drill", 32)),
   species("dudunsparce", "Dudunsparce", "Normal"),
   species("deerling", "Deerling", "Normal/Grass", level(34)),
   species("sawsbuck", "Sawsbuck", "Normal/Grass"),
-  species("girafarig", "Girafarig", "Normal/Psychic", know("Twin Beam")),
+  species("girafarig", "Girafarig", "Normal/Psychic", know("Twin Beam", 32)),
   species("farigiraf", "Farigiraf", "Normal/Psychic"),
   species("grimer", "Grimer", "Poison", level(38)),
   species("muk", "Muk", "Poison"),

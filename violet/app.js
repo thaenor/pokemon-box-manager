@@ -3,6 +3,8 @@ import { changeCount, progressPrefix, readCount, withStorageLock } from "./progr
 
 const PARTY_KEY = "violet-companion:party";
 const LAST_VIEWED_KEY = "violet-companion:last-viewed";
+const RECENT_SEARCHES_KEY = "violet-companion:recent-searches";
+const RECENT_SEARCHES_LIMIT = 6;
 const PARTY_LIMIT = 6;
 const speciesById = new Map(catalogue.map((species) => [species.id, species]));
 const byId = (id) => document.getElementById(id);
@@ -62,6 +64,35 @@ function lastViewed() {
     return speciesById.get(localStorage.getItem(LAST_VIEWED_KEY));
   } catch {
     return undefined;
+  }
+}
+
+function readRecentSearches() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY));
+    if (Array.isArray(saved)) {
+      return [...new Set(saved.filter((id) => speciesById.has(id)))].slice(
+        0,
+        RECENT_SEARCHES_LIMIT,
+      );
+    }
+  } catch {
+    // Keep lookups available when storage is blocked or corrupt.
+  }
+  return [];
+}
+
+let recentSearches = readRecentSearches();
+
+function rememberSearch(id) {
+  recentSearches = [id, ...recentSearches.filter((recent) => recent !== id)].slice(
+    0,
+    RECENT_SEARCHES_LIMIT,
+  );
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(recentSearches));
+  } catch {
+    // Keep history available for the current page.
   }
 }
 
@@ -394,7 +425,6 @@ const suggestions = ["charcadet", "sprigatito", "fuecoco", "quaxly", "eevee", "p
 
 function matches(value) {
   const term = normalize(value);
-  if (!value.trim()) return suggestions;
   if (!term) return [];
   if (/^\d+$/.test(term)) {
     const species = catalogue[Number(term) - 1];
@@ -441,8 +471,22 @@ function updateSearchTools() {
 }
 
 function renderResults() {
-  const found = matches(search.value).filter((item) => !addingToParty || !party.has(item.id));
+  const hasQuery = Boolean(search.value.trim());
+  const canSelect = (species) => !addingToParty || !party.has(species.id);
+  const recent = hasQuery ? [] : recentSearches.map((id) => speciesById.get(id)).filter(canSelect);
+  const found = recent.length
+    ? recent
+    : (hasQuery ? matches(search.value) : suggestions).filter(canSelect);
   const rows = document.createDocumentFragment();
+  const label = hasQuery
+    ? "Search results"
+    : recent.length
+      ? "Recently searched"
+      : "Suggested Pokémon";
+  results.setAttribute("aria-label", label);
+  if (recent.length) {
+    rows.append(element("li", "search-results-label", label));
+  }
   for (const species of found) {
     const row = element("li");
     const button = element("button", "result-option");
@@ -453,7 +497,10 @@ function renderResults() {
       document.createTextNode(species.name),
       element("span", "result-type", species.types.join(" / ")),
     );
-    button.addEventListener("click", () => selectSpecies(species));
+    button.addEventListener("click", () => {
+      rememberSearch(species.id);
+      selectSpecies(species);
+    });
     row.append(button);
     rows.append(row);
   }
@@ -470,7 +517,7 @@ function renderResults() {
   results.replaceChildren(rows);
   results.hidden = false;
   updateSearchTools();
-  if (search.value.trim()) announce(found.length + (found.length === 1 ? " match." : " matches."));
+  if (hasQuery) announce(found.length + (found.length === 1 ? " match." : " matches."));
 }
 
 search.addEventListener("focus", renderResults);
@@ -534,6 +581,9 @@ document.addEventListener("keydown", (event) => {
   }
 });
 window.addEventListener("storage", (event) => {
+  if (event.key === RECENT_SEARCHES_KEY || event.key === null) {
+    recentSearches = readRecentSearches();
+  }
   if (event.key?.startsWith(progressPrefix)) {
     const species = speciesById.get(event.key.slice(progressPrefix.length));
     if (species?.methods[0]?.counter) refreshCounter(species);

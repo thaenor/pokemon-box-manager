@@ -1,6 +1,6 @@
 const scope = new URL(self.registration.scope);
 const cachePrefix = scope.pathname === "/" ? "pkmn-box-v" : `pkmn-box-${scope.pathname}:v`;
-const CACHE_NAME = `${cachePrefix}9`;
+const CACHE_NAME = `${cachePrefix}10`;
 const BOX_SHELL = scope.pathname;
 const GUIDE_SHELL = `${scope.pathname}violet/`;
 const GUIDE_PATHS = new Set([GUIDE_SHELL, `${GUIDE_SHELL}index.html`]);
