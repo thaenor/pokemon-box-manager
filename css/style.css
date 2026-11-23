@@ -277,6 +277,27 @@ img {
 }
 
 /* ── Layout ── */
+.companion-nav {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-sm) var(--space-md) 0;
+}
+
+.companion-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 40px;
+  padding: 0 1rem;
+  font-weight: 600;
+  color: #e4d5ff;
+  background: #282234;
+  border: 1px solid #4f405f;
+  border-radius: var(--radius-full);
+}
+
 #app {
   max-width: 1200px;
   margin: 0 auto;
@@ -789,8 +810,8 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - var(--space-md) * 2);
-  min-height: calc(100dvh - var(--space-md) * 2);
+  min-height: calc(100vh - var(--space-md) * 2 - 48px);
+  min-height: calc(100dvh - var(--space-md) * 2 - 48px);
 }
 
 .login-view__card {

@@ -1,4 +1,6 @@
-const CACHE_NAME = "pkmn-box-v4";
+const CACHE_NAME = "pkmn-box-v7";
+const GUIDE_SHELL = "/violet/";
+const GUIDE_PATHS = new Set(["/violet", GUIDE_SHELL, "/violet/index.html"]);
 
 const PRECACHE_URLS = [
   "/",
@@ -9,21 +11,26 @@ const PRECACHE_URLS = [
   "/manifest.json",
   "/images/icon-192.svg",
   "/images/icon-512.svg",
+  GUIDE_SHELL,
+  "/violet/companion.css",
+  "/violet/app.js",
+  "/violet/progress.js",
+  "/violet/catalogue.js",
+  "/violet/art/charcadet.png",
+  "/violet/art/portraits.png",
+  "/violet/manifest.webmanifest",
+  "/violet/icon-192.png",
+  "/violet/icon-512.png",
 ];
 
 /* ── Install: cache static assets ── */
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(PRECACHE_URLS);
-      })
-      .catch((err) => {
-        console.error("Precache failed:", err);
-      }),
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(PRECACHE_URLS);
+      await self.skipWaiting();
+    }),
   );
-  self.skipWaiting();
 });
 
 /* ── Activate: clean old caches ── */
@@ -32,13 +39,14 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
+        Promise.all(
+          keys
+            .filter((key) => key.startsWith("pkmn-box-") && key !== CACHE_NAME)
+            .map((key) => caches.delete(key)),
+        ),
       )
-      .catch((err) => {
-        console.error("Cache cleanup failed:", err);
-      }),
+      .then(() => self.clients.claim()),
   );
-  self.clients.claim();
 });
 
 /* ── Fetch strategy ── */
@@ -62,9 +70,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigation requests: serve cached index.html shell as fallback
+  // Reopen the correct app, including a direct visit to the guide while offline.
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(() => caches.match("/index.html")));
+    const shell = GUIDE_PATHS.has(url.pathname) ? GUIDE_SHELL : "/index.html";
+    event.respondWith(fetch(request).catch(() => caches.match(shell)));
     return;
   }
 

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#12121c" />
+    <meta
+      name="description"
+      content="Find spoiler-free evolution methods for Pokémon Violet and keep your party’s next steps close at hand."
+    />
+    <title>Violet Field Guide · Trainer Companion</title>
+    <link rel="manifest" href="/violet/manifest.webmanifest" />
+    <link rel="icon" href="/violet/icon-192.png" />
+    <link rel="apple-touch-icon" href="/violet/icon-192.png" />
+    <link rel="stylesheet" href="/violet/companion.css" />
+    <script type="module" src="/violet/app.js"></script>
+  </head>
+  <body>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="0"
+      height="0"
+      aria-hidden="true"
+      style="position: absolute; pointer-events: none"
+    >
+      <defs>
+        <symbol id="compass" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="m16.8 7.2-3.2 6.4-6.4 3.2 3.2-6.4z" />
+        </symbol>
+        <symbol id="box" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </symbol>
+        <symbol id="search" viewBox="0 0 24 24">
+          <circle cx="10" cy="10" r="6.5" />
+          <path d="m15 15 5 5" />
+        </symbol>
+        <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+        <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></symbol>
+        <symbol id="check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6" /></symbol>
+        <symbol id="gem" viewBox="0 0 24 24">
+          <path d="M6 4h12l4 6-10 11L2 10zM2 10h20M8 10l4-6 4 6-4 11z" />
+        </symbol>
+        <symbol id="trade" viewBox="0 0 24 24"><path d="M3 8h16l-4-4m6 12H5l4 4" /></symbol>
+        <symbol id="level" viewBox="0 0 24 24">
+          <path d="m4 14 6-6 4 4 6-8m-5 0h5v5M4 20h16" />
+        </symbol>
+        <symbol id="team" viewBox="0 0 24 24">
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3 20v-2a6 6 0 0 1 12 0v2m1-15a3 3 0 0 1 0 6m2 3a4 4 0 0 1 3 4v2" />
+        </symbol>
+        <symbol id="pin-icon" viewBox="0 0 24 24">
+          <path d="m10 3 9 9-3 1-3 4-3-3-6 6 6-6-3-3 4-3z" />
+        </symbol>
+        <symbol id="chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+        <symbol id="fire" viewBox="0 0 24 24">
+          <path
+            d="M13 2c0 5-4 6-4 10-2-1-2-3-2-3-2 2-3 4-3 7a8 8 0 0 0 16 0c0-4-2-8-4-10 1 4-2 5-2 5 1-4 0-7-1-9z"
+          />
+        </symbol>
+      </defs>
+    </svg>
+    <div class="shell">
+      <header class="masthead">
+        <a class="brand" href="/violet/" aria-label="Violet Field Guide home">
+          <span class="brand-mark" aria-hidden="true"
+            ><svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <use href="#compass" /></svg
+          ></span>
+          <span
+            ><span class="brand-name">Trainer Companion</span
+            ><span class="brand-edition">Pokémon Violet</span></span
+          >
+        </a>
+        <a class="box-link" href="/"
+          ><svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            aria-hidden="true"
+          >
+            <use href="#box" /></svg
+          >Box Manager</a
+        >
+      </header>
+      <main class="guide">
+        <div class="page-intro">
+          <h1>Evolution field guide</h1>
+          <p class="intro-copy">Look up the next step. Discover the evolution in-game.</p>
+        </div>
+        <div class="search-region" id="search-region" role="search" aria-label="Pokédex">
+          <label class="sr-only" for="species-search">Search Pokémon</label>
+          <div class="search-wrap">
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <use href="#search" />
+            </svg>
+            <input
+              type="search"
+              id="species-search"
+              placeholder="Search Pokémon or dex number"
+              autocomplete="off"
+              spellcheck="false"
+              aria-controls="results"
+            />
+            <kbd class="search-key" aria-hidden="true">/</kbd>
+            <button
+              class="search-clear"
+              id="clear-search"
+              type="button"
+              aria-label="Clear search"
+              hidden
+            >
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <use href="#close" />
+              </svg>
+            </button>
+          </div>
+          <ul class="search-results" id="results" aria-label="Search results" hidden></ul>
+        </div>
+        <div class="dashboard">
+          <div class="field-column">
+            <section class="specimen" aria-labelledby="species-name">
+              <div class="specimen-info">
+                <div class="eyebrow" id="dex-number"></div>
+                <h2 class="specimen-name" id="species-name" tabindex="-1"></h2>
+                <div class="type-list" id="types"></div>
+                <button type="button" class="pin-btn" id="pin"></button>
+              </div>
+              <div class="specimen-art" aria-hidden="true"><span class="art-orbit"></span></div>
+            </section>
+            <section class="methods-panel" aria-labelledby="methods-title">
+              <div class="section-head">
+                <h2 id="methods-title">Evolution methods</h2>
+                <span class="method-count" id="method-count"></span>
+              </div>
+              <div class="method-list" id="methods"></div>
+              <div
+                class="battle-counter"
+                id="battle-counter"
+                role="group"
+                aria-labelledby="counter-label"
+                hidden
+              >
+                <label for="counter-count" id="counter-label"></label>
+                <div class="counter-controls">
+                  <button type="button" id="counter-less" aria-label="Subtract one">−</button>
+                  <input
+                    id="counter-count"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    aria-describedby="counter-goal"
+                  />
+                  <span id="counter-goal"></span>
+                  <button type="button" id="counter-more" aria-label="Add one">+1</button>
+                </div>
+                <progress id="counter-bar" aria-labelledby="counter-label"></progress>
+                <p id="counter-hint"></p>
+              </div>
+            </section>
+          </div>
+          <section class="party-panel" aria-label="Pinned party">
+            <div class="section-head">
+              <h2>Your party</h2>
+              <span class="party-count" id="party-count"></span>
+            </div>
+            <ol class="party-list" id="party"></ol>
+            <p class="party-hint" id="party-hint">
+              Pin up to six Pokémon for quick access while you play.
+            </p>
+          </section>
+        </div>
+        <noscript>This field guide needs JavaScript to search the Pokédex.</noscript>
+      </main>
+    </div>
+    <div class="sr-only" id="status" role="status" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>

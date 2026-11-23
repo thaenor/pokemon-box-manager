@@ -4,6 +4,19 @@
 
 Browse, filter, edit, and manage your Pokémon Champions boxes — all offline-first, all in your browser.
 
+## Pokémon Violet trainer companion
+
+Run `npm run dev` and open [the Violet Field Guide](http://localhost:5000/violet/).
+Search the 400 base Paldea Pokédex entries by name or regional dex number. Each entry
+shows how to trigger the next evolution and flags trade, co-op, or DLC requirements.
+The guide keeps evolution outcomes hidden. Pin up to six Pokémon to keep their next
+steps handy. For a Pokémon with multiple paths, expand a method and pin it to your
+party. The guide remembers your choice and reopens the last Pokémon you viewed on
+this device. Log Rage Fist uses for Primeape and leader victories for Bisharp with
+the manual counters. You can enter an existing total, correct a tap, or log a win
+or use directly from a pinned party slot. Counts stay on this device, including
+after you unpin. The guide works offline after its first load.
+
 ## Overview
 
 **Pokémon Box Manager** is a single-page web application designed for players of [Pokémon Champions](https://www.pokemonchampions.com/) (by The Game Factory). It helps you plan and organize your teams for the **Reg M-C** competitive formats:

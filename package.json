@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "serve . --no-port-switching -l tcp://127.0.0.1:5000",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
