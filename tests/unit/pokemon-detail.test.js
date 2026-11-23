@@ -255,8 +255,10 @@ describe("showPokemonDetail", () => {
       types: ["Bug", "Water"],
     };
     const promise = showPokemonDetail(championSpecies);
+    const status = document.querySelector('[role="dialog"] [role="status"]');
+    expect(status?.textContent).toBe("Loading Pokémon data…");
     await vi.waitFor(() => {
-      expect(document.body.textContent).toContain("Couldn't fetch data");
+      expect(status.textContent).toContain("Couldn't fetch data");
     });
 
     // Close button should resolve null
