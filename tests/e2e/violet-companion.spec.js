@@ -62,3 +62,61 @@ test("reopens offline and looks up an unvisited species", async ({ page, context
   await page.getByRole("link", { name: "Box Manager" }).click();
   await expect(page.getByTestId("box-slot")).toHaveCount(40);
 });
+
+for (const existing of [[], ["pawmi", "pawmo", "pawmot", "quaxly", "fuecoco"]]) {
+  test(`saves concurrent pins across tabs with ${existing.length} occupied slots`, async ({
+    page,
+    context,
+  }) => {
+    const key = "violet-companion:party";
+    await page.goto(companion);
+    await page.evaluate(
+      ([key, ids]) => localStorage.setItem(key, JSON.stringify(ids)),
+      [key, existing],
+    );
+    await page.reload();
+    const other = await context.newPage();
+    await other.goto(companion);
+    await lookUp(page, "Eevee");
+    await lookUp(other, "Charcadet");
+
+    // Make both tabs act on the same snapshot before either can save.
+    await page.evaluate(
+      (key) =>
+        new Promise((ready) => {
+          navigator.locks.request(
+            key,
+            () =>
+              new Promise((release) => {
+                window.releasePartyLock = release;
+                ready();
+              }),
+          );
+        }),
+      key,
+    );
+    await page.getByRole("button", { name: "Pin to party", exact: true }).click();
+    await page.waitForFunction(
+      async (key) => (await navigator.locks.query()).pending.some((lock) => lock.name === key),
+      key,
+    );
+    await other.getByRole("button", { name: "Pin to party", exact: true }).click();
+    await page.waitForFunction(
+      async (key) =>
+        (await navigator.locks.query()).pending.filter((lock) => lock.name === key).length === 2,
+      key,
+    );
+    await lookUp(page, "Sprigatito");
+    await page.evaluate(async (key) => {
+      window.releasePartyLock();
+      await navigator.locks.request(key, () => {});
+    }, key);
+    const expected = [...existing, "eevee", "charcadet"].slice(0, 6);
+    const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), key);
+    expect(saved.map((entry) => entry.id)).toEqual(expected);
+    await other.reload();
+    await expect(other.locator(".party-name")).toHaveText(
+      expected.map((id) => id[0].toUpperCase() + id.slice(1)),
+    );
+  });
+}
