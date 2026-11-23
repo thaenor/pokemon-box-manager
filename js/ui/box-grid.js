@@ -1,12 +1,11 @@
 import { speciesList } from "../data/species-list.js";
 
 /**
- * Creates the box grid view — main view after login.
+ * Creates the main box grid view.
  * @param {Array} box — array of Pokémon objects in the box (initially empty)
  * @param {Function} onAddPokemon — callback when user clicks an empty grid slot
  * @param {Function} onSelectPokemon — callback when user clicks a filled slot
  * @param {number} boxSize — max slots (default 40)
- * @param {Function} onLogout — callback for sign-out
  * @param {Function} onBoxSizeChange — callback when grid size changes (newSize)
  * @param {Function} onImport — callback when user imports JSON data (pokemonArray)
  * @returns {HTMLElement} the rendered view
@@ -16,7 +15,6 @@ export function renderBoxGrid(
   onAddPokemon,
   onSelectPokemon,
   boxSize = 40,
-  onLogout,
   onBoxSizeChange,
   onImport,
 ) {
@@ -116,15 +114,6 @@ export function renderBoxGrid(
   importBtn.textContent = "Import";
   importBtn.addEventListener("click", () => showImportDialog(onImport));
   toolbar.appendChild(importBtn);
-
-  // ── Sign-out button ──
-  if (typeof onLogout === "function") {
-    const logoutBtn = document.createElement("button");
-    logoutBtn.className = "box-nav-header__toggle box-nav-header__toggle--logout";
-    logoutBtn.textContent = "Sign out";
-    logoutBtn.addEventListener("click", onLogout);
-    toolbar.appendChild(logoutBtn);
-  }
 
   nav.appendChild(toolbar);
 

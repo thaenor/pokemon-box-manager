@@ -90,7 +90,7 @@ describe("renderBoxGrid", () => {
   });
 
   it("renders grid size dropdown with 30/35/40 options", () => {
-    const el = renderBoxGrid([], vi.fn(), vi.fn(), 35, undefined, vi.fn());
+    const el = renderBoxGrid([], vi.fn(), vi.fn(), 35);
     const select = el.querySelector("select");
     expect(select).not.toBeNull();
     expect(select.getAttribute("aria-label")).toBe("Grid size");
@@ -105,7 +105,7 @@ describe("renderBoxGrid", () => {
 
   it("changing dropdown value calls onBoxSizeChange", () => {
     const onBoxSizeChange = vi.fn();
-    const el = renderBoxGrid([], vi.fn(), vi.fn(), 30, undefined, onBoxSizeChange);
+    const el = renderBoxGrid([], vi.fn(), vi.fn(), 30, onBoxSizeChange);
     const select = el.querySelector("select");
     select.value = "40";
     select.dispatchEvent(new Event("change"));

@@ -4,6 +4,19 @@
 
 Browse, filter, edit, and manage your Pokémon Champions boxes — all offline-first, all in your browser.
 
+## Pokémon Violet trainer companion
+
+Run `npm run dev` and open [the Violet Field Guide](http://127.0.0.1:4173/violet/).
+Search the 400 base Paldea Pokédex entries by name or regional dex number. Each entry
+shows how to trigger the next evolution and flags trade, co-op, or DLC requirements.
+The guide keeps evolution outcomes hidden. Pin up to six Pokémon to keep their next
+steps handy. For a Pokémon with multiple paths, expand a method and pin it to your
+party. The guide remembers your choice and reopens the last Pokémon you viewed on
+this device. Log Rage Fist uses for Primeape and leader victories for Bisharp with
+the manual counters. You can enter an existing total, correct a tap, or log a win
+or use directly from a pinned party slot. Counts stay on this device, including
+after you unpin. The guide works offline after its first load.
+
 ## Overview
 
 **Pokémon Box Manager** is a single-page web application designed for players of [Pokémon Champions](https://www.pokemonchampions.com/) (by The Game Factory). It helps you plan and organize your teams for the **Reg M-C** competitive formats:
@@ -18,22 +31,21 @@ Browse, filter, edit, and manage your Pokémon Champions boxes — all offline-f
 - **Pokémon Detail Form** — edit nickname, held item, ability, nature, EVs, moves, Tera type, and shininess
 - **Import/Export** — import teams from Pokémon Showdown (Pokepaste) or JSON format; export to both
 - **Offline-First PWA** — installable, works offline with cached sprites and data
-- **Firebase Auth** — Google sign-in with persistent boxes synced via Firestore
+- **Local Saves** — open the box without an account and keep your Pokémon and grid size in this browser
 
 ## Tech Stack
 
 | Layer           | Technology                                                                       |
 | --------------- | -------------------------------------------------------------------------------- |
 | **Frontend**    | Vanilla JS / HTML / CSS — ES modules, no framework                               |
-| **Auth**        | Firebase Auth (Google sign-in) + App Check (reCAPTCHA Enterprise)                |
 | **Data**        | PokéAPI (sprites, base stats, types, abilities)                                  |
 | **Persistence** | `localStorage` (box state) + IndexedDB (cached Pokémon data)                     |
 | **PWA**         | Service Worker (`sw.js`) + `manifest.json` (standalone display, offline caching) |
-| **Hosting**     | Firebase Hosting (two targets: production + staging)                             |
+| **Hosting**     | Static HTTP server                                                               |
 
 ## Dependencies
 
-All dependencies are **devDependencies** (no runtime dependencies in `package.json`). Runtime Firebase SDK is loaded via CDN script tags in `index.html`.
+All npm dependencies are for development and testing. The app runs as static HTML, CSS, and JavaScript.
 
 | Package                                             | Purpose                                |
 | --------------------------------------------------- | -------------------------------------- |
@@ -55,7 +67,6 @@ All dependencies are **devDependencies** (no runtime dependencies in `package.js
 
 - **Node.js 22 LTS** (enforced by `.nvmrc`)
 - **npm** (comes with Node)
-- A **Firebase project** (`pokemon-box-manager`) — config is in `js/firebase-config.js`
 
 ### Setup
 
@@ -63,28 +74,39 @@ All dependencies are **devDependencies** (no runtime dependencies in `package.js
 # 1. Install dependencies
 npm install
 
-# 2. Validate configuration (Firebase config, data files, etc.)
+# 2. Start the local server
+npm run dev
+```
+
+Open [the box manager](http://127.0.0.1:4173/). Saved boxes and grid sizes are tied to the browser and site address.
+
+### Checks
+
+```bash
+# Validate test and CI configuration
 npm run validate
 
-# 3. Run unit tests
+# Run unit tests
 npm run test
 
-# 4. Run E2E tests (starts a local dev server on port 5000)
+# Install Chromium for Playwright and run E2E tests
+npx playwright install chromium
 npm run test:e2e
 ```
 
 ### Development Commands
 
-| Command              | Description                                      |
-| -------------------- | ------------------------------------------------ |
-| `npm run test`       | Run unit tests (Vitest + happy-dom)              |
-| `npm run test:watch` | Watch mode for unit tests                        |
-| `npm run test:e2e`   | Run E2E tests (Playwright, serves on port 5000)  |
-| `npm run lint`       | Check code quality (ESLint)                      |
-| `npm run lint:fix`   | Auto-fix lint issues                             |
-| `npm run format`     | Check formatting (Prettier)                      |
-| `npm run format:fix` | Auto-fix formatting                              |
-| `npm run validate`   | Validate config integrity (Firebase, data, etc.) |
+| Command              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| `npm run dev`        | Serve the app locally on port 4173              |
+| `npm run test`       | Run unit tests (Vitest + happy-dom)             |
+| `npm run test:watch` | Watch mode for unit tests                       |
+| `npm run test:e2e`   | Run E2E tests (Playwright, serves on port 4173) |
+| `npm run lint`       | Check code quality (ESLint)                     |
+| `npm run lint:fix`   | Auto-fix lint issues                            |
+| `npm run format`     | Check formatting (Prettier)                     |
+| `npm run format:fix` | Auto-fix formatting                             |
+| `npm run validate`   | Validate test and CI configuration              |
 
 > **Before committing:** Always run `npm run format:fix && npm run lint:fix` first. `lint-staged` will auto-fix on commit, but running it proactively saves CI cycles.
 
@@ -92,16 +114,13 @@ npm run test:e2e
 
 ```
 pokemon-box-manager/
-├── index.html            # Main entry — loads Firebase SDK, app scripts, registers SW
+├── index.html            # Main entry — loads the app and registers the service worker
 ├── sw.js                 # Service worker (PWA offline support)
 ├── manifest.json         # PWA manifest (standalone, portrait, #1A1A2E theme)
-├── firebase.json         # Firebase Hosting config (default + staging targets)
-├── .firebaserc           # Firebase project ID
 ├── .nvmrc                # Node 22 LTS
 │
 ├── js/                   # Application source (ES modules)
-│   ├── app.js            # Main SPA orchestrator (auth → box grid → search → detail → save)
-│   ├── firebase-config.js# Firebase config (public keys, App Check setup)
+│   ├── app.js            # Main SPA orchestrator (box grid → search → detail → save)
 │   ├── api/
 │   │   └── pokeapi.js    # PokéAPI client with localStorage + in-memory dual-layer cache
 │   ├── cache/
@@ -156,12 +175,6 @@ pokemon-box-manager/
 - **`js/data/species-list.js`** — Auto-generated by `scripts/build-roster.js`. Contains the Reg M-C allowed species roster. **Do not edit this file directly.**
 - **`data/` directory** — Generated by `scripts/fetch-data.js`. Gitignored. Run the script to regenerate.
 
-### 🔑 Firebase Config Is Public
-
-Firebase API keys (`apiKey`, `projectId`, `authDomain`, `appId`, etc.) in `js/firebase-config.js` are **public client-side identifiers** — they ship with every web app. Every browser needs them to authenticate with Firebase services. They are **NOT secrets**.
-
-Firebase enforces security via **App Check** (reCAPTCHA) + **Security Rules** (Firestore/Storage), not by hiding config values. **Never redact or replace these values in documentation.**
-
 ### Code Quality
 
 - **ESLint 9** (flat config) ignores `scripts/`, `data/`, and `sw.js`.
@@ -172,22 +185,11 @@ Firebase enforces security via **App Check** (reCAPTCHA) + **Security Rules** (F
 
 ## Deployment
 
-Deployed via **Firebase Hosting** with two targets:
+Set **Settings → Pages → Build and deployment → Source** to **GitHub Actions**. CI runs lint, formatting, config validation, unit tests, and browser tests against the staged site under the repository path. On `main`, passing checks publish that same artifact to GitHub Pages. The CI workflow can also be run manually from `main`.
 
-| Target    | Production URL                        |
-| --------- | ------------------------------------- |
-| `default` | `pokemon-box-manager.web.app`         |
-| `staging` | `pokemon-box-manager-staging.web.app` |
+The default site address is [Pokémon Box Manager on GitHub Pages](https://thaenor.github.io/pokemon-box-manager/), with the guide at `/pokemon-box-manager/violet/`. GitHub Pages requires an eligible plan for private repositories, and the deployed site is public on a personal account.
 
-```bash
-# Deploy to production (default target)
-firebase deploy --only hosting
-
-# Deploy to staging
-firebase deploy --only hosting:staging
-```
-
-The `firebase.json` rewrites all routes to `index.html` (SPA routing), and ignores `docs/**`, `research/**`, `.firebase/`, and `node_modules/**`.
+To move your Pokémon to Pages, export your box as JSON from the old site and import it into an empty box on the new site. Set the destination grid size first so it has room for every Pokémon. Import fills consecutive slots starting at slot 1. If you want to recreate your layout, record the original slot positions before moving.
 
 ## Further Reading
 
@@ -195,4 +197,4 @@ The `firebase.json` rewrites all routes to `index.html` (SPA routing), and ignor
 - [`research/data-sources.md`](research/data-sources.md) — Evaluation of PokéAPI, Smogon/@pkmn stats, Pikalytics for offline PWA suitability.
 - [`research/export-format.md`](research/export-format.md) — Team export format recommendations (Pokémon Showdown Pokepaste vs JSON).
 - [`docs/adr/`](docs/adr/) — Architecture Decision Records.
-- [`AGENTS.md`](AGENTS.md) — Agent instructions (Firebase config warnings, file generation rules).
+- [`AGENTS.md`](AGENTS.md) — Agent instructions and file generation rules.

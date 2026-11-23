@@ -1,54 +1,38 @@
-/**
- * Shared Playwright fixture for Firebase-mocked tests.
- *
- * Intercepts Firebase Auth and App Check CDN scripts so they don't load,
- * strips navigator.webdriver so the auth gate activates, and injects the
- * controllable auth mock via addInitScript.
- *
- * Default: authenticated (mock user). Tests that need unauthenticated state
- * explicitly set setAuthState(page, null) before navigation.
- */
 import { test as base } from "@playwright/test";
 
+export { expect } from "@playwright/test";
+
+const sprite = {
+  contentType: "image/svg+xml",
+  body: '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"><rect width="2" height="2"/></svg>',
+};
+
 export const test = base.extend({
-  page: async ({ page }, use) => {
-    // Intercept Firebase Auth CDN — serve empty (mock handles it)
-    await page.route("**/firebase-auth-compat.js", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/javascript",
-        body: "",
-      });
-    });
-
-    // Intercept Firebase App Check CDN — no-op (can't run reCAPTCHA in headless)
-    await page.route("**/firebase-app-check-compat.js", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/javascript",
-        body: "",
-      });
-    });
-
-    // Strip navigator.webdriver so the auth gate activates (not bypassed)
-    await page.addInitScript(() => {
-      Object.defineProperty(navigator, "webdriver", { get: () => undefined });
-    });
-
-    // Inject auth mock via addInitScript — uses polling to wait for firebase global
-    await page.addInitScript({ path: "tests/e2e/firebase-auth-mock.js" });
-
-    // Default to authenticated state for backward compat with existing tests
-    await page.addInitScript(() => {
-      window.__authState = {
-        uid: "test-uid",
-        email: "test@example.com",
-        displayName: "Test User",
-      };
-    });
-
-    await use(page);
+  context: async ({ context }, use) => {
+    await context.route("https://fonts.googleapis.com/**", (route) =>
+      route.fulfill({ contentType: "text/css", body: "" }),
+    );
+    await context.route("https://play.pokemonshowdown.com/sprites/gen5/*.png", (route) =>
+      route.fulfill(sprite),
+    );
+    await context.route(
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png",
+      (route) => route.fulfill(sprite),
+    );
+    await context.route("https://pokeapi.co/api/v2/pokemon/pikachu", (route) =>
+      route.fulfill({
+        json: {
+          species: { name: "pikachu" },
+          sprites: {
+            front_default: "https://play.pokemonshowdown.com/sprites/gen5/pikachu.png",
+            front_shiny: "https://play.pokemonshowdown.com/sprites/gen5/pikachu-shiny.png",
+          },
+          stats: [{ stat: { name: "hp" }, base_stat: 35 }],
+          abilities: [{ ability: { name: "static" } }],
+          types: [{ type: { name: "electric" } }],
+        },
+      }),
+    );
+    await use(context);
   },
 });
-
-export { expect } from "@playwright/test";

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchPokemon, fetchSprite } from "../../js/api/pokeapi.js";
+let fetchPokemon, fetchSprite;
 
 const mockPikachu = {
   sprite: "https://example.com/pikachu.png",
@@ -13,10 +13,10 @@ const mockPikachu = {
   speciesName: "pikachu",
 };
 
-beforeEach(() => {
-  // Reset localStorage
+beforeEach(async () => {
   localStorage.clear();
-  // Clear in-memory cache by importing a fresh perspective — we'll handle via vi.resetModules
+  vi.resetModules();
+  ({ fetchPokemon, fetchSprite } = await import("../../js/api/pokeapi.js"));
 });
 
 describe("in-memory cache", () => {
@@ -33,8 +33,9 @@ describe("in-memory cache", () => {
         }),
     });
 
-    // First call hits network
-    const first = await fetchPokemon("pikachu");
+    const [first, sprite] = await Promise.all([fetchPokemon("pikachu"), fetchSprite("PIKACHU")]);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(sprite).toBe(mockPikachu.sprite);
     expect(first).not.toBeNull();
     expect(first.sprite).toBe(mockPikachu.sprite);
 
@@ -69,6 +70,8 @@ describe("localStorage cache", () => {
 
     const result = await fetchPokemon("nonexistent");
     expect(result).toBeNull();
+    await fetchPokemon("nonexistent");
+    expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 });
 
