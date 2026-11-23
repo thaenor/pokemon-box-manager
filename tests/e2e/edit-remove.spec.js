@@ -37,7 +37,7 @@ function buildBox(withPokemon = true) {
 
 test.describe("Edit and remove Pokémon flow", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("./");
+    await page.goto("./champions/");
   });
 
   test("clicking a filled slot opens the detail form", async ({ page }) => {

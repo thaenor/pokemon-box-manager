@@ -6,7 +6,7 @@
 
 ## Context
 
-Ticket #6 (Box Data Model & UI) requires decisions on how Pokémon data is stored, persisted, and resolved in the Pokémon Box Manager MVP. The app is a client-side SPA hosted on Firebase Hosting with an existing Firestore config but no auth or persistence logic.
+Ticket #6 (Box Data Model & UI) requires decisions on how Pokémon data is stored, persisted, and resolved in the Pokémon Box Manager MVP.
 
 Key questions:
 
@@ -20,7 +20,7 @@ Key questions:
 
 ### 1. No auth — localStorage only
 
-The MVP uses **zero authentication**. All box data is persisted to the browser's `localStorage`. Firestore is not used for MVP. This eliminates the need for auth UI, security rules, and backend persistence infrastructure.
+The MVP opens without a login and saves box data in the browser's `localStorage`.
 
 ### 2. Two localStorage keys
 
@@ -74,15 +74,13 @@ Deferred to a follow-up ticket. The 5 Champions-exclusive forms (Mega Golisopod,
 - Zero backend cost and zero auth friction for users
 - Page loads are instant once species have been cached
 - Simple architecture — two localStorage keys, no async persistence pipeline
-- Easy to add auth + Firestore later (the existing `firebase-config.js` is already wired)
 
 **Negative:**
 
-- Data is device-local — no cross-device sync without a future Firestore migration
+- Data is local to the browser. Use a JSON backup to move a box to another browser.
 - Cached PokéAPI data never auto-evicts; manual DevTools clear is the escape hatch
 - 5-10MB localStorage limit could become a constraint if the roster grows to 1000+ species with cached data (mitigated by storing URLs not images)
 
 **Risks:**
 
-- A user clearing browser data loses their box. This is acceptable for MVP; a future export/backup feature can mitigate it.
-- Migrating from localStorage to Firestore later requires a one-time data migration script — manageable as long as the schema of saved objects is stable.
+- Clearing browser data deletes the saved box. A JSON backup lets a user restore it.

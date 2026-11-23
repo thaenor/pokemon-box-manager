@@ -9,6 +9,7 @@ const sprite = {
 
 export const test = base.extend({
   context: async ({ context }, use) => {
+    await context.route("https://championsbattledata.com/api/rankings?*", (route) => route.abort());
     await context.route("https://fonts.googleapis.com/**", (route) =>
       route.fulfill({ contentType: "text/css", body: "" }),
     );

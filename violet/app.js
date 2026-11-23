@@ -1,4 +1,5 @@
 import { catalogue } from "./catalogue.js";
+import { artworkUrl } from "./artwork.js";
 import { changeCount, progressPrefix, readCount, withStorageLock } from "./progress.js";
 
 const PARTY_KEY = "violet-companion:party";
@@ -207,19 +208,23 @@ byId("counter-count").addEventListener("change", (event) => {
 });
 
 function portrait(species, forHero = false) {
-  if (forHero && species.id === "charcadet") {
-    const image = element("img", "hero-art");
-    image.src = new URL("./art/charcadet.png", import.meta.url).href;
-    image.alt = "";
-    return image;
-  }
+  const wrapper = element("span", forHero ? "portrait hero-portrait" : "portrait party-thumb");
+  wrapper.setAttribute("aria-hidden", "true");
 
-  const sprite = element("span", forHero ? "portrait hero-portrait" : "portrait party-thumb");
-  sprite.setAttribute("aria-hidden", "true");
+  const sprite = element("span", "portrait-sprite");
   const slot = species.number - 1;
   sprite.style.backgroundPosition =
     ((slot % 20) * 100) / 19 + "% " + (Math.floor(slot / 20) * 100) / 19 + "%";
-  return sprite;
+
+  const image = element("img", "portrait-artwork");
+  image.alt = "";
+  image.crossOrigin = "anonymous";
+  image.decoding = "async";
+  if (!forHero) image.loading = "lazy";
+  image.addEventListener("load", () => wrapper.classList.add("portrait--loaded"), { once: true });
+  image.src = artworkUrl(species.number);
+  wrapper.append(sprite, image);
+  return wrapper;
 }
 
 function orderedMethods(species) {
@@ -315,7 +320,7 @@ function renderSpecies() {
     types.append(chip);
   }
   const artwork = document.querySelector(".specimen-art");
-  artwork.querySelector(".hero-art, .hero-portrait")?.remove();
+  artwork.querySelector(".hero-portrait")?.remove();
   artwork.append(portrait(selected, true));
   renderMethods();
   renderCounter();

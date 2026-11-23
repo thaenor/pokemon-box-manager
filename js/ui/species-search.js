@@ -6,8 +6,11 @@
  */
 
 import { speciesList } from "../data/species-list.js";
+import { loadRankedRoster, toShowdownId } from "../api/champions.js";
 import { saveFocus, trapTab } from "./focus-trap.js";
 import PokemonCache from "../cache/pokemon-cache.js";
+
+const RANKED_PREVIEW_SIZE = 25;
 
 /** All 18 Pokémon types, ordered per convention. */
 const ALL_TYPES = [
@@ -39,6 +42,8 @@ export function showSpeciesSearch() {
   return new Promise((resolve) => {
     let resolved = false;
     const restoreFocus = saveFocus();
+    const availableSpecies = new Map(speciesList.map((species) => [species.showdownId, species]));
+    const rankedRosters = new Map();
 
     /** @type {Set<string>} Currently selected type filters (OR logic). */
     const selectedTypes = new Set();
@@ -46,6 +51,7 @@ export function showSpeciesSearch() {
     function finish(result) {
       if (resolved) return;
       resolved = true;
+      clearTimeout(debounceTimer);
       revokeSpriteBlobUrls();
       document.removeEventListener("keydown", onKeyDown);
       restoreFocus();
@@ -69,7 +75,7 @@ export function showSpeciesSearch() {
     panel.className = "overlay__panel";
     panel.style.maxWidth = "520px";
     panel.style.width = "90vw";
-    panel.style.maxHeight = "80vh";
+    panel.style.maxHeight = "90dvh";
     panel.style.display = "flex";
     panel.style.flexDirection = "column";
     panel.style.gap = "var(--space-md)";
@@ -114,6 +120,23 @@ export function showSpeciesSearch() {
     });
     input.dataset.testid = "search-input";
     panel.appendChild(input);
+
+    const rosterLabel = document.createElement("label");
+    rosterLabel.className = "species-roster-control";
+    rosterLabel.textContent = "Roster";
+    const rosterSelect = document.createElement("select");
+    rosterLabel.appendChild(rosterSelect);
+    for (const [value, text] of [
+      ["", "All Pokémon"],
+      ["Singles", "Ranked Singles"],
+      ["Doubles", "Ranked Doubles"],
+    ]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = text;
+      rosterSelect.appendChild(option);
+    }
+    panel.appendChild(rosterLabel);
 
     /* ── Type filter chips ── */
     const chipBar = document.createElement("div");
@@ -211,12 +234,23 @@ export function showSpeciesSearch() {
     resultsEl.setAttribute("role", "listbox");
     panel.appendChild(resultsEl);
 
+    const rosterStatus = document.createElement("p");
+    rosterStatus.className = "species-roster-status";
+    rosterStatus.setAttribute("role", "status");
+    panel.appendChild(rosterStatus);
+
     /* ── Footer with cancel button ── */
     const footer = document.createElement("div");
-    footer.style.display = "flex";
-    footer.style.justifyContent = "flex-end";
+    footer.className = "species-search-footer";
     footer.style.paddingTop = "var(--space-sm)";
     footer.style.borderTop = "1px solid var(--color-hairline)";
+
+    const source = document.createElement("a");
+    source.href = "https://championsbattledata.com/";
+    source.target = "_blank";
+    source.rel = "noopener";
+    source.textContent = "Battle data provided by Pokémon Champions Battle Data";
+    footer.appendChild(source);
 
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "btn btn-secondary";
@@ -257,7 +291,7 @@ export function showSpeciesSearch() {
     }
 
     /* ── Render a single species row ── */
-    function createSpeciesRow(species) {
+    function createSpeciesRow(species, position) {
       const row = document.createElement("div");
       row.dataset.testid = "search-result";
       row.setAttribute("tabindex", "0");
@@ -365,6 +399,13 @@ export function showSpeciesSearch() {
 
       row.appendChild(infoCol);
 
+      if (position) {
+        const rank = document.createElement("span");
+        rank.className = "species-rank";
+        rank.textContent = `#${position}`;
+        row.appendChild(rank);
+      }
+
       return row;
     }
 
@@ -389,12 +430,31 @@ export function showSpeciesSearch() {
 
     function renderResults(filter) {
       const q = filter.trim().toLowerCase();
+      const format = rosterSelect.value;
+      const ranked = rankedRosters.get(format);
+      const positions = new Map();
 
       resultsEl.innerHTML = "";
       highlightedIndex = -1;
+      rosterStatus.textContent = "";
 
-      // Start filtering with full species list
-      let results = speciesList;
+      let results = [...availableSpecies.values()];
+      if (format && ranked === undefined) {
+        rosterStatus.textContent = `Loading ranked ${format.toLowerCase()}…`;
+        return;
+      }
+      if (format && ranked === null) {
+        rosterStatus.textContent = "Rankings unavailable. Showing the available Pokémon.";
+      }
+      if (ranked) {
+        for (const { species, position } of ranked) {
+          if (species) positions.set(species.showdownId, position);
+        }
+        results = ranked.flatMap(({ species }) => (species ? [species] : []));
+        if (results.length < ranked.length) {
+          rosterStatus.textContent = "Some ranked Pokémon are missing catalogue data.";
+        }
+      }
 
       // Apply type filter
       if (selectedTypes.size > 0) {
@@ -403,19 +463,31 @@ export function showSpeciesSearch() {
 
       // Apply name filter (AND with type filter)
       if (q.length > 0) {
-        results = results.filter((s) => s.name.toLowerCase().includes(q));
+        const showdownQuery = toShowdownId(q);
+        results = results.filter(
+          (species) =>
+            species.name.toLowerCase().includes(q) ||
+            (showdownQuery && toShowdownId(species.showdownId).includes(showdownQuery)),
+        );
       }
 
-      // Empty state (no filters at all)
+      // Offer a short ranked list before the user enters a search.
       if (selectedTypes.size === 0 && q.length === 0) {
-        const hint = document.createElement("div");
-        hint.className = "body-md";
-        hint.style.color = "var(--color-text-muted)";
-        hint.style.textAlign = "center";
-        hint.style.padding = "var(--space-2xl) var(--space-md)";
-        hint.textContent = "Type to search Pokémon…";
-        resultsEl.appendChild(hint);
-        return;
+        if (ranked) {
+          if (results.length > RANKED_PREVIEW_SIZE && !rosterStatus.textContent) {
+            rosterStatus.textContent = `Top ${RANKED_PREVIEW_SIZE} · Search to see more`;
+          }
+          results = results.slice(0, RANKED_PREVIEW_SIZE);
+        } else {
+          const hint = document.createElement("div");
+          hint.className = "body-md";
+          hint.style.color = "var(--color-text-muted)";
+          hint.style.textAlign = "center";
+          hint.style.padding = "var(--space-2xl) var(--space-md)";
+          hint.textContent = "Type to search Pokémon…";
+          resultsEl.appendChild(hint);
+          return;
+        }
       }
 
       // No results
@@ -431,7 +503,7 @@ export function showSpeciesSearch() {
       }
 
       results.forEach((species, i) => {
-        const row = createSpeciesRow(species);
+        const row = createSpeciesRow(species, positions.get(species.showdownId));
         if (i === 0 && highlightedIndex === -1) {
           highlightedIndex = 0;
           row.style.background = "var(--color-surface-hover)";
@@ -439,6 +511,31 @@ export function showSpeciesSearch() {
         resultsEl.appendChild(row);
       });
     }
+
+    async function refreshRoster(format) {
+      if (rankedRosters.has(format)) return;
+      rankedRosters.set(format, undefined);
+      const ranked = await loadRankedRoster(format, speciesList);
+      if (resolved) return;
+      rankedRosters.set(format, ranked);
+      let addedSpecies = false;
+      for (const { species } of ranked ?? []) {
+        if (species && !availableSpecies.has(species.showdownId)) {
+          availableSpecies.set(species.showdownId, species);
+          addedSpecies = true;
+        }
+      }
+      if (rosterSelect.value === format || (!rosterSelect.value && addedSpecies)) {
+        renderResults(input.value);
+      }
+    }
+
+    rosterSelect.addEventListener("change", () => {
+      const format = rosterSelect.value;
+      if (rankedRosters.get(format) === null) rankedRosters.delete(format);
+      renderResults(input.value);
+      if (format) refreshRoster(format);
+    });
 
     /* ── Debounced input handler ── */
     function handleInput() {
@@ -490,8 +587,8 @@ export function showSpeciesSearch() {
     }
     document.addEventListener("keydown", onKeyDown);
 
-    /* ── Initial render (show all with type chips available) ── */
     renderResults("");
+    refreshRoster("Doubles");
 
     /* ── Append to body and focus input ── */
     document.body.appendChild(overlay);

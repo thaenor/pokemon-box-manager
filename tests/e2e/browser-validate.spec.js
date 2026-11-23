@@ -15,7 +15,7 @@ test.describe("Browser-only code validation", () => {
       if (msg.type() === "error") errors.push(msg.text());
     });
 
-    await page.goto("./");
+    await page.goto("./champions/");
     // Wait for app to render its initial state
     await expect(page.locator("text=Your box is empty")).toBeVisible({
       timeout: 5000,

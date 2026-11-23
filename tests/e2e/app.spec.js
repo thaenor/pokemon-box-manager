@@ -1,15 +1,20 @@
 import { test, expect } from "./fixtures.js";
 
 test.describe("Pokémon Box Manager", () => {
-  test("opens the box immediately in a fresh browser session", async ({ page }) => {
+  test("lets a fresh browser choose either game and return to the landing page", async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, "webdriver", { value: false });
     });
     await page.goto("./");
+    await expect(page.getByRole("heading", { name: "Choose your game" })).toBeVisible();
+    await page.getByRole("link", { name: "Box Manager Pokémon Champions" }).click();
     await expect(page).toHaveTitle("Pokémon Box Manager", { timeout: 5000 });
     await expect(page.getByText("Your box is empty")).toBeVisible();
     await expect(page.getByTestId("box-slot")).toHaveCount(40);
-    await page.getByRole("link", { name: "Violet Field Guide" }).click();
+    await page.getByRole("link", { name: "All tools" }).click();
+    await page.getByRole("link", { name: "Violet Field Guide Pokémon Violet" }).click();
     await expect(page.getByRole("heading", { name: "Evolution field guide" })).toBeVisible();
   });
 
@@ -17,7 +22,7 @@ test.describe("Pokémon Box Manager", () => {
     page,
     context,
   }) => {
-    await page.goto("./");
+    await page.goto("./champions/");
     await expect(page.getByTestId("box-slot")).toHaveCount(40);
     await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
 
@@ -26,10 +31,51 @@ test.describe("Pokémon Box Manager", () => {
     await expect(page.getByTestId("box-slot")).toHaveCount(40);
     await page.getByTestId("box-slot").first().click();
     await expect(page.getByTestId("species-search")).toBeVisible();
+    await page.getByRole("combobox", { name: "Roster" }).selectOption("Doubles");
+    await expect(page.getByRole("status")).toContainText("Rankings unavailable");
+    await page.getByTestId("search-input").fill("Watchog");
+    await expect(page.getByTestId("search-result")).toContainText("Watchog");
+  });
+
+  test("uses ranked data for each format and adds newly eligible Pokémon to search", async ({
+    page,
+  }) => {
+    await page.route("https://championsbattledata.com/api/rankings?*", (route) => {
+      const format = new URL(route.request().url()).searchParams.get("format");
+      const entries = format === "Doubles" ? ["raichu", "charizard"] : ["charizard", "ivysaur"];
+      return route.fulfill({
+        json: {
+          format,
+          total: entries.length,
+          rankings: entries.map((id, index) => ({
+            showdownId: id,
+            slug: id,
+            position: index + 1,
+          })),
+        },
+      });
+    });
+    await page.route("https://play.pokemonshowdown.com/data/pokedex.json", (route) =>
+      route.fulfill({ json: { ivysaur: { num: 2, name: "Ivysaur", types: ["Grass", "Poison"] } } }),
+    );
+    await page.goto("./champions/");
+    await page.getByTestId("box-slot").first().click();
+    const roster = page.getByRole("combobox", { name: "Roster" });
+    const results = page.getByTestId("search-result");
+    await roster.selectOption("Doubles");
+    await expect(results.first()).toContainText("Raichu");
+    await expect(results.first()).toContainText("#1");
+    await roster.selectOption("Singles");
+    await expect(results.first()).toContainText("Charizard");
+    await expect(results.last()).toContainText("Ivysaur");
+    await roster.selectOption("");
+    await page.getByTestId("search-input").fill("Ivysaur");
+    await expect(results).toHaveCount(1);
+    await expect(results.first()).toContainText("Ivysaur");
   });
 
   test("can open species search overlay", async ({ page }) => {
-    await page.goto("./");
+    await page.goto("./champions/");
 
     // Click the first empty grid slot (opens search overlay)
     const firstSlot = page.locator('[data-testid="box-slot"]').first();
@@ -40,7 +86,7 @@ test.describe("Pokémon Box Manager", () => {
   });
 
   test("can search by name and see results", async ({ page }) => {
-    await page.goto("./");
+    await page.goto("./champions/");
 
     // Open search overlay by clicking first empty grid slot
     const firstSlot = page.locator('[data-testid="box-slot"]').first();
@@ -58,7 +104,7 @@ test.describe("Pokémon Box Manager", () => {
   });
 
   test("sprite loads in search results after typing a query", async ({ page }) => {
-    await page.goto("./");
+    await page.goto("./champions/");
 
     // Open species search by clicking first empty grid slot
     const firstSlot = page.locator('[data-testid="box-slot"]').first();

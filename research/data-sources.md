@@ -78,13 +78,12 @@
 
 ## 3. Pikalytics
 
-| Field            | Value                                                            |
-| ---------------- | ---------------------------------------------------------------- |
-| **URL**          | https://www.pikalytics.com/                                      |
-| **AI endpoints** | `GET /ai/pokedex/{format}`, `GET /ai/pokedex/{format}/{pokemon}` |
-| **Auth**         | None (public Markdown endpoints)                                 |
-| **Rate limits**  | None documented (use conservative rates + caching)               |
-| **Data format**  | Markdown (AI endpoints); JSON-LD embedded on HTML pages          |
+| Field           | Value                                              |
+| --------------- | -------------------------------------------------- |
+| **URL**         | https://www.pikalytics.com/                        |
+| **Auth**        | None for public pages                              |
+| **Rate limits** | None documented (use conservative rates + caching) |
+| **Data format** | JSON-LD embedded on HTML pages                     |
 
 **What it provides:**
 
@@ -103,9 +102,9 @@
 3. RK9 Tournament data (official VGC team sheets)
 4. Pokémon GO PvP
 
-**Reliability:** Good aggregate data. Public Markdown endpoints are new (2025); no uptime guarantees. Site has been active since 2017.
+**Reliability:** Good aggregate data with no uptime guarantee. The site has been active since 2017.
 
-**PWA suitability:** ✅ **Good for metagame snapshots** — /ai/pokedex endpoint returns structured Markdown. Parse server-side, cache in app. Not suitable as live browser dependency.
+**PWA suitability:** Useful as a reference for metagame snapshots.
 
 ---
 
@@ -197,7 +196,6 @@
 | **data.pkmn.cc**             | https://data.pkmn.cc/                    | ✅ Excellent       | Curated datasets: analyses, formats, sets, stats, teams — efficient batch access |
 | **@pkmn/data** (npm)         | https://www.npmjs.com/package/@pkmn/data | ✅ Excellent       | TypeScript/JS library for parsing Showdown data — MIT license                    |
 | **Pokémon Showdown replays** | https://replay.pokemonshowdown.com/      | ⚠️ Research only   | Replay logs; bulk download for analysis; not suitable for runtime                |
-| **Metamon datasets**         | https://github.com/UT-Austin-RPL/metamon | ⚠️ Research only   | Million-battle datasets for ML; too large for PWA                                |
 | **Trainer Tower**            | https://trainertower.com/                | ⚠️ Manual curation | VGC tournament results, rental teams; no API; scrape with permission             |
 | **Victory Road**             | https://victoryroadvgc.com/              | ⚠️ Manual curation | Tournament articles, usage trends; editorial content, no API                     |
 | **Limitless TCG**            | https://play.limitlesstcg.com/           | ⚠️ Manual curation | Tournament team sheets; no public API for VGC                                    |
@@ -208,12 +206,11 @@
 
 ### Primary data sources (in order of importance)
 
-| #     | Source                                | What to use                                                                                | Pre-caching strategy                                                                                 |
-| ----- | ------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **1** | **Pokémon Showdown `/data/` files**   | `pokedex.json`, `moves.json`, `abilities.js`, `items.js`, `typechart.js`, `learnsets.json` | **Bundle at build time.** JSON files are 500KB–3MB each, ideal for offline.                          |
-| **2** | **Smogon usage stats (data.pkmn.cc)** | Monthly usage JSON per format (e.g. `gen9ou.json`)                                         | **Pre-cache latest 1-2 months** for supported formats. Update via background sync.                   |
-| **3** | **PokéAPI**                           | Sprites (get sprite URLs), form data, species data not in Showdown                         | Use for **initial sync only** — fetch and cache sprites + species details, then go offline.          |
-| **4** | **Pikalytics AI endpoints**           | Metagame usage, movesets, items for current regulation                                     | **Server-side fetch + cache** — not directly from browser. Use for "what's meta right now" features. |
+| #     | Source                                | What to use                                                                                | Pre-caching strategy                                                                        |
+| ----- | ------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| **1** | **Pokémon Showdown `/data/` files**   | `pokedex.json`, `moves.json`, `abilities.js`, `items.js`, `typechart.js`, `learnsets.json` | **Bundle at build time.** JSON files are 500KB–3MB each, ideal for offline.                 |
+| **2** | **Smogon usage stats (data.pkmn.cc)** | Monthly usage JSON per format (e.g. `gen9ou.json`)                                         | **Pre-cache latest 1-2 months** for supported formats. Update via background sync.          |
+| **3** | **PokéAPI**                           | Sprites (get sprite URLs), form data, species data not in Showdown                         | Use for **initial sync only** — fetch and cache sprites + species details, then go offline. |
 
 ### Offline-first architecture
 

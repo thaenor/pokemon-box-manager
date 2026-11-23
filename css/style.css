@@ -792,6 +792,54 @@ img {
   max-width: 480px;
 }
 
+.species-roster-control,
+.species-search-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.species-roster-control {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.species-roster-control select {
+  min-height: 40px;
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-default);
+  color: var(--color-text-primary);
+  background: var(--color-surface-l2);
+  font: inherit;
+}
+
+.species-roster-status,
+.species-search-footer a,
+.species-rank {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.species-roster-status {
+  margin: 0;
+}
+
+.species-roster-status:empty {
+  display: none;
+}
+
+.species-search-footer a {
+  max-width: 22ch;
+  text-decoration: underline;
+}
+
+.species-rank {
+  margin-inline: auto var(--space-sm);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Utility ── */
 .sr-only {
   position: absolute;

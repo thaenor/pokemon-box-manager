@@ -3,31 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0D1117" />
-    <meta
-      name="description"
-      content="Browse, filter, and manage your Pokémon Champions box with ease."
-    />
-    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#f5f5fa" />
+    <meta name="description" content="Choose a tool for Pokémon Champions or Pokémon Violet." />
     <link rel="icon" type="image/svg+xml" href="./images/icon-192.svg" />
-    <title>Pokémon Box Manager</title>
-    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/landing.css" />
+    <title>Pokémon Tools</title>
   </head>
   <body>
-    <nav class="companion-nav" aria-label="Trainer tools">
-      <a href="./violet/">Violet Field Guide <span aria-hidden="true">↗</span></a>
-    </nav>
-    <main id="app"></main>
-
-    <script type="module" src="./js/app.js"></script>
+    <main class="chooser">
+      <p class="site-name">
+        <img src="./images/icon-192.svg" width="28" height="28" alt="" />
+        Pokémon Tools
+      </p>
+      <h1>Choose your game</h1>
+      <nav class="tool-grid" aria-label="Pokémon tools">
+        <a class="tool tool--champions" href="./champions/" aria-labelledby="box-title champions">
+          <div class="tool-art" aria-hidden="true">
+            <img src="./images/icon-512.svg" width="124" height="124" alt="" />
+          </div>
+          <div class="tool-info">
+            <p class="tool-game" id="champions">Pokémon Champions</p>
+            <h2 id="box-title">Box Manager</h2>
+            <p class="tool-description">Organize your boxes and find Pokémon for ranked battles.</p>
+            <span class="tool-action" aria-hidden="true">Open Box Manager <span>→</span></span>
+          </div>
+        </a>
+        <a class="tool tool--violet" href="./violet/" aria-labelledby="guide-title violet">
+          <div class="tool-art" aria-hidden="true">
+            <img src="./violet/icon-512.png" width="124" height="124" alt="" />
+          </div>
+          <div class="tool-info">
+            <p class="tool-game" id="violet">Pokémon Violet</p>
+            <h2 id="guide-title">Violet Field Guide</h2>
+            <p class="tool-description">
+              Look up evolution methods without spoilers and track your party.
+            </p>
+            <span class="tool-action" aria-hidden="true">Open Field Guide <span>→</span></span>
+          </div>
+        </a>
+      </nav>
+    </main>
     <script>
       if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("./sw.js")
-            .then((reg) => console.log("SW registered:", reg.scope))
-            .catch((err) => console.error("SW registration failed:", err));
-        });
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
       }
     </script>
   </body>

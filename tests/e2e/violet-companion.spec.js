@@ -9,6 +9,40 @@ async function lookUp(page, name) {
   await expect(page.getByRole("heading", { name, level: 2, exact: true })).toBeVisible();
 }
 
+test("uses official artwork for a Paldean form and keeps it available offline", async ({
+  page,
+  context,
+}) => {
+  const url =
+    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10253.png";
+  await context.route(url, (route) =>
+    route.fulfill({
+      headers: { "access-control-allow-origin": "*" },
+      contentType: "image/svg+xml",
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"><rect width="2" height="2"/></svg>',
+    }),
+  );
+  await page.goto(companion);
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+  await lookUp(page, "Paldean Wooper");
+  const portrait = page.locator(".hero-portrait");
+  await expect(portrait.locator("img")).toHaveAttribute("src", url);
+  await expect(portrait.locator("img")).toBeVisible();
+  await expect(portrait.locator(".portrait-sprite")).toBeHidden();
+
+  await page.getByRole("button", { name: "Pin to party", exact: true }).click();
+  const partyArtwork = page.getByRole("button", { name: "View Paldean Wooper" }).locator("img");
+  await partyArtwork.scrollIntoViewIfNeeded();
+  await expect(partyArtwork).toHaveAttribute("src", url);
+  await expect(partyArtwork).toBeVisible();
+
+  // Fail any network request so a successful offline reload must use the service worker cache.
+  await context.route(url, (route) => route.abort());
+  await context.setOffline(true);
+  await page.reload();
+  await expect(portrait.locator("img")).toBeVisible();
+});
+
 test("reopens recent searches in order without adding party visits to history", async ({
   page,
 }) => {
@@ -82,8 +116,11 @@ test("reopens offline and looks up an unvisited species", async ({ page, context
   await context.setOffline(true);
   await page.goto("./violet");
   await lookUp(page, "Sprigatito");
+  await expect(page.locator(".hero-portrait .portrait-sprite")).toBeVisible();
+  await expect(page.locator(".hero-portrait img")).toBeHidden();
   await expect(page.locator(".method-summary")).toContainText(/16/);
-  await page.getByRole("link", { name: "Box Manager" }).click();
+  await page.getByRole("link", { name: "All tools" }).click();
+  await page.getByRole("link", { name: /Box Manager/ }).click();
   await expect(page.getByTestId("box-slot")).toHaveCount(40);
 });
 

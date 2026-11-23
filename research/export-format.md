@@ -1,8 +1,6 @@
-# AI-Friendly Pokémon Team Export Format — Research
+# Pokémon Team Export Formats
 
-**Date:** 2026-09-12  
-**Issue:** [#4 — Research: AI-Friendly Export Format](https://github.com/thaenor/pokemon-box-manager/issues/4)  
-**Project:** Pokemon Box Manager
+Research for Pokémon Box Manager, September 12, 2026. [Issue #4](https://github.com/thaenor/pokemon-box-manager/issues/4).
 
 ---
 
@@ -15,17 +13,16 @@
    - [Pokemon Showdown Packed](#3-pokemon-showdown-packed)
    - [Custom JSON/YAML Schemas](#4-custom-jsonyaml-schemas)
 3. [Handling Regional Variants](#handling-regional-variants)
-4. [What AI Chatbots Parse Best](#what-ai-chatbots-parse-best)
-5. [Recommended Format](#recommended-format)
-6. [Concrete Example](#concrete-example)
-7. [Implementation Notes](#implementation-notes)
-8. [Sources](#sources)
+4. [Recommended Format](#recommended-format)
+5. [Concrete Example](#concrete-example)
+6. [Implementation Notes](#implementation-notes)
+7. [Sources](#sources)
 
 ---
 
 ## Executive Summary
 
-The **Pokémon Showdown Export format** (commonly called _Pokepaste_) is the unambiguous recommendation. It is the universal format used by the competitive Pokémon community (Smogon, VGC, Pokémon Showdown), is natively parseable by both humans and LLMs, handles all edge cases including regional variants, and requires no external tooling to produce or consume. Export JSON format is recommended as an internal/structured interchange format for programmatic use.
+The **Pokémon Showdown Export format** (commonly called _Pokepaste_) is the unambiguous recommendation. It is the universal format used by the competitive Pokémon community (Smogon, VGC, Pokémon Showdown), handles all edge cases including regional variants, and requires no external tooling to produce or consume. Export JSON format is recommended as an internal/structured interchange format for programmatic use.
 
 ---
 
@@ -40,7 +37,6 @@ Pokémon Showdown defines three canonical team formats ([source](https://github.
 **Strengths:**
 
 - Universally understood by the competitive community — Smogon forums, VGC players, Discord servers
-- Natively readable by LLMs (OpenAI ChatGPT, Claude, Gemini, etc.) — it's structured plain text
 - Every existing Pokémon MCP server and tool produces/consumes this format
 - Single text block, copy-pasteable into any chat
 - pokepast.es and other sites render sprites from it inline
@@ -135,7 +131,7 @@ NICKNAME|SPECIES|ITEM|ABILITY|MOVES|NATURE|EVS|GENDER|IVS|SHINY|LEVEL|HAPPINESS,
 ||Arcanine-Hisui||intimidate|heavydutyboots|flareblitz,headsmash,willowisp,extremespeed|Adamant|252,252,,,4,|M|,,31,31,31,31,31,31||50|
 ```
 
-**Verdict:** Not for AI consumption — too compressed and opaque.
+**Verdict:** Best suited to compact storage and transmission.
 
 ### 4. Custom JSON/YAML Schemas
 
@@ -145,7 +141,7 @@ NICKNAME|SPECIES|ITEM|ABILITY|MOVES|NATURE|EVS|GENDER|IVS|SHINY|LEVEL|HAPPINESS,
 - **YAML** — less commonly used in the Pokémon community; no existing tooling
 - **Custom flat formats** — no interoperability; reinventing the wheel
 
-**When to use JSON internally:** The project's internal database and API responses should use the Showdown JSON format, which can always be converted to export format for user/AI consumption.
+**When to use JSON:** Showdown JSON is useful for tools that need structured team data.
 
 ---
 
@@ -195,62 +191,34 @@ This is unambiguous: the parser sees `Arcanine-Hisui`, looks up the species, and
 
 ---
 
-## What AI Chatbots Parse Best
-
-Based on analysis of existing MCP servers, community usage, and format structure:
-
-| Format                 | LLM Readability | Community Standard | Tooling Support | Unambiguous |
-| ---------------------- | :-------------: | :----------------: | :-------------: | :---------: |
-| **Export (Pokepaste)** |   ⭐⭐⭐⭐⭐    |     ⭐⭐⭐⭐⭐     |   ⭐⭐⭐⭐⭐    |     Yes     |
-| JSON                   |    ⭐⭐⭐⭐     |       ⭐⭐⭐       |    ⭐⭐⭐⭐     |     Yes     |
-| Packed                 |      ⭐⭐       |       ⭐⭐⭐       |     ⭐⭐⭐      |     No      |
-| Custom YAML            |    ⭐⭐⭐⭐     |         ⭐         |       ⭐        |  Could be   |
-
-**Why Export format wins for AI ingestion:**
-
-1. **Natural language alignment** — The key-value structure (`Ability: Intimidate`, `EVs: 252 HP / ...`) mirrors how a human would describe a set. LLMs natively generate and parse this structure without special training.
-
-2. **Existing MCP ecosystem** — The [PokePaste MCP server](https://github.com/jpbullalayao/pokemon-paste-mcp) and [Pokemon Paste MCP](https://mcp.directory/servers/pokepaste) already use Export format as their output and JSON for structured input. Claude Code, Cursor, and other AI tools have drop-in support.
-
-3. **Context efficient** — A 6-Pokémon team in Export format averages ~600–900 characters. The same team in JSON averages ~1,200–1,500 characters. Packed format is smaller but less reliable for LLM parsing.
-
-4. **Error-tolerant** — LLMs can produce Export format with minor typos and humans/AI can still parse it. JSON must be perfectly valid or parsing fails entirely.
-
-5. **Copy-paste ready** — A user can paste Export format into any chat, email, Discord, or Pokémon Showdown itself. JSON requires syntax highlighting or a code block.
-
----
-
 ## Recommended Format
 
 ### Primary: Pokémon Showdown Export (Pokepaste)
 
 Use this format for:
 
-- **Exporting teams** for the user to copy/paste into AI chat, pokepast.es, or Pokémon Showdown
+- **Exporting teams** for the user to paste into pokepast.es or Pokémon Showdown
 - **Displaying team data** in the UI (read-only or editable text blocks)
 - **Sharing** via chat, forum, or clipboard
-- **AI ingestion** — LLMs read this format directly
 
 ### Secondary: Pokémon Showdown JSON
 
 Use this format for:
 
-- **Internal storage** in the application database
-- **API responses** between backend and frontend
 - **Programmatic manipulation** (sorting, filtering, transforming teams)
 - **Round-trip safety** — parse once, validate, then export to any format
 
 ### Conversion Strategy
 
 ```
-Export Format (user/AI facing)
+Export Format (shareable text)
         ↕ Teams.export() / Teams.import()
-JSON Format (internal storage, API)
+Showdown JSON (structured team data)
         ↕ Teams.pack() / Teams.unpack()
 Packed Format (storage optimization, network)
 ```
 
-The project should implement the Export ↔ JSON conversion (or use the official [ts-pokeapi showdown utility](https://jaflesch.github.io/ts-pokeapi/docs/utils/showdown/)). Packed format is optional for storage optimization.
+Showdown provides conversion between these formats. The box manager uses its own JSON backup format.
 
 ---
 
@@ -406,31 +374,7 @@ Adamant Nature
 
 ## Implementation Notes
 
-### For Pokemon Box Manager
-
-1. **Primary output format:** Pokémon Showdown Export (Pokepaste)
-   - This is what users copy-paste into AI chats, Discord, pokepast.es, etc.
-
-2. **Internal storage:** Showdown JSON (`PokemonSet[]`)
-   - Parsed from export format on import
-   - Validated before persistence
-   - Serialized to export format for display/sharing
-
-3. **Regional variants:** Use `-Alola`, `-Galar`, `-Hisui`, `-Paldea` suffixes
-   - Validate species names against the Showdown Pokedex (mirror `dex-species.ts` logic)
-   - Accept community aliases as input (e.g., `alowak` → `Marowak-Alola`)
-
-4. **Field requirements** (minimum viable set):
-   - Required: `species`, `moves` (at least 1)
-   - Strongly recommended: `item`, `ability`, `nature`, `evs`, `teraType`
-   - Optional: `level`, `ivs`, `gender`, `shiny`, `name` (nickname), `happiness`, `gigantamax`
-
-5. **Conversion library options:**
-   - [ts-pokeapi Showdown utility](https://jaflesch.github.io/ts-pokeapi/docs/utils/showdown/) — TypeScript, format() method produces export string
-   - [pokemon-showdown sim/teams.ts](https://github.com/smogon/pokemon-showdown/blob/master/sim/teams.ts) — Reference implementation, `Teams.exportSet()` and `Teams.import()`
-   - [kazam-team](https://crates.io/crates/kazam-team) — Rust conversion if needed
-
-6. **Validation:** After parsing, validate each set against known species, moves, abilities, and items (e.g., via local data or a PokéAPI lookup). The Export format itself does not validate legality — Pokémon Showdown's team validator is the gate.
+The Box Manager exports JSON backups and Pokémon Showdown text. Import accepts Box Manager JSON backups. For a backup you plan to restore, choose **JSON** in the export dialog and paste the copied text into **Import**.
 
 ---
 
@@ -442,5 +386,4 @@ Adamant Nature
 - [Pokemon Showdown aliases.ts](https://github.com/smogon/pokemon-showdown/blob/master/data/aliases.ts) — Community alias mapping
 - [Pokemon Showdown teams.ts](https://github.com/smogon/pokemon-showdown/blob/master/sim/teams.ts) — Reference implementation of export/import/pack/unpack
 - [ts-pokeapi Showdown utility](https://jaflesch.github.io/ts-pokeapi/docs/utils/showdown/) — TypeScript format() implementation
-- [PokePaste MCP Guide](https://mcp.directory/blog/pokepaste-mcp-complete-guide-2026) — AI tooling ecosystem
 - [Pokepaste Guide (Pok Universe)](https://pokuniverse.com/knowledge-base/pokepaste-guide/) — Community usage documentation

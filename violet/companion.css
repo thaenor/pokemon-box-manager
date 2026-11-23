@@ -520,33 +520,40 @@ summary {
   inset: 12%;
   border: 1px solid #f3dbff36;
 }
-.hero-art {
-  display: block;
+.hero-portrait {
+  --portrait-size: 200px;
   width: min(97%, 286px);
   height: 255px;
-  object-fit: contain;
   filter: drop-shadow(0 15px 12px #25133170);
   animation: species-enter 0.42s cubic-bezier(0.16, 0.7, 0.25, 1) both;
 }
-.hero-portrait {
-  --portrait-size: 200px;
-  filter: drop-shadow(0 8px 9px #25133180);
-  animation: species-enter 0.36s ease-out both;
-}
-.hero-portrait,
-.party-thumb,
-.result-portrait {
-  display: block;
+.portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
   flex: none;
-  width: var(--portrait-size);
   max-width: 100%;
+}
+.portrait-sprite {
+  width: min(100%, var(--portrait-size));
   aspect-ratio: 1;
   background: url("./art/portraits.png") no-repeat;
   background-size: 2000% 2000%;
   image-rendering: pixelated;
 }
-.result-portrait {
-  --portrait-size: 32px;
+.portrait-artwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  visibility: hidden;
+}
+.portrait--loaded .portrait-artwork {
+  visibility: visible;
+}
+.portrait--loaded .portrait-sprite {
+  visibility: hidden;
 }
 
 .methods-panel,
@@ -896,6 +903,8 @@ summary.method-summary {
 }
 .party-thumb {
   --portrait-size: 36px;
+  width: var(--portrait-size);
+  aspect-ratio: 1;
   animation: species-enter 0.24s ease-out both;
 }
 .party-remove {
@@ -965,11 +974,9 @@ summary.method-summary {
   .specimen-info {
     padding-left: 21px;
   }
-  .hero-art {
-    height: 218px;
-  }
   .hero-portrait {
     --portrait-size: 145px;
+    height: 218px;
   }
   .field-column {
     gap: 16px;
@@ -1012,12 +1019,10 @@ summary.method-summary {
   .specimen-info {
     padding: 20px 0 20px 21px;
   }
-  .hero-art {
-    height: 211px;
-    width: min(98%, 235px);
-  }
   .hero-portrait {
     --portrait-size: 140px;
+    height: 211px;
+    width: min(98%, 235px);
   }
   .method-summary {
     min-height: 64px;
@@ -1032,8 +1037,7 @@ summary.method-summary {
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .empty-slot .icon,
-  .pin-btn .icon,
-  .result-portrait {
+  .pin-btn .icon {
     transition: transform 0.18s ease;
   }
   .empty-slot:hover .icon {
@@ -1041,9 +1045,6 @@ summary.method-summary {
   }
   .pin-btn:hover:enabled .icon {
     transform: rotate(-10deg);
-  }
-  .result-option:hover .result-portrait {
-    transform: translateY(-2px);
   }
 }
 @media (pointer: coarse) {
@@ -1081,11 +1082,9 @@ summary.method-summary {
   .specimen-info {
     padding-left: 15px;
   }
-  .hero-art {
-    height: 178px;
-  }
   .hero-portrait {
     --portrait-size: 112px;
+    height: 178px;
   }
   .method-summary {
     gap: 9px;

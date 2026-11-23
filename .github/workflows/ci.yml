@@ -61,7 +61,7 @@ jobs:
         run: |
           pages_artifact="$RUNNER_TEMP/pages/$SITE_NAME"
           mkdir -p "$pages_artifact"
-          cp -R index.html manifest.json sw.js css images js violet "$pages_artifact/"
+          cp -R index.html manifest.json sw.js css images js champions violet "$pages_artifact/"
           printf 'PAGES_ARTIFACT=%s\n' "$pages_artifact" >> "$GITHUB_ENV"
       - name: Test the staged site under the repository path
         run: npm run test:e2e

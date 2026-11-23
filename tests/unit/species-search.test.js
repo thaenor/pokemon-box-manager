@@ -43,6 +43,11 @@ vi.mock("../../js/data/species-list.js", () => ({
   speciesList: mockSpecies,
 }));
 
+vi.mock("../../js/api/champions.js", async (importOriginal) => ({
+  ...(await importOriginal()),
+  loadRankedRoster: vi.fn().mockResolvedValue(null),
+}));
+
 let showSpeciesSearch;
 
 beforeEach(async () => {

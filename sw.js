@@ -1,15 +1,20 @@
 const scope = new URL(self.registration.scope);
 const cachePrefix = scope.pathname === "/" ? "pkmn-box-v" : `pkmn-box-${scope.pathname}:v`;
-const CACHE_NAME = `${cachePrefix}10`;
-const BOX_SHELL = scope.pathname;
-const GUIDE_SHELL = `${scope.pathname}violet/`;
-const GUIDE_PATHS = new Set([GUIDE_SHELL, `${GUIDE_SHELL}index.html`]);
+const CACHE_NAME = `${cachePrefix}12`;
+const ARTWORK_CACHE_NAME = `${cachePrefix}violet-artwork`;
+const ARTWORK_PATH =
+  /^\/PokeAPI\/sprites\/master\/sprites\/pokemon\/other\/official-artwork\/\d+\.png$/;
+const HOME_SHELL = scope.pathname;
+const APP_SHELLS = ["champions/", "violet/"].map((route) => `${HOME_SHELL}${route}`);
 
 const PRECACHE_URLS = [
   "",
+  "champions/",
+  "css/landing.css",
   "css/style.css",
   "js/app.js",
   "js/api/pokeapi.js",
+  "js/api/champions.js",
   "js/cache/pokemon-cache.js",
   "js/cache/schema.js",
   "js/data/natures.js",
@@ -25,6 +30,7 @@ const PRECACHE_URLS = [
   "violet/",
   "violet/companion.css",
   "violet/app.js",
+  "violet/artwork.js",
   "violet/progress.js",
   "violet/catalogue.js",
   "violet/art/charcadet.png",
@@ -52,7 +58,10 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key.startsWith(cachePrefix) && key !== CACHE_NAME)
+            .filter(
+              (key) =>
+                key.startsWith(cachePrefix) && key !== CACHE_NAME && key !== ARTWORK_CACHE_NAME,
+            )
             .map((key) => caches.delete(key)),
         ),
       )
@@ -66,23 +75,41 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   if (
+    request.method === "GET" &&
+    request.destination === "image" &&
+    request.mode === "cors" &&
+    url.origin === "https://raw.githubusercontent.com" &&
+    ARTWORK_PATH.test(url.pathname)
+  ) {
+    event.respondWith(cacheFirst(request, ARTWORK_CACHE_NAME));
+    return;
+  }
+
+  if (
     request.method !== "GET" ||
     url.origin !== scope.origin ||
-    !url.pathname.startsWith(BOX_SHELL)
+    !url.pathname.startsWith(HOME_SHELL)
   ) {
     return;
   }
 
   // Reopen the correct app, including a direct visit to the guide while offline.
   if (request.mode === "navigate") {
-    if (url.pathname === GUIDE_SHELL.slice(0, -1)) {
-      url.pathname = GUIDE_SHELL;
+    const shell = APP_SHELLS.find(
+      (path) =>
+        url.pathname === path ||
+        url.pathname === `${path}index.html` ||
+        url.pathname === path.slice(0, -1),
+    );
+    if (shell && url.pathname === shell.slice(0, -1)) {
+      url.pathname = shell;
       event.respondWith(Response.redirect(url));
       return;
     }
 
-    const shell = GUIDE_PATHS.has(url.pathname) ? GUIDE_SHELL : BOX_SHELL;
-    event.respondWith(fetch(request).catch(() => caches.match(shell, { cacheName: CACHE_NAME })));
+    event.respondWith(
+      fetch(request).catch(() => caches.match(shell ?? HOME_SHELL, { cacheName: CACHE_NAME })),
+    );
     return;
   }
 
@@ -113,15 +140,15 @@ async function networkFirst(request) {
 }
 
 /* ── Cache-first strategy ── */
-async function cacheFirst(request) {
-  const cached = await caches.match(request, { cacheName: CACHE_NAME });
+async function cacheFirst(request, cacheName = CACHE_NAME) {
+  const cached = await caches.match(request, { cacheName });
   if (cached) return cached;
 
   try {
     const response = await fetch(request);
-    if (response && response.status === 200 && response.type === "basic") {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone());
+    if (response.status === 200 && ["basic", "cors"].includes(response.type)) {
+      const cache = await caches.open(cacheName);
+      await cache.put(request, response.clone()).catch(() => {});
     }
     return response;
   } catch (err) {

@@ -424,6 +424,36 @@ function buildSpeciesLookup() {
   return map;
 }
 
+function speciesFromBackup(species) {
+  const { id, name, showdownId, types, spriteUrl, pokeApiName, isMega, isUltra } = species;
+  const slug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  if (
+    !Number.isInteger(id) ||
+    id < 1 ||
+    typeof name !== "string" ||
+    !name.trim() ||
+    typeof showdownId !== "string" ||
+    !slug.test(showdownId) ||
+    !Array.isArray(types) ||
+    !types.length ||
+    types.some((type) => typeof type !== "string" || !type.trim()) ||
+    typeof spriteUrl !== "string" ||
+    !spriteUrl.startsWith("https://")
+  ) {
+    return null;
+  }
+  return {
+    id,
+    name,
+    showdownId,
+    types,
+    spriteUrl,
+    ...(typeof pokeApiName === "string" && slug.test(pokeApiName) && { pokeApiName }),
+    isMega: Boolean(isMega),
+    isUltra: Boolean(isUltra),
+  };
+}
+
 /**
  * Show a modal dialog for importing box data from pasted JSON.
  * @param {Function} onImport — callback(data:Array<Object>) when import is confirmed
@@ -534,9 +564,11 @@ export function showImportDialog(onImport) {
         continue;
       }
 
-      const id = (entry.species.showdownId || "").toLowerCase();
-      const name = (entry.species.name || "").toLowerCase();
-      const match = speciesMap.get(id) || speciesMap.get(name);
+      const { showdownId, name } = entry.species;
+      const byId = typeof showdownId === "string" && speciesMap.get(showdownId.toLowerCase());
+      const byName = typeof name === "string" && speciesMap.get(name.toLowerCase());
+      // Full backups can include Pokémon from earlier regulations or newly fetched rosters.
+      const match = byId || byName || speciesFromBackup(entry.species);
 
       if (!match) {
         const label = entry.species.showdownId || entry.species.name || "(unknown)";
