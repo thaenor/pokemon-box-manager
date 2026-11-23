@@ -1,15 +1,35 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Pokémon Box Manager", () => {
-  test("page loads and shows the app shell", async ({ page }) => {
-    await page.goto("/");
+  test("opens the box immediately in a fresh browser session", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "webdriver", { value: false });
+    });
+    await page.goto("./");
     await expect(page).toHaveTitle("Pokémon Box Manager", { timeout: 5000 });
-    const main = page.locator("main#app");
-    await expect(main).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Your box is empty")).toBeVisible();
+    await expect(page.getByTestId("box-slot")).toHaveCount(40);
+    await page.getByRole("link", { name: "Violet Field Guide" }).click();
+    await expect(page.getByRole("heading", { name: "Evolution field guide" })).toBeVisible();
+  });
+
+  test("reopens the box and species search offline after the initial visit", async ({
+    page,
+    context,
+  }) => {
+    await page.goto("./");
+    await expect(page.getByTestId("box-slot")).toHaveCount(40);
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+
+    await context.setOffline(true);
+    await page.reload();
+    await expect(page.getByTestId("box-slot")).toHaveCount(40);
+    await page.getByTestId("box-slot").first().click();
+    await expect(page.getByTestId("species-search")).toBeVisible();
   });
 
   test("can open species search overlay", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
 
     // Click the first empty grid slot (opens search overlay)
     const firstSlot = page.locator('[data-testid="box-slot"]').first();
@@ -20,7 +40,7 @@ test.describe("Pokémon Box Manager", () => {
   });
 
   test("can search by name and see results", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
 
     // Open search overlay by clicking first empty grid slot
     const firstSlot = page.locator('[data-testid="box-slot"]').first();
@@ -38,7 +58,7 @@ test.describe("Pokémon Box Manager", () => {
   });
 
   test("sprite loads in search results after typing a query", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
 
     // Open species search by clicking first empty grid slot
     const firstSlot = page.locator('[data-testid="box-slot"]').first();

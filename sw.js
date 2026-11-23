@@ -1,27 +1,38 @@
-const CACHE_NAME = "pkmn-box-v7";
-const GUIDE_SHELL = "/violet/";
-const GUIDE_PATHS = new Set(["/violet", GUIDE_SHELL, "/violet/index.html"]);
+const scope = new URL(self.registration.scope);
+const cachePrefix = scope.pathname === "/" ? "pkmn-box-v" : `pkmn-box-${scope.pathname}:v`;
+const CACHE_NAME = `${cachePrefix}9`;
+const BOX_SHELL = scope.pathname;
+const GUIDE_SHELL = `${scope.pathname}violet/`;
+const GUIDE_PATHS = new Set([GUIDE_SHELL, `${GUIDE_SHELL}index.html`]);
 
 const PRECACHE_URLS = [
-  "/",
-  "/index.html",
-  "/css/style.css",
-  "/js/firebase-config.js",
-  "/js/app.js",
-  "/manifest.json",
-  "/images/icon-192.svg",
-  "/images/icon-512.svg",
-  GUIDE_SHELL,
-  "/violet/companion.css",
-  "/violet/app.js",
-  "/violet/progress.js",
-  "/violet/catalogue.js",
-  "/violet/art/charcadet.png",
-  "/violet/art/portraits.png",
-  "/violet/manifest.webmanifest",
-  "/violet/icon-192.png",
-  "/violet/icon-512.png",
-];
+  "",
+  "css/style.css",
+  "js/app.js",
+  "js/api/pokeapi.js",
+  "js/cache/pokemon-cache.js",
+  "js/cache/schema.js",
+  "js/data/natures.js",
+  "js/data/species-list.js",
+  "js/ui/box-grid.js",
+  "js/ui/focus-trap.js",
+  "js/ui/pokemon-detail.js",
+  "js/ui/species-search.js",
+  "js/ui/toast.js",
+  "manifest.json",
+  "images/icon-192.svg",
+  "images/icon-512.svg",
+  "violet/",
+  "violet/companion.css",
+  "violet/app.js",
+  "violet/progress.js",
+  "violet/catalogue.js",
+  "violet/art/charcadet.png",
+  "violet/art/portraits.png",
+  "violet/manifest.webmanifest",
+  "violet/icon-192.png",
+  "violet/icon-512.png",
+].map((asset) => new URL(asset, scope).href);
 
 /* ── Install: cache static assets ── */
 self.addEventListener("install", (event) => {
@@ -41,7 +52,7 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key.startsWith("pkmn-box-") && key !== CACHE_NAME)
+            .filter((key) => key.startsWith(cachePrefix) && key !== CACHE_NAME)
             .map((key) => caches.delete(key)),
         ),
       )
@@ -54,26 +65,24 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only intercept GET requests
-  if (request.method !== "GET") {
-    return;
-  }
-
-  // Firebase SDK scripts from CDN: stale-while-revalidate for offline resilience
-  if (url.origin === "https://www.gstatic.com" && url.pathname.startsWith("/firebasejs/")) {
-    event.respondWith(staleWhileRevalidate(request));
-    return;
-  }
-
-  // Only intercept same-origin requests beyond this point
-  if (url.origin !== self.location.origin) {
+  if (
+    request.method !== "GET" ||
+    url.origin !== scope.origin ||
+    !url.pathname.startsWith(BOX_SHELL)
+  ) {
     return;
   }
 
   // Reopen the correct app, including a direct visit to the guide while offline.
   if (request.mode === "navigate") {
-    const shell = GUIDE_PATHS.has(url.pathname) ? GUIDE_SHELL : "/index.html";
-    event.respondWith(fetch(request).catch(() => caches.match(shell)));
+    if (url.pathname === GUIDE_SHELL.slice(0, -1)) {
+      url.pathname = GUIDE_SHELL;
+      event.respondWith(Response.redirect(url));
+      return;
+    }
+
+    const shell = GUIDE_PATHS.has(url.pathname) ? GUIDE_SHELL : BOX_SHELL;
+    event.respondWith(fetch(request).catch(() => caches.match(shell, { cacheName: CACHE_NAME })));
     return;
   }
 
@@ -87,27 +96,6 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(cacheFirst(request));
 });
 
-/* ── Stale-while-revalidate strategy (for CDN scripts) ── */
-async function staleWhileRevalidate(request) {
-  const cached = await caches.match(request);
-  const fetchPromise = fetch(request)
-    .then((response) => {
-      if (response && response.ok) {
-        caches
-          .open(CACHE_NAME)
-          .then((c) => {
-            c.put(request, response.clone()).catch(() => {});
-          })
-          .catch(() => {});
-      }
-      return response;
-    })
-    .catch(() => cached || new Response("Offline", { status: 503 }));
-
-  // Return cached immediately if available, else wait for network
-  return cached || fetchPromise;
-}
-
 /* ── Network-first strategy (for JS files) ── */
 async function networkFirst(request) {
   try {
@@ -118,7 +106,7 @@ async function networkFirst(request) {
     }
     return response;
   } catch (err) {
-    const cached = await caches.match(request);
+    const cached = await caches.match(request, { cacheName: CACHE_NAME });
     if (cached) return cached;
     return new Response("Offline", { status: 503, statusText: "Offline" });
   }
@@ -126,7 +114,7 @@ async function networkFirst(request) {
 
 /* ── Cache-first strategy ── */
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const cached = await caches.match(request, { cacheName: CACHE_NAME });
   if (cached) return cached;
 
   try {

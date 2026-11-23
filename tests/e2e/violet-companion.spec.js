@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const companion = "/violet/";
+const companion = "./violet/";
 
 async function lookUp(page, name) {
   const search = page.getByRole("searchbox", { name: "Search Pokémon" });
@@ -56,7 +56,9 @@ test("reopens offline and looks up an unvisited species", async ({ page, context
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);
-  await page.reload();
+  await page.goto("./violet");
   await lookUp(page, "Sprigatito");
   await expect(page.locator(".method-summary")).toContainText(/16/);
+  await page.getByRole("link", { name: "Box Manager" }).click();
+  await expect(page.getByTestId("box-slot")).toHaveCount(40);
 });
