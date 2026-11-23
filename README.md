@@ -189,7 +189,7 @@ Set **Settings → Pages → Build and deployment → Source** to **GitHub Actio
 
 The default site address is [Pokémon Box Manager on GitHub Pages](https://thaenor.github.io/pokemon-box-manager/), with the guide at `/pokemon-box-manager/violet/`. GitHub Pages requires an eligible plan for private repositories, and the deployed site is public on a personal account.
 
-When moving to a different site address, export your box as JSON from the old address and import it at the new one.
+To move your Pokémon to Pages, export your box as JSON from the old site and import it into an empty box on the new site. Set the destination grid size first so it has room for every Pokémon. Import fills consecutive slots starting at slot 1. If you want to recreate your layout, record the original slot positions before moving.
 
 ## Further Reading
 

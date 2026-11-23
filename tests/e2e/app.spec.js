@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.js";
 
 test.describe("Pokémon Box Manager", () => {
   test("opens the box immediately in a fresh browser session", async ({ page }) => {

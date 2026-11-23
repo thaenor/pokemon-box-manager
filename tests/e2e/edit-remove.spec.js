@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.js";
 
 /**
  * Shared Pokémon fixture for edit/remove E2E tests.
@@ -46,7 +46,6 @@ test.describe("Edit and remove Pokémon flow", () => {
       buildBox(true),
     );
     await page.reload();
-    await page.waitForLoadState("networkidle");
 
     // Click first filled slot
     await page.locator('[data-testid="box-slot"]').first().click();
@@ -63,7 +62,6 @@ test.describe("Edit and remove Pokémon flow", () => {
       buildBox(true),
     );
     await page.reload();
-    await page.waitForLoadState("networkidle");
 
     // Click first slot
     await page.locator('[data-testid="box-slot"]').first().click();
@@ -83,7 +81,6 @@ test.describe("Edit and remove Pokémon flow", () => {
       buildBox(true),
     );
     await page.reload();
-    await page.waitForLoadState("networkidle");
 
     // Click first slot
     await page.locator('[data-testid="box-slot"]').first().click();
@@ -112,7 +109,6 @@ test.describe("Edit and remove Pokémon flow", () => {
       buildBox(true),
     );
     await page.reload();
-    await page.waitForLoadState("networkidle");
 
     // Click first slot
     await page.locator('[data-testid="box-slot"]').first().click();
@@ -148,7 +144,6 @@ test.describe("Edit and remove Pokémon flow", () => {
       buildBox(true),
     );
     await page.reload();
-    await page.waitForLoadState("networkidle");
 
     // Click first slot
     await page.locator('[data-testid="box-slot"]').first().click();
